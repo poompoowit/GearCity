@@ -396,7 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
       badgeDispLive.textContent = `${res.displacementCc.toFixed(0)} cc`;
       statCost.textContent = `$${res.unitCost.toFixed(2)}`;
       statWeight.textContent = `${res.weightKg.toFixed(1)} kg`;
-      statDim.textContent = `${res.lengthCm.toFixed(1)} x ${res.widthCm.toFixed(1)} cm`;
+      statDim.textContent = `L: ${(res.lengthCm * 10).toFixed(0)} mm | W: ${(res.widthCm * 10).toFixed(0)} mm (${res.lengthCm.toFixed(1)} x ${res.widthCm.toFixed(1)} cm)`;
     } catch (err) {
       console.error('Calculation error:', err);
     }
@@ -430,8 +430,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const year = Number(inputYear.value);
     const maxCost = inputMaxCost.value ? Number(inputMaxCost.value) : null;
     const maxWeight = inputMaxWeight.value ? Number(inputMaxWeight.value) : null;
-    const maxLength = inputMaxLen.value ? Number(inputMaxLen.value) : null;
-    const maxWidth = inputMaxWid.value ? Number(inputMaxWid.value) : null;
+    const maxLength = inputMaxLen.value ? Number(inputMaxLen.value) / 10.0 : null; // mm to cm
+    const maxWidth = inputMaxWid.value ? Number(inputMaxWid.value) / 10.0 : null;   // mm to cm
 
     optimizerStatus.textContent = 'Optimizing blueprint...';
     btnAutoOptimize.disabled = true;
