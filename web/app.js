@@ -409,48 +409,50 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Function to set year and refresh UI
-  function setGameYear(val, forceFilterReset = true) {
-    const clamped = Math.max(1890, Math.min(2020, Number(val) || 1900));
+  function setGameYear(val, forceFilterReset = false) {
+    const clamped = Math.max(1900, Math.min(2020, Number(val) || 1900));
     inputYear.value = clamped;
     if (inputYearNum) inputYearNum.value = clamped;
 
-    initFiltersForYear(clamped, forceFilterReset);
+    if (forceFilterReset) {
+      initFiltersForYear(clamped, true);
+    }
     populateComponentDropdowns();
     updateCalculations();
   }
 
   // Event Listeners for Live Updates
   inputYear.addEventListener('input', () => {
-    setGameYear(inputYear.value, true);
+    setGameYear(inputYear.value, false);
   });
 
   if (inputYearNum) {
     inputYearNum.addEventListener('input', () => {
       if (inputYearNum.value.length >= 4) {
-        setGameYear(inputYearNum.value, true);
+        setGameYear(inputYearNum.value, false);
       }
     });
     inputYearNum.addEventListener('change', () => {
-      setGameYear(inputYearNum.value, true);
+      setGameYear(inputYearNum.value, false);
     });
   }
 
   if (btnYearPrev) {
     btnYearPrev.addEventListener('click', () => {
-      setGameYear(Number(inputYear.value) - 1, true);
+      setGameYear(Number(inputYear.value) - 1, false);
     });
   }
 
   if (btnYearNext) {
     btnYearNext.addEventListener('click', () => {
-      setGameYear(Number(inputYear.value) + 1, true);
+      setGameYear(Number(inputYear.value) + 1, false);
     });
   }
 
   btnYearPresets.forEach((btn) => {
     btn.addEventListener('click', () => {
       const yr = Number(btn.dataset.year);
-      setGameYear(yr, true);
+      setGameYear(yr, false);
     });
   });
 
