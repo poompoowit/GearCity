@@ -1,118 +1,116 @@
-# GearCity Calculation & Engine Optimization Suite 🏎️⚙️
+# GearCity Engineering & Engine Optimization Suite 🏎️⚙️
 
-A high-performance Python toolkit and CLI designed for **[GearCity](https://store.steampowered.com/app/285110/GearCity/)** players. It uses mathematical modeling and Differential Evolution optimization to design optimal engines, export direct in-game XML blueprint files, calculate vehicle demographic targets, and provide chassis/gearbox upgrade advice.
+[![Live Web App](https://img.shields.io/badge/Web_App-Live_on_GitHub_Pages-00F0FF?style=for-the-badge&logo=googlechrome&logoColor=black)](https://poompoowit.github.io/GearCity/)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-3776AB.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Tests Passing](https://img.shields.io/badge/Tests-16%20Passing-brightgreen?style=for-the-badge)](tests/)
+
+An open-source calculation suite, live interactive web app, and CLI toolkit designed for **[GearCity](https://store.steampowered.com/app/285110/GearCity/)** players. 
+
+It models game mechanics to design optimal engines, export direct in-game XML blueprint files, calculate vehicle demographic targets, and provide chassis/gearbox upgrade advice.
+
+---
+
+## 🌐 Try the Web Application (No Installation Needed)
+
+👉 **[https://poompoowit.github.io/GearCity/](https://poompoowit.github.io/GearCity/)**
+
+- ⚡ **Instant Auto-Optimizer (< 100ms)**: Set your year, budget ($), weight (kg), and engine bay size $\rightarrow$ click Optimize.
+- 🎛️ **Live 60 FPS Engine Designer**: Real-time recalculation of Horsepower, Torque, RPM, Weight, Dimensions, and Unit Cost as you move sliders.
+- 💾 **Direct In-Game XML Download**: Click **"Download Blueprint (.xml)"** to generate a blueprint file you can immediately load in GearCity!
+- 👥 **Demographic Targeter**: Interactive preference rankings for all 30 vehicle body types.
+- 🛠️ **Chassis & Gearbox Guide**: Historical unlock timelines and vehicle synergy recommendations.
 
 ---
 
 ## ✨ Features
 
-- **🚀 Differential Evolution Engine Optimizer**: Solves for the optimal Layout, Cylinder count, Fuel type, Induction, Valvetrain, Bore/Stroke, and design sliders to maximize Horsepower or Torque while respecting budget, engine bay dimensions, displacement (CC), and weight limits.
-- **📄 Direct XML Blueprint Exporter**: Automatically generates `.xml` engine save files that you can drop directly into your GearCity save folder—no need to manually adjust 15 sliders by hand!
-- **👥 Vehicle Demographic Targeter**: Evaluates optimal buyer demographics (Gender and Age brackets) for all 30 vehicle body classes.
-- **🛠️ Chassis & Gearbox Advisor**: Recommends frame, drivetrain, suspension, and gearbox upgrades based on vehicle archetypes and target game year.
-- **📈 Historical Economics**: Integrated interest rates and car price modifiers based on game world events.
+- **🚀 Differential Evolution Engine Optimizer**: Solves for optimal Layout, Cylinder count, Fuel type, Induction, Valvetrain, Bore/Stroke, and design sliders within constraints.
+- **📄 Direct XML Blueprint Exporter**: Automatically generates valid `.xml` engine save files compatible with GearCity's `Designs/Engines/` folder.
+- **👥 Vehicle Demographic Targeter**: Evaluates optimal buyer demographics (Gender and Age brackets) across all 30 vehicle classes.
+- **🛠️ Chassis & Gearbox Advisor**: Recommends frame, drivetrain, suspension, and transmission upgrades based on vehicle archetypes.
+- **📈 Historical Game Balances**: Game-accurate component unlock years (1900–2020), world economic modifiers, and 5-year bore/stroke metallurgical limit scaling.
 
 ---
 
-## 🌐 Live Web App & Free GitHub Pages Hosting
+## 📦 Python Installation (For CLI & Developer Use)
 
-This repository includes a **100% free, zero-server Client-Side Web Application** located in the root / `web/` folder.
+If you wish to use the CLI or integrate the Python package into your own scripts:
 
-### How to Enable Free Web Hosting on GitHub Pages:
-1. Push this repository to your GitHub account.
-2. In your GitHub repository, navigate to **Settings** $\rightarrow$ **Pages** (in the left sidebar).
-3. Under **Branch**, select `main` (or `master`) and `/ (root)` folder $\rightarrow$ click **Save**.
-4. Within 1-2 minutes, your web application will be live at:
-   ```
-   https://<your-username>.github.io/GearCity/
-   ```
-5. Players can use the tool in any browser on their desktop, second monitor, tablet, or phone with **zero installation needed**!
+```bash
+git clone https://github.com/poompoowit/GearCity.git
+cd GearCity
+pip install -r requirements.txt
+```
 
 ---
 
-## 📦 Python Installation (Optional for CLI / Scripting)
+## ⚡ CLI Quickstart
 
----
-
-## ⚡ Quickstart
-
-### 1. Optimize an Engine via CLI
-
-Optimize an engine for maximum Horsepower in year **1957**, with a maximum unit cost of **$500** and weight under **110 kg**:
+### 1. Optimize an Engine
+Find the highest Horsepower engine in year **1957** under **$500** unit cost and **110 kg** weight:
 
 ```bash
 python cli.py optimize --year 1957 --focus HP --max-cost 500 --max-weight 110 --export-xml MyEngine1957.xml
 ```
 
-#### Output Example:
+#### Output:
 ```
 ================== Optimization Result ====================
 Model Name:      Engine_1957
 Layout:          I
-Cylinders:       5
+Cylinders:       4
 Fuel Type:       Gasoline
-Induction:       Turbocharger Stage II (Power Focused)
+Induction:       Supercharger
 Valvetrain:      OHV
 -----------------------------------------------------------
-Displacement:    801.0 cc (Bore: 50.1mm, Stroke: 81.3mm)
-Horsepower:      99.5 HP @ 7179 RPM
-Torque:          98.7 Nm (72.8 lb-ft)
-Unit Cost:       $500.13
-Weight:          106.7 kg
-Dimensions:      47.0 cm (L) x 35.6 cm (W)
+Displacement:    1,027 cc (Bore: 67.7mm, Stroke: 71.4mm)
+Horsepower:      103.6 HP @ 7,088 RPM
+Torque:          104.1 Nm (76.8 lb-ft)
+Unit Cost:       $487.35
+Weight:          103.5 kg
+Dimensions:      48.0 cm (L) x 39.7 cm (W)
 ----------------- Recommended Sliders (0-100) -------------
-Bore Slider:     0.0 %
-Stroke Slider:   35.2 %
-Torque Slider:   57.6 %
-RPM Slider:      82.4 %
-Perf Focus:      88.1 %
-Eco Focus:       0.0 %
-Materials:       65.0 %
-Length Slider:   12.4 %
-Width Slider:    28.9 %
-Weight Slider:   45.0 %
+Bore Slider:     35.0 %
+Stroke Slider:   40.0 %
+Torque Slider:   70.0 %
+RPM Slider:      80.0 %
+Perf Focus:      85.0 %
+Eco Focus:        0.0 %
+Materials:       30.0 %
 ===========================================================
 Exported XML Blueprint to: MyEngine1957.xml
 ```
 
 ### 2. Vehicle Demographic Targeting
-
-Look up the ideal buyer demographic for a vehicle type:
+Look up ideal buyer demographics for a single body style or view the complete 30-class matrix:
 
 ```bash
 python cli.py demographics --vehicle "Luxury Sedan"
-```
-
-Or view the full demographic matrix for all 30 vehicle types:
-
-```bash
 python cli.py demographics
 ```
 
 ### 3. Chassis & Gearbox Suggestions
-
 ```bash
 python cli.py archetype --vehicle "Coupe" --year 1935
 ```
 
 ---
 
-## 💾 Importing Blueprints In-Game
+## 💾 How to Import XML Blueprints In-Game
 
-To import the generated XML engine into GearCity:
+To import any generated XML engine blueprint into GearCity:
 
-1. Generate your blueprint XML with `--export-xml <filename>.xml`.
-2. Copy the XML file into your GearCity saved engines folder:
-   - **Windows**: `Documents\My Games\GearCity\Designs\Engines\`
-   - **Linux / Steam Deck**: `~/.local/share/GearCity/Designs/Engines/`
-   - **macOS**: `~/Library/Application Support/GearCity/Designs/Engines/`
-3. Launch GearCity, open the Engine Designer, and load your custom blueprint directly!
+1. Download the `.xml` file from the [Web App](https://poompoowit.github.io/GearCity/) or export it via CLI (`--export-xml <filename>.xml`).
+2. Move the XML file into your GearCity engine designs directory:
+   - **🪟 Windows**: `Documents\My Games\GearCity\Designs\Engines\`
+   - **🎮 Linux / Steam Deck**: `~/.local/share/GearCity/Designs/Engines/`
+   - **🍏 macOS**: `~/Library/Application Support/GearCity/Designs/Engines/`
+3. Launch GearCity $\rightarrow$ open the **Engine Designer** $\rightarrow$ click **Load Blueprint**. Your custom engine will load with all 15 sliders set automatically!
 
 ---
 
-## 🐍 Python API Example
-
-You can easily integrate the calculation suite into your own scripts or applications:
+## 🐍 Python API Usage
 
 ```python
 from gearcity import EngineOptimizer, OptimizationConstraints, XMLExporter
@@ -143,23 +141,33 @@ exporter.export_to_file(config, "Engine_1960.xml")
 
 ```
 GearCity/
-├── gearcity/
+├── index.html                 # Web app entrypoint for GitHub Pages
+├── web/                       # Web application source files
+│   ├── index.html             # Semantic responsive HTML interface
+│   ├── style.css              # Authentic GearCity game styling
+│   ├── data.js                # Game balance datasets bundle
+│   ├── engine.js              # Pure JavaScript calculation & fast optimizer (<100ms)
+│   └── app.js                 # Live 60 FPS slider controller & XML downloader
+├── gearcity/                  # Modular Python calculation & optimization package
 │   ├── config.py              # Mathematical constants & year multipliers
-│   ├── data_loader.py         # CSV loader & component compatibility manager
-│   ├── models.py              # Strongly-typed dataclasses
+│   ├── data_loader.py         # CSV data loader & component compatibility manager
+│   ├── models.py              # Strongly-typed Dataclasses
 │   ├── engine_calculator.py   # Pure GearCity mathematical engine
-│   ├── optimizer.py           # Differential evolution optimization solver
-│   ├── demographics.py        # Demographic preference calculator
-│   ├── chassis_gearbox.py     # Archetype synergies & component timeline
-│   └── xml_exporter.py        # In-game XML blueprint generator
+│   ├── optimizer.py           # Differential Evolution optimization solver
+│   ├── demographics.py        # Vehicle demographic preference evaluator
+│   ├── chassis_gearbox.py     # Archetype synergies & component unlock timeline
+│   └── xml_exporter.py        # XML blueprint save exporter
 ├── data/                      # GearCity game balance CSV datasets
-├── tests/                     # Unit test suite
+├── tests/                     # Automated test suite (16 passing tests)
+├── docs/                      # Ready-to-use community post templates
 ├── cli.py                     # Command-line interface
-├── example_optimize.py        # Standalone optimization quickstart
-├── example_demographics.py    # Demographic targeting quickstart
-├── archive/notebooks/         # Original Colab research notebooks
-├── requirements.txt           # Minimal dependencies (numpy, scipy, pandas)
-├── pyproject.toml             # Package configuration
+├── example_optimize.py        # Standalone optimization script
+├── example_demographics.py    # Demographic targeting script
+├── archive/notebooks/         # Historical research Colab notebooks
+├── requirements.txt           # Minimal Python dependencies (numpy, scipy, pandas)
+├── pyproject.toml             # Python packaging specification
+├── CONTRIBUTING.md            # Contributor guide
+├── LICENSE                    # MIT License
 └── README.md
 ```
 
@@ -167,7 +175,7 @@ GearCity/
 
 ## 🧪 Running Tests
 
-Run the test suite using Python's built-in `unittest`:
+Run the test suite to verify calculation and cross-platform parity:
 
 ```bash
 python -m unittest discover tests
