@@ -9,7 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // DOM Elements - Optimizer Inputs
   const inputYear = document.getElementById('input-year');
-  const labelYearVal = document.getElementById('label-year-val');
+  const inputYearNum = document.getElementById('input-year-num');
+  const btnYearPrev = document.getElementById('btn-year-prev');
+  const btnYearNext = document.getElementById('btn-year-next');
+  const btnYearPresets = document.querySelectorAll('.btn-year-preset');
   const goalOptions = document.querySelectorAll('.goal-option');
   const inputMaxCost = document.getElementById('input-max-cost');
   const inputMaxWeight = document.getElementById('input-max-weight');
@@ -332,7 +335,6 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   function updateCalculations() {
     const year = Number(inputYear.value);
-    labelYearVal.textContent = year;
 
     const layoutName = selectLayout.value;
     const cylName = selectCylinders.value;
@@ -402,12 +404,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Event Listeners for Live Updates
-  inputYear.addEventListener('input', () => {
-    const year = Number(inputYear.value);
-    initFiltersForYear(year, true);
+  // Function to set year and refresh UI
+  function setGameYear(val, forceFilterReset = true) {
+    const clamped = Math.max(1890, Math.min(2020, Number(val) || 1900));
+    inputYear.value = clamped;
+    if (inputYearNum) inputYearNum.value = clamped;
+
+    initFiltersForYear(clamped, forceFilterReset);
     populateComponentDropdowns();
     updateCalculations();
+  }
+
+  // Event Listeners for Live Updates
+  inputYear.addEventListener('input', () => {
+    setGameYear(inputYear.value, true);
+  });
+
+  if (inputYearNum) {
+    inputYearNum.addEventListener('input', () => {
+      if (inputYearNum.value.length >= 4) {
+        setGameYear(inputYearNum.value, true);
+      }
+    });
+    inputYearNum.addEventListener('change', () => {
+      setGameYear(inputYearNum.value, true);
+    });
+  }
+
+  if (btnYearPrev) {
+    btnYearPrev.addEventListener('click', () => {
+      setGameYear(Number(inputYear.value) - 1, true);
+    });
+  }
+
+  if (btnYearNext) {
+    btnYearNext.addEventListener('click', () => {
+      setGameYear(Number(inputYear.value) + 1, true);
+    });
+  }
+
+  btnYearPresets.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const yr = Number(btn.dataset.year);
+      setGameYear(yr, true);
+    });
   });
 
   selectLayout.addEventListener('change', () => {
