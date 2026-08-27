@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GearCity Engineering & Engine Optimization Suite</title>
+  <title>GearCity Calculation & Engine Optimization Suite</title>
   <meta name="description" content="Free open-source engine designer, optimizer, XML blueprint generator, and demographic calculator for GearCity.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="web/style.css?v=2.7">
+  <link rel="stylesheet" href="web/style.css?v=2.8">
   <style>
     .modal-overlay { display: none !important; }
   </style>
@@ -27,7 +27,8 @@
       <nav class="nav-tabs" role="tablist">
         <button class="nav-tab active" data-tab="tab-optimizer">⚡ Engine Optimizer</button>
         <button class="nav-tab" data-tab="tab-demographics">👥 Demographics</button>
-        <button class="nav-tab" data-tab="tab-chassis">🛠️ Chassis & Gearbox</button>
+        <button class="nav-tab" data-tab="tab-chassis">🛠️ Vehicle Advisor</button>
+        <button class="nav-tab" data-tab="tab-vehicle-engine">🏭 Vehicle Engine</button>
         <button class="nav-tab" data-tab="tab-guide">📖 XML Import Guide</button>
       </nav>
     </div>
@@ -371,159 +372,126 @@
       </div>
     </section>
 
-    <!-- ==================== TAB 3: CHASSIS & GEARBOX ==================== -->
+    <!-- ==================== TAB 3: VEHICLE CLASS ADVISOR ==================== -->
     <section id="tab-chassis" class="tab-content">
-      <!-- Interactive Advisor -->
+
+      <!-- Vehicle Class Reference Table -->
       <div class="card">
         <div class="card-header">
-          <h2 class="card-title">🛠️ Chassis, Gearbox & Synergy Advisor</h2>
+          <h2 class="card-title">🚗 Vehicle Class Reference</h2>
         </div>
-
-        <p style="font-size: 13px; color: var(--gc-text-muted); margin-bottom: 20px; line-height: 1.5;">
-          Select any vehicle archetype and target design year to view recommended frame architectures, suspension types, transmission pairings, and target engine profiles based on in-game buyer synergies.
+        <p style="font-size: 13px; color: var(--gc-text-muted); margin-bottom: 16px; line-height: 1.5;">
+          All 30 vehicle types from GearCity with their recommended Chassis, Engine, and Gearbox design concepts. Click any row to see detailed design recommendations below.
         </p>
+
+        <div class="table-container" style="max-height: 460px; overflow-y: auto;">
+          <table class="data-table" id="table-vehicle-classes">
+            <thead style="position: sticky; top: 0; z-index: 2;">
+              <tr>
+                <th>Car Type</th>
+                <th>Chassis</th>
+                <th>Engine</th>
+                <th>Gearbox</th>
+                <th style="text-align: center;">Mil.</th>
+                <th style="text-align: center;">Civ.</th>
+                <th style="text-align: center;">Low $</th>
+                <th style="text-align: center;">High $</th>
+                <th>Body Focus</th>
+                <th>Wealth</th>
+              </tr>
+            </thead>
+            <tbody id="table-vehicle-classes-body">
+              <!-- Injected via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Vehicle Detail Panel -->
+      <div class="card" style="margin-top: 24px;">
+        <div class="card-header">
+          <h2 class="card-title">📋 Vehicle Design Detail</h2>
+        </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px; align-items: start;">
           <div class="form-group" style="margin-bottom: 0;">
             <label class="form-label">Vehicle Type</label>
-            <select id="select-synergy-vehicle" class="select-dropdown"></select>
+            <select id="select-vehicle-advisor" class="select-dropdown"></select>
           </div>
           <div class="form-group" style="margin-bottom: 0;">
             <label class="form-label" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
               <span>Game Year</span>
               <div style="display: flex; align-items: center; gap: 4px;">
-                <button type="button" id="btn-synergy-year-prev" class="btn-secondary" style="margin-top: 0; padding: 2px 8px; font-size: 11px; height: 26px; min-width: 24px;">◀</button>
-                <input type="number" id="input-synergy-year-num" class="input-text" min="1900" max="2020" value="1960" style="width: 76px; padding: 2px 6px; font-size: 14px; font-weight: 800; text-align: center; height: 26px; color: var(--gc-text-gold); font-family: var(--font-game-mono);">
-                <button type="button" id="btn-synergy-year-next" class="btn-secondary" style="margin-top: 0; padding: 2px 8px; font-size: 11px; height: 26px; min-width: 24px;">▶</button>
+                <button type="button" id="btn-advisor-year-prev" class="btn-secondary" style="margin-top: 0; padding: 2px 8px; font-size: 11px; height: 26px; min-width: 24px;">◀</button>
+                <input type="number" id="input-advisor-year-num" class="input-text" min="1900" max="2020" value="1960" style="width: 76px; padding: 2px 6px; font-size: 14px; font-weight: 800; text-align: center; height: 26px; color: var(--gc-text-gold); font-family: var(--font-game-mono);">
+                <button type="button" id="btn-advisor-year-next" class="btn-secondary" style="margin-top: 0; padding: 2px 8px; font-size: 11px; height: 26px; min-width: 24px;">▶</button>
               </div>
             </label>
-            <input type="range" id="input-synergy-year" class="slider-range" min="1900" max="2020" value="1960" step="1">
-            <div style="display: flex; justify-content: space-between; gap: 4px; margin-top: 6px;">
-              <button type="button" class="btn-synergy-year-preset btn-secondary" data-year="1900" style="margin-top: 0; padding: 3px 6px; font-size: 11px; flex: 1;">1900</button>
-              <button type="button" class="btn-synergy-year-preset btn-secondary" data-year="1920" style="margin-top: 0; padding: 3px 6px; font-size: 11px; flex: 1;">1920</button>
-              <button type="button" class="btn-synergy-year-preset btn-secondary" data-year="1940" style="margin-top: 0; padding: 3px 6px; font-size: 11px; flex: 1;">1940</button>
-              <button type="button" class="btn-synergy-year-preset btn-secondary" data-year="1960" style="margin-top: 0; padding: 3px 6px; font-size: 11px; flex: 1;">1960</button>
-              <button type="button" class="btn-synergy-year-preset btn-secondary" data-year="1980" style="margin-top: 0; padding: 3px 6px; font-size: 11px; flex: 1;">1980</button>
-              <button type="button" class="btn-synergy-year-preset btn-secondary" data-year="2000" style="margin-top: 0; padding: 3px 6px; font-size: 11px; flex: 1;">2000</button>
-            </div>
+            <input type="range" id="input-advisor-year" class="slider-range" min="1900" max="2020" value="1960" step="1">
           </div>
         </div>
 
-        <div id="synergy-results-box" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+        <!-- Vehicle Summary -->
+        <div id="vehicle-summary-card" style="background: rgba(0,0,0,0.3); border: 1px solid var(--gc-border-brown); border-radius: 4px; padding: 14px; margin-bottom: 16px;">
           <!-- Injected via JS -->
         </div>
-      </div>
 
-      <!-- Synergy Mechanics & Design Rules -->
-      <div class="card" style="margin-top: 24px;">
-        <div class="card-header">
-          <h2 class="card-title">💡 How Chassis & Gearbox Synergies Work in GearCity</h2>
+        <!-- Design Cards Grid -->
+        <div id="vehicle-design-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+          <!-- Injected via JS: Chassis, Engine, Gearbox cards -->
         </div>
+      </div>
+    </section>
 
-        <div style="font-size: 13px; color: var(--gc-text-ivory); line-height: 1.6;">
-          <p style="margin-bottom: 14px;">
-            In <em>GearCity</em>, a vehicle's overall appeal and market score are heavily influenced by the <strong>coherence between its Chassis, Engine, and Gearbox</strong>. Vehicle buyers have strict expectations based on their socioeconomic class and intended usage:
-          </p>
+    <!-- ==================== TAB 5: VEHICLE ENGINE OPTIMIZER ==================== -->
+    <section id="tab-vehicle-engine" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">🏭 Vehicle-Guided Engine Optimizer</h2>
+        </div>
+        <p style="font-size: 13px; color: var(--gc-text-muted); margin-bottom: 20px; line-height: 1.5;">
+          Select a vehicle type and game year to auto-configure engine constraints from the design spreadsheet, then optimize.
+        </p>
 
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 20px;">
-            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--gc-border-brown); border-radius: 4px; padding: 14px;">
-              <div style="font-weight: 700; color: var(--gc-text-gold); margin-bottom: 6px;">🏗️ Frame vs. Body Rigidity</div>
-              <div style="font-size: 12px; color: var(--gc-text-muted);">
-                • <strong>Ladder Frame (1902)</strong>: Highest payload and rough-road durability; essential for Trucks, Heavy SUVs, and Commercial Vans.<br>
-                • <strong>Unibody (1930)</strong>: Lighter, cheaper to produce, and provides superior passenger cabin safety for Sedans, Coupes, and Hatchbacks.<br>
-                • <strong>Spaceframe / Superleggera (1924)</strong>: Maximum torsional stiffness at minimum weight; ideal for Sports Cars and Supercars.
-              </div>
-            </div>
-
-            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--gc-border-brown); border-radius: 4px; padding: 14px;">
-              <div style="font-weight: 700; color: var(--gc-text-amber); margin-bottom: 6px;">🌀 Suspension vs. Handling & Comfort</div>
-              <div style="font-size: 12px; color: var(--gc-text-muted);">
-                • <strong>Leaf Springs</strong>: Heavy load capacity and rock-solid durability at the expense of ride comfort.<br>
-                • <strong>Double Wishbone (1924)</strong>: Superior camber stability and cornering control for sports vehicles.<br>
-                • <strong>MacPherson Strut (1939)</strong>: Compact and affordable; the foundation for economy compacts.<br>
-                • <strong>Hydropneumatic / Adaptive (1944/1990)</strong>: Isolates road bumps for top-tier Luxury Sedans and Limousines.
-              </div>
-            </div>
-
-            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--gc-border-brown); border-radius: 4px; padding: 14px;">
-              <div style="font-weight: 700; color: var(--gc-text-green); margin-bottom: 6px;">⚙️ Gearbox vs. Driving Dynamics</div>
-              <div style="font-size: 12px; color: var(--gc-text-muted);">
-                • <strong>Manual (Synchromesh 1912)</strong>: High mechanical efficiency, low cost, and driver control for sports & economy.<br>
-                • <strong>Automatic (1925/1950)</strong>: Smooth torque-converter shifting preferred by luxury & high-wealth buyers.<br>
-                • <strong>Dual-Clutch / DCT (1980)</strong>: Ultra-fast sub-100ms gear shifts without power interruption for performance sports cars.
-              </div>
-            </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Vehicle Type</label>
+            <select id="select-vopt-vehicle" class="select-dropdown"></select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Engine Concept</label>
+            <select id="select-vopt-concept" class="select-dropdown"></select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Game Year</label>
+            <input type="number" id="input-vopt-year" class="input-text" min="1900" max="2020" value="1960" style="font-weight: 800; color: var(--gc-text-gold); font-family: var(--font-game-mono);">
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Design Skill</label>
+            <input type="number" id="input-vopt-skill" class="input-text" min="0" max="100" value="70" style="font-weight: 800; color: var(--gc-text-amber); font-family: var(--font-game-mono);">
           </div>
         </div>
-      </div>
 
-      <!-- Archetype Code Glossary Table -->
-      <div class="card" style="margin-top: 24px;">
-        <div class="card-header">
-          <h2 class="card-title">📖 In-Game Archetype Code Glossary</h2>
+        <!-- Auto-filled constraints display -->
+        <div id="vopt-constraints-box" style="background: rgba(0,0,0,0.3); border: 1px solid var(--gc-border-brown); border-radius: 4px; padding: 14px; margin-bottom: 16px; font-size: 12px; color: var(--gc-text-muted);">
+          <!-- Injected via JS -->
         </div>
 
-        <div class="table-container">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th style="width: 140px;">Code / Style</th>
-                <th style="width: 200px;">Core Philosophy</th>
-                <th>Target Engineering Characteristics</th>
-                <th style="width: 200px;">Best Vehicle Classes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><span style="font-weight: 700; color: var(--gc-text-gold);">Balance</span></td>
-                <td>Cost / Performance Harmony</td>
-                <td>Moderate displacement, dependable inline/flat engines, standard unibody, balanced gear ratios.</td>
-                <td>Sedan, Hatchback, Wagon, Crossover</td>
-              </tr>
-              <tr>
-                <td><span style="font-weight: 700; color: var(--gc-text-amber);">SmallB</span></td>
-                <td>Small-Bore Fuel Saver</td>
-                <td>Bore under 75mm, sub-2.0L displacement, lightweight materials, tall overdrive economy gearing.</td>
-                <td>Compact, Subcompact, Microcar, Minivan</td>
-              </tr>
-              <tr>
-                <td><span style="font-weight: 700; color: var(--gc-text-green);">Power</span></td>
-                <td>High Torque & Output</td>
-                <td>Large displacement V8/V12/I6, reinforced crankshaft, wide powerband for effortless acceleration.</td>
-                <td>Full Sized Sedan, Fastback, Coupe</td>
-              </tr>
-              <tr>
-                <td><span style="font-weight: 700; color: #64b5f6);">SafeLux / CLux</span></td>
-                <td>Whisper-Quiet Luxury</td>
-                <td>Ultra-smooth multi-cylinder engines, soft air/hydraulic suspension, seamless automatic transmission.</td>
-                <td>Luxury Sedan, Limousine, Town Car, Landaulet</td>
-              </tr>
-              <tr>
-                <td><span style="font-weight: 700; color: #ff8a80);">Sport / Race</span></td>
-                <td>High-G Cornering & Track Speed</td>
-                <td>High-revving lightweight engine, double wishbone/multi-link suspension, close-ratio manual/DCT.</td>
-                <td>Roadster, Sports, Supercar, Coupe</td>
-              </tr>
-              <tr>
-                <td><span style="font-weight: 700; color: #d7ccc8);">Truck</span></td>
-                <td>Heavy Hauling & Durability</td>
-                <td>Ladder frame, heavy-duty leaf springs, high low-end torque engine, high thermal durability.</td>
-                <td>Pickup Truck, Van, SUV, Coupe Utility</td>
-              </tr>
-              <tr>
-                <td><span style="font-weight: 700; color: #ffd54f);">Tiny</span></td>
-                <td>Ultra-Compact Packaging</td>
-                <td>1–2 cylinder engines (under 1.0L), MacPherson front struts, minimalist short wheelbase.</td>
-                <td>Microcar, Microvan, Subcompact</td>
-              </tr>
-            </tbody>
-          </table>
+        <button id="btn-vopt-optimize" class="btn-primary" style="background: linear-gradient(135deg, #b06f40, #754425); margin-bottom: 12px;">
+          ⚡ Optimize Engine for Vehicle
+        </button>
+        <div id="vopt-status" style="font-size: 12px; color: var(--gc-text-muted); margin-bottom: 16px;"></div>
+
+        <!-- Results -->
+        <div id="vopt-results-box" style="display: none;">
+          <!-- Injected via JS -->
         </div>
       </div>
     </section>
 
     <!-- ==================== TAB 4: IN-GAME XML IMPORT GUIDE ==================== -->
     <section id="tab-guide" class="tab-content">
+
       <div class="card">
         <div class="card-header">
           <h2 class="card-title">📖 How to Import XML Blueprints In-Game</h2>
@@ -627,8 +595,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="web/data.js?v=2.7"></script>
-  <script src="web/engine.js?v=2.7"></script>
-  <script src="web/app.js?v=2.7"></script>
+  <script src="web/data.js?v=2.8"></script>
+  <script src="web/engine.js?v=2.8"></script>
+  <script src="web/app.js?v=2.8"></script>
 </body>
 </html>

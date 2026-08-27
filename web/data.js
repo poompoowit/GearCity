@@ -4589,9 +4589,78 @@ const GEARCITY_DATA = {
     "military_fleet": true,
     "civilian_fleet": true
   }
+},
+
+// === Vehicle Class & Design Concept Data (from Gearcity.xlsx) ===
+vehicleClasses: [
+  { carType: "Compact Car", chassis: "Balance", engineType: "Balance", gear: "Fuel", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Small Cargo", wealth: "Lower-Middle" },
+  { carType: "Compact SUV", chassis: "Drive", engineType: "Truck", gear: "Drive", milFleet: true, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Middle" },
+  { carType: "Compact Van", chassis: "Tiny", engineType: "SmallB/Balance", gear: "Balance", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Lower-Middle" },
+  { carType: "Coupe", chassis: "Sport", engineType: "Sport", gear: "Sport", milFleet: false, civFleet: true, lowFunding: true, highFunding: true, bodyFocus: "Small Cargo", wealth: "Upper" },
+  { carType: "Coupe 2+2", chassis: "Sport", engineType: "Sport", gear: "Sport", milFleet: false, civFleet: true, lowFunding: true, highFunding: true, bodyFocus: "Small Cargo", wealth: "Upper-Middle" },
+  { carType: "Coupe Utility", chassis: "Drive", engineType: "Truck", gear: "Truck", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Upper-Middle" },
+  { carType: "Crossover", chassis: "Balance", engineType: "Balance", gear: "Lux", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Upper-Middle" },
+  { carType: "Fastback", chassis: "Sport,Drive", engineType: "Sport,Power", gear: "Sport,Drive", milFleet: false, civFleet: false, lowFunding: true, highFunding: true, bodyFocus: "Small Cargo", wealth: "Upper" },
+  { carType: "Full Sized Sedan", chassis: "SafLux", engineType: "Power", gear: "Lux", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Upper" },
+  { carType: "Hatchback", chassis: "Balance", engineType: "Balance", gear: "Balance", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Balance", wealth: "Middle" },
+  { carType: "Landaulet", chassis: "CLux", engineType: "Balance/Power", gear: "Lux", milFleet: false, civFleet: false, lowFunding: true, highFunding: false, bodyFocus: "Large Cargo", wealth: "Ultra-Wealthy" },
+  { carType: "Limousine", chassis: "CLux", engineType: "Power", gear: "Lux", milFleet: false, civFleet: true, lowFunding: true, highFunding: false, bodyFocus: "Large Cargo", wealth: "Ultra-Wealthy" },
+  { carType: "Luxury Sedan", chassis: "Lux,CLux", engineType: "Sport,Power", gear: "SportLux,Lux", milFleet: false, civFleet: true, lowFunding: true, highFunding: true, bodyFocus: "Large Cargo", wealth: "Wealthy" },
+  { carType: "Microcar", chassis: "Tiny", engineType: "SmallB", gear: "Fuel", milFleet: false, civFleet: false, lowFunding: false, highFunding: false, bodyFocus: "Small Cargo", wealth: "Low" },
+  { carType: "Microvan", chassis: "Tiny", engineType: "SmallB/Balance", gear: "Balance", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Lower-Middle" },
+  { carType: "Minivan", chassis: "Balance > SafLux", engineType: "Power", gear: "Lux", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Middle" },
+  { carType: "Phaeton", chassis: "Tiny", engineType: "Balance", gear: "Fuel", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Small Cargo", wealth: "Low" },
+  { carType: "Pickup Truck", chassis: "Truck", engineType: "Truck", gear: "Truck", milFleet: true, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Middle" },
+  { carType: "Roadster", chassis: "Sport", engineType: "Sport", gear: "Sport", milFleet: false, civFleet: false, lowFunding: true, highFunding: true, bodyFocus: "Small Cargo", wealth: "Upper" },
+  { carType: "Roadster 2+2", chassis: "Sport", engineType: "Sport", gear: "Sport", milFleet: false, civFleet: false, lowFunding: true, highFunding: true, bodyFocus: "Small Cargo", wealth: "Upper-Middle" },
+  { carType: "Sedan", chassis: "Balance", engineType: "Balance", gear: "Balance", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Balance", wealth: "Upper-Middle" },
+  { carType: "Shooting Brake", chassis: "SafLux", engineType: "Power", gear: "Lux", milFleet: false, civFleet: false, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Upper-Middle" },
+  { carType: "Sports", chassis: "Sport,Race", engineType: "Sport,Race", gear: "Sport,Race", milFleet: false, civFleet: false, lowFunding: true, highFunding: true, bodyFocus: "Small Cargo", wealth: "Upper" },
+  { carType: "Station Wagon", chassis: "SafLux", engineType: "Power", gear: "Lux", milFleet: false, civFleet: false, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Middle" },
+  { carType: "Subcompact", chassis: "Balance", engineType: "Balance", gear: "Fuel", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Small Cargo", wealth: "Low" },
+  { carType: "Supercar", chassis: "Race", engineType: "Race", gear: "Race", milFleet: false, civFleet: false, lowFunding: false, highFunding: true, bodyFocus: "Small Cargo", wealth: "Ultra-Wealthy" },
+  { carType: "SUV", chassis: "SafLux", engineType: "Truck", gear: "Lux/Truck", milFleet: true, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Middle" },
+  { carType: "Touring", chassis: "Drive", engineType: "Power", gear: "Balance", milFleet: false, civFleet: false, lowFunding: false, highFunding: false, bodyFocus: "Balance", wealth: "Middle" },
+  { carType: "Town Car", chassis: "CLux", engineType: "Balance", gear: "Lux", milFleet: false, civFleet: false, lowFunding: true, highFunding: false, bodyFocus: "Large Cargo", wealth: "Upper" },
+  { carType: "Van", chassis: "Truck", engineType: "Truck", gear: "Truck", milFleet: true, civFleet: true, lowFunding: true, highFunding: false, bodyFocus: "Large Cargo", wealth: "Middle" }
+],
+
+chassisDesigns: {
+  "Sport": { name: "Sport", maxEngine: "Sport/Power", note: "", ratings: { driveability: "High", safety: "Mid", luxury: "Low", dependability: "Mid +" }, frame: "1902 Ladder\n1930 Unibody", drivetrain: "F4\n1940 RMR?", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink" },
+  "Race": { name: "Race", maxEngine: "Race", note: "", ratings: { driveability: "Highest", safety: "Low", luxury: "Minimum", dependability: "Low" }, frame: "1902 Ladder\n1924 Superleggera", drivetrain: "F4\n1945 M4?", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink" },
+  "Drive": { name: "Drive", maxEngine: "Power/Truck", note: "", ratings: { driveability: "Very High", safety: "Mid", luxury: "Low Mid", dependability: "Mid +" }, frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR\n1940 RMR?", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink" },
+  "CLux": { name: "CLux", maxEngine: "Power/LuxTruck", note: "", ratings: { driveability: "Very low", safety: "Very High", luxury: "Very High", dependability: "Mid +" }, frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR", suspension: "1901 Swing Axle\n1924 Wishbone\n1990 Magnetorheological" },
+  "Lux": { name: "Lux", maxEngine: "Sport", note: "", ratings: { driveability: "Highest", safety: "Highest", luxury: "Highest", dependability: "Highest" }, frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR", suspension: "1901 Swing Axle\n1915 Air\n1944 Hydropneumatic\n1990 Magnetorheological" },
+  "Truck": { name: "Truck", maxEngine: "Truck", note: "", ratings: { driveability: "Low", safety: "High", luxury: "Low", dependability: "Very High" }, frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR", suspension: "Leaf Spring" },
+  "Balance": { name: "Balance", maxEngine: "Truck", note: "", ratings: { driveability: "Mid", safety: "Very High", luxury: "Mid", dependability: "Very High" }, frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink" },
+  "Tiny": { name: "Tiny", maxEngine: "Balance", note: "Low Weight", ratings: { driveability: "High", safety: "Mid +", luxury: "Very low", dependability: "Very High" }, frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR\n1940 RMR", suspension: "1901 Swing Axle\n1924 Wishbone\n1939 MacPherson?" },
+  "SafLux": { name: "SafLux", maxEngine: "Power/Truck/LuxTruck", note: "Large Safe", ratings: { driveability: "Low", safety: "Highest", luxury: "High", dependability: "Mid +" }, frame: "1902 Ladder\n1930 Unibody", drivetrain: "1902 FF", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink" }
+},
+
+engineDesigns: {
+  "Balance": { name: "Balance", concept: "Fuel saving, Balance", ratingNeed: "", optimizeFocus: "Torque", maxWeight: 140, maxHpTorqueRatio: 1.6, designDependability: 60, performanceFuel: 80, techComponent: 30, techTechnology: 30, techTechnique: 30, costTargets: { "1932": 260, "1944": 300, "1954": 300 } },
+  "SmallB": { name: "SmallB", concept: "Balance but small", ratingNeed: "", optimizeFocus: "Torque", maxWeight: 100, maxHpTorqueRatio: 1.4, designDependability: 60, performanceFuel: 100, techComponent: 30, techTechnology: 0, techTechnique: 0, costTargets: { "1932": 200, "1944": 230, "1954": 260 } },
+  "Power": { name: "Power", concept: "Balance, Higher power", ratingNeed: "", optimizeFocus: "Torque", maxWeight: 150, maxHpTorqueRatio: 1.6, designDependability: 40, performanceFuel: 30, techComponent: 0, techTechnology: 0, techTechnique: 0, costTargets: { "1932": 350, "1944": 400, "1954": 400 } },
+  "Truck": { name: "Truck", concept: "High Torque", ratingNeed: "Dependability", optimizeFocus: "Torque", maxWeight: 210, maxHpTorqueRatio: 2.7, designDependability: 90, performanceFuel: 30, techComponent: 30, techTechnology: 0, techTechnique: 0, costTargets: { "1932": 260, "1944": 300, "1954": 300 } },
+  "Sport": { name: "Sport", concept: "High HP", ratingNeed: "", optimizeFocus: "Torque", maxWeight: 150, maxHpTorqueRatio: 1.3, designDependability: 30, performanceFuel: 20, techComponent: 0, techTechnology: 0, techTechnique: 0, costTargets: { "1932": 350, "1944": 400, "1954": 400 } },
+  "Race": { name: "Race", concept: "Max", ratingNeed: "", optimizeFocus: "HP", maxWeight: 250, maxHpTorqueRatio: null, designDependability: null, performanceFuel: null, techComponent: null, techTechnology: null, techTechnique: null, costTargets: { "1932": 4500, "1944": 4500, "1954": 4500 } },
+  "LuxTruck": { name: "LuxTruck", concept: "High Torque but Lux / If Smoothness is too expensive for power model", ratingNeed: "", optimizeFocus: "Torque", maxWeight: 170, maxHpTorqueRatio: 2.2, designDependability: 60, performanceFuel: 30, techComponent: 30, techTechnology: 30, techTechnique: 30, costTargets: { "1932": 350, "1944": 400, "1954": 400 } }
+},
+
+gearboxDesigns: {
+  "Race": { name: "Race", concept: "Max", maxEngineType: "Race", ratings: { luxury: "Minimum", performance: "Highest", dependability: "Low", power: "Highest" }, gearboxes: "1912 Manual\n1950 DCT" },
+  "Sport": { name: "Sport", concept: "High HP", maxEngineType: "Sport", ratings: { luxury: "Very low", performance: "Very High", dependability: "Low", power: "Mid +" }, gearboxes: "1912 Manual\n1950 DCT" },
+  "Drive": { name: "Drive", concept: "High Driveability", maxEngineType: "Power", ratings: { luxury: "Very low", performance: "Highest", dependability: "Mid", power: "Mid" }, gearboxes: "1912 Manual\n1950 DCT" },
+  "SportLux": { name: "SportLux", concept: "High Luxury - Low Drive", maxEngineType: "Sport", ratings: { luxury: "Highest", performance: "Highest", dependability: "Very High", power: "Highest" }, gearboxes: "1912 Manual\n1925 Automatic\n1950 DCT" },
+  "Lux": { name: "Lux", concept: "High Luxury - Low Drive", maxEngineType: "Power", ratings: { luxury: "Highest", performance: "Very low", dependability: "Mid +", power: "Mid" }, gearboxes: "1912 Manual\n1925 Automatic" },
+  "Truck": { name: "Truck", concept: "High torque - Low speed", maxEngineType: "Truck", ratings: { luxury: "Very low", performance: "Mid", dependability: "Very High", power: "Highest" }, gearboxes: "1912 Manual" },
+  "Balance": { name: "Balance", concept: "Balance - Medium Lux", maxEngineType: "Power", ratings: { luxury: "Low", performance: "High", dependability: "High", power: "Mid +" }, gearboxes: "1912 Manual\n1925 Automatic?\n1950 DCT" },
+  "Fuel": { name: "Fuel", concept: "Aim for Fuel Saving VSmall", maxEngineType: "Balance", ratings: { luxury: "Very low", performance: "Very low", dependability: "Very High", power: "Very low" }, gearboxes: "1912 Manual\n1950 DCT" }
 }
+
 };
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = GEARCITY_DATA;
 }
+

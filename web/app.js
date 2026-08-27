@@ -93,14 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const demoHighlightBox = document.getElementById('demo-highlight-box');
   const tableDemographicsBody = document.getElementById('table-demographics-body');
 
-  // DOM Elements - Chassis & Synergies Tab
-  const selectSynergyVehicle = document.getElementById('select-synergy-vehicle');
-  const inputSynergyYear = document.getElementById('input-synergy-year');
-  const inputSynergyYearNum = document.getElementById('input-synergy-year-num');
-  const btnSynergyYearPrev = document.getElementById('btn-synergy-year-prev');
-  const btnSynergyYearNext = document.getElementById('btn-synergy-year-next');
-  const btnSynergyYearPresets = document.querySelectorAll('.btn-synergy-year-preset');
-  const synergyResultsBox = document.getElementById('synergy-results-box');
+
 
   let currentFocus = 'HP';
 
@@ -693,154 +686,454 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ==========================================================================
      Chassis & Gearbox Synergies Tab Controller
      ========================================================================== */
-  function initChassisAdvisor() {
-    const vehicles = Object.keys(GEARCITY_DATA.archetypes);
-    selectSynergyVehicle.innerHTML = '';
-    vehicles.forEach((v) => {
+  // ============================================================
+  // TAB 3: Vehicle Class Advisor
+  // ============================================================
+  function initVehicleAdvisor() {
+    const selectVehicle = document.getElementById('select-vehicle-advisor');
+    const inputYear = document.getElementById('input-advisor-year');
+    const inputYearNum = document.getElementById('input-advisor-year-num');
+    const btnPrev = document.getElementById('btn-advisor-year-prev');
+    const btnNext = document.getElementById('btn-advisor-year-next');
+    const summaryCard = document.getElementById('vehicle-summary-card');
+    const designCards = document.getElementById('vehicle-design-cards');
+    const tableBody = document.getElementById('table-vehicle-classes-body');
+
+    // Rating level to percentage for bar display
+    const RATING_LEVELS = {
+      'Minimum': 5, 'Very low': 15, 'Low': 25, 'Low Mid': 35,
+      'Mid': 45, 'Mid +': 55, 'High': 65, 'Very High': 80,
+      'Highest': 95
+    };
+
+    const RATING_COLORS = {
+      driveability: '#64b5f6', safety: '#81c784', luxury: '#ce93d8',
+      dependability: '#ffb74d', performance: '#ef5350', power: '#ff7043'
+    };
+
+    function ratingBar(label, value, colorKey) {
+      const pct = RATING_LEVELS[value] || 50;
+      const color = RATING_COLORS[colorKey] || '#ffb74d';
+      return `<div style="margin-bottom: 6px;">
+        <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 2px;">
+          <span style="color: var(--gc-text-ivory);">${label}</span>
+          <span style="color: ${color}; font-weight: 600;">${value}</span>
+        </div>
+        <div style="background: rgba(0,0,0,0.4); border-radius: 3px; height: 6px; overflow: hidden;">
+          <div style="width: ${pct}%; height: 100%; background: ${color}; border-radius: 3px; transition: width 0.3s;"></div>
+        </div>
+      </div>`;
+    }
+
+    function yearTag(items) {
+      return items.map(item => {
+        const yearStr = item.year > 0 ? `<span class="filter-year-tag" style="font-size: 10px; padding: 1px 5px;">${item.year}</span> ` : '';
+        return `<div style="margin-bottom: 3px; font-size: 12px; color: var(--gc-text-ivory);">${yearStr}${item.name}</div>`;
+      }).join('');
+    }
+
+    function unavailableTag(items) {
+      return items.map(item => {
+        return `<div style="margin-bottom: 3px; font-size: 11px; color: var(--gc-text-muted); opacity: 0.5;">🔒 <span style="text-decoration: line-through;">${item.year} ${item.name}</span></div>`;
+      }).join('');
+    }
+
+    // Populate vehicle class reference table
+    function renderTable() {
+      const vc = GEARCITY_DATA.vehicleClasses;
+      tableBody.innerHTML = vc.map(v => `
+        <tr data-vehicle="${v.carType}" style="cursor: pointer;" class="vehicle-class-row">
+          <td style="font-weight: 700; color: var(--gc-text-gold);">${v.carType}</td>
+          <td><span style="color: var(--gc-text-amber);">${v.chassis}</span></td>
+          <td><span style="color: var(--gc-text-green);">${v.engineType}</span></td>
+          <td><span style="color: #64b5f6;">${v.gear}</span></td>
+          <td style="text-align: center;">${v.milFleet ? '✓' : '—'}</td>
+          <td style="text-align: center;">${v.civFleet ? '✓' : '—'}</td>
+          <td style="text-align: center;">${v.lowFunding ? '💰' : '—'}</td>
+          <td style="text-align: center;">${v.highFunding ? '💎' : '—'}</td>
+          <td style="font-size: 11px;">${v.bodyFocus}</td>
+          <td style="font-size: 11px;">${v.wealth}</td>
+        </tr>
+      `).join('');
+
+      // Click row to select vehicle
+      tableBody.querySelectorAll('.vehicle-class-row').forEach(row => {
+        row.addEventListener('click', () => {
+          const vt = row.dataset.vehicle;
+          selectVehicle.value = vt;
+          updateDetail();
+          // Highlight row
+          tableBody.querySelectorAll('.vehicle-class-row').forEach(r => r.style.background = '');
+          row.style.background = 'rgba(176, 111, 64, 0.15)';
+        });
+      });
+    }
+
+    // Populate dropdown
+    GEARCITY_DATA.vehicleClasses.forEach(v => {
       const opt = document.createElement('option');
-      opt.value = v;
-      opt.textContent = v;
-      selectSynergyVehicle.appendChild(opt);
+      opt.value = v.carType;
+      opt.textContent = v.carType;
+      selectVehicle.appendChild(opt);
     });
-    selectSynergyVehicle.value = 'Luxury Sedan';
+    selectVehicle.value = 'Sedan';
 
-    function updateSynergies() {
-      const v = selectSynergyVehicle.value;
-      const year = Number(inputSynergyYear.value) || 1960;
-      const rec = GearCityEngine.getChassisGearboxRecommendations(v, year);
-      if (!rec) return;
-
-      const arch = rec.archetype;
-
-      // Decode Engine Style Acronyms
-      let engineExplanation = "";
-      if (arch.engine_style.includes("SmallB")) {
-        engineExplanation += "• <strong>SmallB</strong>: Small-Bore, high fuel efficiency engine (sub-2.0L) to minimize displacement taxes and fuel costs.<br>";
-      }
-      if (arch.engine_style.includes("Power")) {
-        engineExplanation += "• <strong>Power</strong>: High torque & horsepower output (V8/I6) for effortless highway passing and hauling.<br>";
-      }
-      if (arch.engine_style.includes("SafeLux") || arch.engine_style.includes("Lux")) {
-        engineExplanation += "• <strong>SafeLux</strong>: Ultra-smooth, quiet, highly dependable multi-cylinder architecture (V8/V12/I6).<br>";
-      }
-      if (arch.engine_style.includes("Sport") || arch.engine_style.includes("Race")) {
-        engineExplanation += "• <strong>Sport/Race</strong>: High-revving, responsive powerband with optimized intake flow and lightweight materials.<br>";
-      }
-      if (arch.engine_style.includes("Truck")) {
-        engineExplanation += "• <strong>Truck</strong>: High low-end torque curve, rugged cast materials, and high thermal dependability.<br>";
-      }
-      if (arch.engine_style.includes("Balance")) {
-        engineExplanation += "• <strong>Balance</strong>: Moderate displacement inline/flat engine offering optimal cost-to-performance ratio.<br>";
-      }
-      if (!engineExplanation) {
-        engineExplanation = "• Balanced output tailored for general passenger transport.";
+    function updateDetail() {
+      const carType = selectVehicle.value;
+      const year = Number(inputYear.value) || 1960;
+      const advice = GearCityEngine.getVehicleDesignAdvice(carType, year);
+      if (!advice) {
+        summaryCard.innerHTML = '<div style="color: var(--gc-text-muted);">Select a vehicle type.</div>';
+        designCards.innerHTML = '';
+        return;
       }
 
-      synergyResultsBox.innerHTML = `
-        <!-- Card 1: Frame Selection -->
-        <div class="metric-item" style="display: flex; flex-direction: column; justify-content: space-between; text-align: left; padding: 18px;">
-          <div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <div class="metric-item-label" style="font-size: 13px;">🏗️ Recommended Frame</div>
-              <span class="filter-year-tag">${rec.recommendedFrameYear} Unlocked</span>
-            </div>
-            <div class="metric-item-val" style="color: var(--gc-text-gold); font-size: 18px; margin-bottom: 8px;">${rec.recommendedFrame}</div>
-            <div style="font-size: 12px; color: var(--gc-text-ivory); line-height: 1.5;">${rec.frameReason}</div>
-          </div>
-          <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #3d2314; font-size: 11px; color: var(--gc-text-muted);">
-            Target Tuning: <strong style="color: var(--gc-text-amber);">${arch.chassis_style}</strong>
+      const v = advice.vehicle;
+
+      // Vehicle Summary
+      summaryCard.innerHTML = `
+        <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: center;">
+          <div style="font-size: 18px; font-weight: 800; color: var(--gc-text-gold); flex: 1;">${v.carType}</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size: 11px;">
+            ${v.milFleet ? '<span style="background: rgba(76,175,80,0.15); color: #81c784; padding: 3px 8px; border-radius: 3px; border: 1px solid rgba(76,175,80,0.3);">🎖️ Military Fleet</span>' : ''}
+            ${v.civFleet ? '<span style="background: rgba(100,181,246,0.15); color: #64b5f6; padding: 3px 8px; border-radius: 3px; border: 1px solid rgba(100,181,246,0.3);">🏢 Civilian Fleet</span>' : ''}
+            ${v.lowFunding ? '<span style="background: rgba(255,183,77,0.15); color: #ffb74d; padding: 3px 8px; border-radius: 3px; border: 1px solid rgba(255,183,77,0.3);">💰 Low Budget Model</span>' : ''}
+            ${v.highFunding ? '<span style="background: rgba(206,147,216,0.15); color: #ce93d8; padding: 3px 8px; border-radius: 3px; border: 1px solid rgba(206,147,216,0.3);">💎 High Budget Model</span>' : ''}
           </div>
         </div>
-
-        <!-- Card 2: Suspension Selection -->
-        <div class="metric-item" style="display: flex; flex-direction: column; justify-content: space-between; text-align: left; padding: 18px;">
-          <div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <div class="metric-item-label" style="font-size: 13px;">🌀 Recommended Suspension</div>
-              <span class="filter-year-tag">${rec.recommendedSuspensionYear} Unlocked</span>
-            </div>
-            <div class="metric-item-val" style="color: var(--gc-text-amber); font-size: 18px; margin-bottom: 8px;">${rec.recommendedSuspension}</div>
-            <div style="font-size: 12px; color: var(--gc-text-ivory); line-height: 1.5;">${rec.suspensionReason}</div>
-          </div>
-          <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #3d2314; font-size: 11px; color: var(--gc-text-muted);">
-            Ride Profile: <strong style="color: var(--gc-text-amber);">${arch.chassis_style}</strong>
-          </div>
+        <div style="display: flex; gap: 24px; margin-top: 10px; font-size: 12px; color: var(--gc-text-muted);">
+          <span>📦 Body: <strong style="color: var(--gc-text-ivory);">${v.bodyFocus}</strong></span>
+          <span>💰 Wealth: <strong style="color: var(--gc-text-ivory);">${v.wealth}</strong></span>
         </div>
+        ${v.lowFunding && v.highFunding ? '<div style="margin-top: 8px; font-size: 11px; color: var(--gc-text-amber); background: rgba(255,183,77,0.08); padding: 6px 10px; border-radius: 3px; border: 1px solid rgba(255,183,77,0.15);">⚠️ This vehicle type needs <strong>two models</strong>: one for budget buyers and one for premium buyers.</div>' : ''}
+      `;
 
-        <!-- Card 3: Transmission Selection -->
-        <div class="metric-item" style="display: flex; flex-direction: column; justify-content: space-between; text-align: left; padding: 18px;">
-          <div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <div class="metric-item-label" style="font-size: 13px;">⚙️ Recommended Transmission</div>
-              <span class="filter-year-tag">${rec.recommendedTransmissionYear} Unlocked</span>
-            </div>
-            <div class="metric-item-val" style="color: var(--gc-text-green); font-size: 18px; margin-bottom: 8px;">${rec.recommendedTransmission}</div>
-            <div style="font-size: 12px; color: var(--gc-text-ivory); line-height: 1.5;">${rec.transmissionReason}</div>
-          </div>
-          <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #3d2314; font-size: 11px; color: var(--gc-text-muted);">
-            Gearbox Behavior: <strong style="color: var(--gc-text-green);">${arch.gearbox_style}</strong>
-          </div>
-        </div>
+      // Build design cards
+      let html = '';
 
-        <!-- Card 4: Target Engine Pairing Profile -->
-        <div class="metric-item" style="display: flex; flex-direction: column; justify-content: space-between; text-align: left; padding: 18px;">
-          <div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <div class="metric-item-label" style="font-size: 13px;">🏎️ Target Engine Synergy Profile</div>
-              <span class="filter-year-tag">Archetype: ${arch.engine_style}</span>
+      // Chassis Design Cards
+      advice.chassisDetails.forEach((ch, idx) => {
+        if (ch.notFound) {
+          html += `<div class="metric-item" style="padding: 16px;"><div style="color: var(--gc-text-muted);">Chassis concept "${ch.name}" not found.</div></div>`;
+          return;
+        }
+        const unavailFrames = ch.frameAll.filter(f => f.year > year && f.year > 0);
+        const unavailDrive = ch.drivetrainAll.filter(f => f.year > year && f.year > 0);
+        const unavailSusp = ch.suspensionAll.filter(f => f.year > year && f.year > 0);
+
+        html += `
+          <div class="metric-item" style="padding: 16px; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <div style="font-weight: 800; font-size: 15px; color: var(--gc-text-gold);">🏗️ Chassis: ${ch.name}</div>
+              ${advice.chassisDetails.length > 1 ? `<span class="filter-year-tag" style="font-size: 10px;">Option ${idx+1}</span>` : ''}
             </div>
-            <div style="font-size: 12px; color: var(--gc-text-ivory); line-height: 1.6; margin-top: 4px;">
-              ${engineExplanation}
+            ${ch.note ? `<div style="font-size: 11px; color: var(--gc-text-amber); margin-bottom: 8px;">📝 ${ch.note}</div>` : ''}
+            <div style="font-size: 11px; color: var(--gc-text-muted); margin-bottom: 8px;">Engine: <strong style="color: var(--gc-text-ivory);">${ch.maxEngine}</strong></div>
+            <div style="margin-bottom: 12px;">
+              ${Object.entries(ch.ratings).map(([k,v]) => ratingBar(k.charAt(0).toUpperCase() + k.slice(1), v, k)).join('')}
+            </div>
+            <div style="border-top: 1px solid #3d2314; padding-top: 8px;">
+              <div style="font-weight: 700; font-size: 11px; color: var(--gc-text-amber); margin-bottom: 4px;">🏗️ Frame</div>
+              ${yearTag(ch.frameAvailable)}
+              ${unavailableTag(unavailFrames)}
+              <div style="font-weight: 700; font-size: 11px; color: var(--gc-text-amber); margin-bottom: 4px; margin-top: 8px;">🔧 Drivetrain</div>
+              ${yearTag(ch.drivetrainAvailable)}
+              ${unavailableTag(unavailDrive)}
+              <div style="font-weight: 700; font-size: 11px; color: var(--gc-text-amber); margin-bottom: 4px; margin-top: 8px;">🌀 Suspension</div>
+              ${yearTag(ch.suspensionAvailable)}
+              ${unavailableTag(unavailSusp)}
             </div>
           </div>
-          <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #3d2314; font-size: 11px; color: var(--gc-text-muted); display: flex; justify-content: space-between;">
-            <span>Wealth Tier: <strong style="color: var(--gc-text-gold);">Tier ${arch.wealth_demographic} / 6</strong></span>
-            <span>Fleet: <strong style="color: ${arch.civilian_fleet ? 'var(--gc-text-green)' : 'var(--gc-text-muted)'};">${arch.civilian_fleet ? 'Civilian Fleet OK' : 'Private Only'}</strong></span>
+        `;
+      });
+
+      // Engine Design Cards
+      advice.engineDetails.forEach((ed, idx) => {
+        if (ed.notFound) {
+          html += `<div class="metric-item" style="padding: 16px;"><div style="color: var(--gc-text-muted);">Engine concept "${ed.name}" not found.</div></div>`;
+          return;
+        }
+        html += `
+          <div class="metric-item" style="padding: 16px; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <div style="font-weight: 800; font-size: 15px; color: var(--gc-text-green);">🔥 Engine: ${ed.name}</div>
+              ${advice.engineDetails.length > 1 ? `<span class="filter-year-tag" style="font-size: 10px;">Option ${idx+1}</span>` : ''}
+            </div>
+            <div style="font-size: 12px; color: var(--gc-text-ivory); margin-bottom: 8px;">💡 ${ed.concept}</div>
+            ${ed.ratingNeed ? `<div style="font-size: 11px; color: var(--gc-text-amber); margin-bottom: 8px;">⚠️ Prioritize: <strong>${ed.ratingNeed}</strong></div>` : ''}
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px; margin-bottom: 8px;">
+              <div style="color: var(--gc-text-muted);">Focus: <strong style="color: var(--gc-text-ivory);">${ed.optimizeFocus || 'HP'}</strong></div>
+              <div style="color: var(--gc-text-muted);">Max Weight: <strong style="color: var(--gc-text-ivory);">${ed.maxWeight} kg</strong></div>
+              <div style="color: var(--gc-text-muted);">HP:Torque: <strong style="color: var(--gc-text-ivory);">${ed.maxHpTorqueRatio != null ? '≤ ' + ed.maxHpTorqueRatio : 'No limit'}</strong></div>
+              <div style="color: var(--gc-text-muted);">Est. Cost: <strong style="color: var(--gc-text-ivory);">$${ed.costTarget || '—'}</strong></div>
+            </div>
+            <div style="border-top: 1px solid #3d2314; padding-top: 8px; font-size: 11px; color: var(--gc-text-muted);">
+              <div style="font-weight: 700; color: var(--gc-text-green); margin-bottom: 4px;">📊 Design Sliders</div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                <div>Design Depend.: <strong style="color: var(--gc-text-ivory);">${ed.designDependability != null ? ed.designDependability : '—'}</strong></div>
+                <div>Perf Fuel: <strong style="color: var(--gc-text-ivory);">${ed.performanceFuel != null ? ed.performanceFuel : '—'}</strong></div>
+                <div>Tech Comp.: <strong style="color: var(--gc-text-ivory);">${ed.techComponent != null ? ed.techComponent : '—'}</strong></div>
+                <div>Tech Tech.: <strong style="color: var(--gc-text-ivory);">${ed.techTechnology != null ? ed.techTechnology : '—'}</strong></div>
+                <div>Tech Technique: <strong style="color: var(--gc-text-ivory);">${ed.techTechnique != null ? ed.techTechnique : '—'}</strong></div>
+              </div>
+            </div>
           </div>
+        `;
+      });
+
+      // Gearbox Design Cards
+      advice.gearDetails.forEach((gd, idx) => {
+        if (gd.notFound) {
+          html += `<div class="metric-item" style="padding: 16px;"><div style="color: var(--gc-text-muted);">Gearbox concept "${gd.name}" not found.</div></div>`;
+          return;
+        }
+        const unavailGears = gd.gearboxAll.filter(g => g.year > year && g.year > 0);
+
+        html += `
+          <div class="metric-item" style="padding: 16px; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <div style="font-weight: 800; font-size: 15px; color: #64b5f6;">⚙️ Gearbox: ${gd.name}</div>
+              ${advice.gearDetails.length > 1 ? `<span class="filter-year-tag" style="font-size: 10px;">Option ${idx+1}</span>` : ''}
+            </div>
+            <div style="font-size: 12px; color: var(--gc-text-ivory); margin-bottom: 8px;">💡 ${gd.concept}</div>
+            <div style="font-size: 11px; color: var(--gc-text-muted); margin-bottom: 8px;">Engine Type: <strong style="color: var(--gc-text-ivory);">${gd.maxEngineType}</strong></div>
+            <div style="margin-bottom: 10px;">
+              ${Object.entries(gd.ratings).map(([k,v]) => ratingBar(k.charAt(0).toUpperCase() + k.slice(1), v, k)).join('')}
+            </div>
+            <div style="border-top: 1px solid #3d2314; padding-top: 8px;">
+              <div style="font-weight: 700; font-size: 11px; color: #64b5f6; margin-bottom: 4px;">🔧 Gearbox Types</div>
+              ${yearTag(gd.gearboxAvailable)}
+              ${unavailableTag(unavailGears)}
+            </div>
+          </div>
+        `;
+      });
+
+      designCards.innerHTML = html;
+    }
+
+    function setAdvisorYear(val) {
+      const clamped = Math.max(1900, Math.min(2020, Number(val) || 1900));
+      inputYear.value = clamped;
+      if (inputYearNum) inputYearNum.value = clamped;
+      updateDetail();
+    }
+
+    selectVehicle.addEventListener('change', updateDetail);
+    inputYear.addEventListener('input', () => setAdvisorYear(inputYear.value));
+    if (inputYearNum) {
+      inputYearNum.addEventListener('input', () => {
+        if (inputYearNum.value.length >= 4) setAdvisorYear(inputYearNum.value);
+      });
+      inputYearNum.addEventListener('change', () => setAdvisorYear(inputYearNum.value));
+    }
+    if (btnPrev) btnPrev.addEventListener('click', () => setAdvisorYear(Number(inputYear.value) - 1));
+    if (btnNext) btnNext.addEventListener('click', () => setAdvisorYear(Number(inputYear.value) + 1));
+
+    renderTable();
+    updateDetail();
+  }
+
+  // ============================================================
+  // TAB 5: Vehicle Engine Optimizer
+  // ============================================================
+  function initVehicleEngineOptimizer() {
+    const selectVehicle = document.getElementById('select-vopt-vehicle');
+    const selectConcept = document.getElementById('select-vopt-concept');
+    const inputYear = document.getElementById('input-vopt-year');
+    const inputSkill = document.getElementById('input-vopt-skill');
+    const constraintsBox = document.getElementById('vopt-constraints-box');
+    const btnOptimize = document.getElementById('btn-vopt-optimize');
+    const statusEl = document.getElementById('vopt-status');
+    const resultsBox = document.getElementById('vopt-results-box');
+
+    // Populate vehicle dropdown
+    GEARCITY_DATA.vehicleClasses.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v.carType;
+      opt.textContent = v.carType;
+      selectVehicle.appendChild(opt);
+    });
+    selectVehicle.value = 'Sedan';
+
+    function updateConceptDropdown() {
+      const vc = GEARCITY_DATA.vehicleClasses.find(v => v.carType === selectVehicle.value);
+      selectConcept.innerHTML = '';
+      if (!vc) return;
+      const concepts = vc.engineType.split(/[,\/]/).map(s => s.trim()).filter(Boolean);
+      concepts.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c + (GEARCITY_DATA.engineDesigns[c] ? ` — ${GEARCITY_DATA.engineDesigns[c].concept}` : '');
+        selectConcept.appendChild(opt);
+      });
+      updateConstraintsDisplay();
+    }
+
+    function updateConstraintsDisplay() {
+      const concept = selectConcept.value;
+      const year = Number(inputYear.value) || 1960;
+      const constraints = GearCityEngine.getEngineDesignConstraints(concept, year);
+      if (!constraints) {
+        constraintsBox.innerHTML = '<span style="color: var(--gc-text-muted);">Select a valid concept.</span>';
+        return;
+      }
+      constraintsBox.innerHTML = `
+        <div style="font-weight: 700; color: var(--gc-text-gold); margin-bottom: 8px; font-size: 13px;">📋 Auto-Configured Constraints for "${concept}"</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 6px;">
+          <div>Max Weight: <strong style="color: var(--gc-text-ivory);">${constraints.maxWeight} kg</strong></div>
+          <div>Max Cost: <strong style="color: var(--gc-text-ivory);">$${constraints.maxCost || '—'}</strong></div>
+          <div>Focus: <strong style="color: var(--gc-text-ivory);">${constraints.focus}</strong></div>
+          <div>HP:Torque Ratio: <strong style="color: var(--gc-text-ivory);">${constraints.maxHpTorqueRatio != null ? '≤ ' + constraints.maxHpTorqueRatio : 'No limit'}</strong></div>
+          <div>Design Depend.: <strong style="color: var(--gc-text-ivory);">${constraints.designDependability != null ? constraints.designDependability : 'Free'}</strong></div>
+          <div>Perf Fuel: <strong style="color: var(--gc-text-ivory);">${constraints.performanceFuel != null ? constraints.performanceFuel : 'Free'}</strong></div>
         </div>
       `;
     }
 
-    function setSynergyYear(val) {
-      const clamped = Math.max(1900, Math.min(2020, Number(val) || 1900));
-      inputSynergyYear.value = clamped;
-      if (inputSynergyYearNum) inputSynergyYearNum.value = clamped;
-      updateSynergies();
-    }
+    selectVehicle.addEventListener('change', updateConceptDropdown);
+    selectConcept.addEventListener('change', updateConstraintsDisplay);
+    inputYear.addEventListener('change', updateConstraintsDisplay);
 
-    selectSynergyVehicle.addEventListener('change', updateSynergies);
-    inputSynergyYear.addEventListener('input', () => setSynergyYear(inputSynergyYear.value));
+    btnOptimize.addEventListener('click', async () => {
+      const concept = selectConcept.value;
+      const year = Number(inputYear.value) || 1960;
+      const skill = Number(inputSkill.value) || 0;
+      const constraints = GearCityEngine.getEngineDesignConstraints(concept, year);
+      if (!constraints) {
+        statusEl.textContent = '❌ Invalid concept selected.';
+        return;
+      }
 
-    if (inputSynergyYearNum) {
-      inputSynergyYearNum.addEventListener('input', () => {
-        if (inputSynergyYearNum.value.length >= 4) {
-          setSynergyYear(inputSynergyYearNum.value);
+      statusEl.textContent = '⏳ Optimizing...';
+      btnOptimize.disabled = true;
+      resultsBox.style.display = 'none';
+
+      try {
+        const result = GearCityEngine.optimizeEngine({
+          year,
+          focus: constraints.focus === 'HP' ? 'HP' : 'Torque',
+          maxWeight: constraints.maxWeight,
+          maxCost: constraints.maxCost,
+          maxHpTorqueRatio: constraints.maxHpTorqueRatio,
+          designDependability: constraints.designDependability,
+          performanceFuel: constraints.performanceFuel,
+          techComponent: constraints.techComponent,
+          techTechnology: constraints.techTechnology,
+          techTechnique: constraints.techTechnique,
+          designSkill: skill,
+          modelName: `${selectVehicle.value}_${concept}_${year}`,
+        });
+
+        if (!result || !result.best) {
+          statusEl.textContent = '❌ No valid engine found within constraints.';
+          btnOptimize.disabled = false;
+          return;
         }
-      });
-      inputSynergyYearNum.addEventListener('change', () => {
-        setSynergyYear(inputSynergyYearNum.value);
-      });
-    }
 
-    if (btnSynergyYearPrev) {
-      btnSynergyYearPrev.addEventListener('click', () => {
-        setSynergyYear(Number(inputSynergyYear.value) - 1);
-      });
-    }
+        const b = result.best;
+        const perf = b.performance;
 
-    if (btnSynergyYearNext) {
-      btnSynergyYearNext.addEventListener('click', () => {
-        setSynergyYear(Number(inputSynergyYear.value) + 1);
-      });
-    }
+        resultsBox.style.display = 'block';
+        resultsBox.innerHTML = `
+          <div class="metric-item" style="padding: 16px; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+              <div style="font-weight: 800; font-size: 16px; color: var(--gc-text-gold);">🏆 Optimal Engine for ${selectVehicle.value} (${concept})</div>
+              <button id="btn-vopt-download-xml" class="btn-secondary" style="margin-top: 0; padding: 4px 12px; font-size: 12px; height: 30px;">
+                📥 Download Blueprint (.xml)
+              </button>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; font-size: 13px;">
+              <div>
+                <div style="color: var(--gc-text-muted); font-size: 11px;">Layout</div>
+                <div style="color: var(--gc-text-ivory); font-weight: 700;">${b.layout}</div>
+              </div>
+              <div>
+                <div style="color: var(--gc-text-muted); font-size: 11px;">Cylinders</div>
+                <div style="color: var(--gc-text-ivory); font-weight: 700;">${b.cylinders}</div>
+              </div>
+              <div>
+                <div style="color: var(--gc-text-muted); font-size: 11px;">Fuel</div>
+                <div style="color: var(--gc-text-ivory); font-weight: 700;">${b.fuel}</div>
+              </div>
+              <div>
+                <div style="color: var(--gc-text-muted); font-size: 11px;">Valvetrain</div>
+                <div style="color: var(--gc-text-ivory); font-weight: 700;">${b.valvetrain}</div>
+              </div>
+              <div>
+                <div style="color: var(--gc-text-muted); font-size: 11px;">Induction</div>
+                <div style="color: var(--gc-text-ivory); font-weight: 700;">${b.induction}</div>
+              </div>
+              <div>
+                <div style="color: var(--gc-text-muted); font-size: 11px;">Displacement</div>
+                <div style="color: var(--gc-text-ivory); font-weight: 700;">${perf.displacementCc?.toFixed(0) || '—'} cc</div>
+              </div>
+              <div>
+                <div style="color: var(--gc-text-muted); font-size: 11px;">Bore × Stroke</div>
+                <div style="color: var(--gc-text-ivory); font-weight: 700;">${perf.boreMm?.toFixed(1) || '—'} × ${perf.strokeMm?.toFixed(1) || '—'} mm</div>
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid #3d2314;">
+              <div style="text-align: center;">
+                <div style="color: var(--gc-text-muted); font-size: 10px;">TORQUE</div>
+                <div style="color: var(--gc-text-gold); font-size: 20px; font-weight: 800;">${perf.torqueNm?.toFixed(1) || '—'}</div>
+                <div style="color: var(--gc-text-muted); font-size: 10px;">Nm</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="color: var(--gc-text-muted); font-size: 10px;">POWER</div>
+                <div style="color: var(--gc-text-amber); font-size: 20px; font-weight: 800;">${perf.horsepower?.toFixed(1) || '—'}</div>
+                <div style="color: var(--gc-text-muted); font-size: 10px;">HP</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="color: var(--gc-text-muted); font-size: 10px;">WEIGHT</div>
+                <div style="color: var(--gc-text-green); font-size: 20px; font-weight: 800;">${perf.weightKg?.toFixed(1) || '—'}</div>
+                <div style="color: var(--gc-text-muted); font-size: 10px;">kg</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="color: var(--gc-text-muted); font-size: 10px;">EST. COST</div>
+                <div style="color: #ef5350; font-size: 20px; font-weight: 800;">$${perf.unitCost?.toFixed(0) || '—'}</div>
+                <div style="color: var(--gc-text-muted); font-size: 10px;">per unit</div>
+              </div>
+            </div>
+            ${perf.ratings ? `
+            <div style="margin-top: 14px; padding-top: 10px; border-top: 1px dashed #3d2314;">
+              <div style="font-weight: 700; font-size: 11px; color: var(--gc-text-gold); margin-bottom: 6px;">🏅 In-Game Quality Ratings (Skill: ${perf.designSkill || 0}/100)</div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; font-size: 11px;">
+                <div style="background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 3px;">Dependability: <strong style="color: #ffb74d;">${perf.ratings.dependability}</strong></div>
+                <div style="background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 3px;">Power: <strong style="color: #ef5350;">${perf.ratings.power}</strong></div>
+                <div style="background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 3px;">Smoothness: <strong style="color: #ce93d8;">${perf.ratings.smoothness}</strong></div>
+                <div style="background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 3px;">Fuel Eco: <strong style="color: #81c784;">${perf.ratings.fuelEconomy}</strong></div>
+                <div style="background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 3px;">Overall: <strong style="color: var(--gc-text-gold);">${perf.ratings.overall}</strong></div>
+              </div>
+            </div>
+            ` : ''}
+          </div>
+        `;
 
-    btnSynergyYearPresets.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        setSynergyYear(Number(btn.dataset.year));
-      });
+        const btnXml = document.getElementById('btn-vopt-download-xml');
+        if (btnXml && result.config) {
+          btnXml.addEventListener('click', () => {
+            const xml = GearCityEngine.generateEngineXml(result.config);
+            const blob = new Blob([xml], { type: 'application/xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${selectVehicle.value}_${concept}_${year}.xml`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          });
+        }
+
+        statusEl.textContent = `✅ Optimization complete in ${result.elapsedMs}ms.`;
+      } catch (err) {
+        statusEl.textContent = '❌ Error: ' + err.message;
+      }
+      btnOptimize.disabled = false;
     });
 
-    updateSynergies();
+    updateConceptDropdown();
   }
 
   // Initialize filters, dropdowns & calculations on load
@@ -849,5 +1142,7 @@ document.addEventListener('DOMContentLoaded', () => {
   populateComponentDropdowns();
   updateCalculations();
   initDemographics();
-  initChassisAdvisor();
+  initVehicleAdvisor();
+  initVehicleEngineOptimizer();
 });
+

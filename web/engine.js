@@ -419,13 +419,19 @@ const GearCityEngine = (() => {
   /**
    * Ultra-Fast (< 50ms) Guided 2-Pass Optimizer
    */
-  function optimizeEngine(year, constraints = {}) {
+  function optimizeEngine(yearOrOptions, constraints = {}) {
+    let year = yearOrOptions;
+    if (typeof yearOrOptions === 'object' && yearOrOptions !== null) {
+      constraints = yearOrOptions;
+      year = Number(constraints.year) || 1960;
+    }
     const startTime = performance.now();
     const maxCost = constraints.maxCost != null && !isNaN(constraints.maxCost) ? Number(constraints.maxCost) : null;
     const maxCc = constraints.maxCc != null && !isNaN(constraints.maxCc) ? Number(constraints.maxCc) : null;
     const maxWeight = constraints.maxWeight != null && !isNaN(constraints.maxWeight) ? Number(constraints.maxWeight) : null;
     const maxLength = constraints.maxLength != null && !isNaN(constraints.maxLength) ? Number(constraints.maxLength) : null;
     const maxWidth = constraints.maxWidth != null && !isNaN(constraints.maxWidth) ? Number(constraints.maxWidth) : null;
+    const maxHpTorqueRatio = constraints.maxHpTorqueRatio != null && !isNaN(constraints.maxHpTorqueRatio) ? Number(constraints.maxHpTorqueRatio) : null;
     const focus = constraints.focus || 'HP';
     const allowedLayouts = constraints.allowedLayouts && constraints.allowedLayouts.length > 0 ? constraints.allowedLayouts : null;
     const allowedCylinders = constraints.allowedCylinders && constraints.allowedCylinders.length > 0 ? constraints.allowedCylinders : null;
@@ -443,10 +449,10 @@ const GearCityEngine = (() => {
     const candidateComponents = [];
 
     for (const l of validLayouts) {
-      const allowedCylNames = l.Cylinders || [];
-      const allowedFuelNames = l.Fuel_Types || l['Fuel Types'] || [];
-      const allowedIndNames = l.Inductions || [];
-      const validValveNames = getValidValvetrains(l, year);
+      const allowedCylNames = typeof l.Cylinders === 'string' ? JSON.parse(l.Cylinders) : l.Cylinders;
+      const allowedFuelNames = typeof l['Fuel Types'] === 'string' ? JSON.parse(l['Fuel Types']) : l['Fuel Types'];
+      const allowedIndNames = typeof l.Inductions === 'string' ? JSON.parse(l.Inductions) : l.Inductions;
+      const validValveNames = getValidValvetrains(l.Name, year);
 
       const lCyls = validCylinders.filter((c) => allowedCylNames.includes(c.Name));
       const lFuels = validFuels.filter((f) => allowedFuelNames.includes(f.Name));
@@ -486,6 +492,9 @@ const GearCityEngine = (() => {
       }
       if (maxWidth != null && res.widthCm > maxWidth) {
         penalty += Math.pow(res.widthCm - maxWidth, 2) * 15;
+      }
+      if (maxHpTorqueRatio != null && (res.horsepower / (res.torqueNm || 1)) > maxHpTorqueRatio) {
+        penalty += Math.pow((res.horsepower / (res.torqueNm || 1)) - maxHpTorqueRatio, 2) * 50;
       }
       return penalty;
     }
@@ -558,17 +567,17 @@ const GearCityEngine = (() => {
                   strokeSlide: s,
                   performanceTorque: t,
                   performanceRevolutions: r,
-                  performanceFuelEconomy: 0.0,
+                  performanceFuelEconomy: constraints.performanceFuel != null ? constraints.performanceFuel / 100.0 : 0.0,
                   designFocusPerformance: 0.85,
                   designFocusFuelEconomy: 0.0,
-                  designFocusDependability: 0.5,
+                  designFocusDependability: constraints.designDependability != null ? constraints.designDependability / 100.0 : 0.5,
                   layoutLength: 0.2,
                   layoutWidth: 0.2,
                   layoutWeight: 0.5,
                   technologyMaterials: m,
-                  technologyComponents: 0.0,
-                  technologyTechnologies: 0.0,
-                  technologyTechniques: 0.0,
+                  technologyComponents: constraints.techComponent != null ? constraints.techComponent / 100.0 : 0.0,
+                  technologyTechnologies: constraints.techTechnology != null ? constraints.techTechnology / 100.0 : 0.0,
+                  technologyTechniques: constraints.techTechnique != null ? constraints.techTechnique / 100.0 : 0.0,
                 };
 
                 const testConfig = { components: comp, sliders, year, designSkill, name: constraints.modelName || `Engine_${year}` };
@@ -593,6 +602,14 @@ const GearCityEngine = (() => {
       performance: bestPerf,
       score: bestScore,
       elapsedMs: Math.round(elapsedMs * 10) / 10,
+      best: bestConfig ? {
+        layout: bestConfig.components.layout,
+        cylinders: bestConfig.components.cylinders,
+        fuel: bestConfig.components.fuel,
+        induction: bestConfig.components.induction,
+        valvetrain: bestConfig.components.valve,
+        performance: bestPerf,
+      } : null,
     };
   }
 
@@ -667,131 +684,127 @@ const GearCityEngine = (() => {
       allScores,
     };
   }
+  /**
+   * Get full design advice for a vehicle type from the spreadsheet data.
+   * Returns chassis, engine, and gearbox design concepts with year-aware components.
+   */
+  function getVehicleDesignAdvice(carType, year) {
+    const vc = GEARCITY_DATA.vehicleClasses.find(v => v.carType === carType);
+    if (!vc) return null;
 
-  function getChassisGearboxRecommendations(vehicleType, year) {
-    const arch = GEARCITY_DATA.archetypes[vehicleType];
-    if (!arch) return null;
+    // Parse comma/slash-separated concepts into arrays
+    const parseConcepts = (str) => str.split(/[,\/]/).map(s => s.trim()).filter(Boolean);
 
-    const cStyle = arch.chassis_style;
-    const gStyle = arch.gearbox_style;
-    const eStyle = arch.engine_style;
+    const chassisConcepts = parseConcepts(vc.chassis);
+    const engineConcepts = parseConcepts(vc.engineType);
+    const gearConcepts = parseConcepts(vc.gear);
 
-    // Frame selection with detailed rationale
-    let frame = "Wood / Basic Frame";
-    let frameYear = 1890;
-    let frameReason = "Basic historical carriage frame suitable for early 1890s horseless carriages.";
-    if (cStyle.includes("Race") && year >= 1924) {
-      frame = "Superleggera / Spaceframe";
-      frameYear = 1924;
-      frameReason = "Ultra-lightweight tubular truss design offering maximum torsional rigidity and agile cornering for sports and racing vehicles.";
-    } else if (cStyle.includes("Truck") || (cStyle.includes("Drive") && (vehicleType.includes("Pickup") || vehicleType.includes("Van") || vehicleType.includes("Sport Utility")))) {
-      frame = year >= 1902 ? "Ladder Frame" : "Heavy Wood Frame";
-      frameYear = 1902;
-      frameReason = "High-tensile steel perimeter rails capable of handling extreme payloads, rough terrain, and heavy towing without chassis twist.";
-    } else if (year >= 1930) {
-      frame = "Unibody (Monocoque)";
-      frameYear = 1930;
-      frameReason = "Integrated body-and-frame structure providing superior passenger safety, significant weight reduction, and low manufacturing costs.";
-    } else if (year >= 1902) {
-      frame = "Ladder Frame";
-      frameYear = 1902;
-      frameReason = "Sturdy steel frame providing durable structural support for early road vehicles.";
-    }
+    // Look up each design concept
+    const chassisDetails = chassisConcepts.map(c => {
+      const cd = GEARCITY_DATA.chassisDesigns[c];
+      if (!cd) return { name: c, notFound: true };
 
-    // Suspension selection with detailed rationale
-    let suspension = "Solid Axle / Leaf Springs";
-    let suspensionYear = 1890;
-    let suspensionReason = "Rugged, low-cost suspension ideal for heavy cargo and rough roads.";
-    if (cStyle.includes("Lux")) {
-      if (year >= 1990) {
-        suspension = "Magnetorheological / Adaptive";
-        suspensionYear = 1990;
-        suspensionReason = "Electromagnetic fluid dampers adjusting damping rates thousands of times per second for the ultimate luxury ride quality.";
-      } else if (year >= 1944) {
-        suspension = "Hydropneumatic Suspension";
-        suspensionYear = 1944;
-        suspensionReason = "Self-leveling nitrogen gas and hydraulic fluid system that completely isolates the passenger cabin from road bumps.";
-      } else if (year >= 1915) {
-        suspension = "Air Suspension";
-        suspensionYear = 1915;
-        suspensionReason = "Pressurized air bellows absorbing high-frequency road vibrations for premium comfort.";
+      // Parse year-based component lines into {year, name} arrays
+      const parseYearLines = (text) => {
+        if (!text) return [];
+        return text.split('\n').map(line => {
+          const match = line.match(/^(\d{4})\s+(.+)$/);
+          if (match) return { year: parseInt(match[1]), name: match[2].trim() };
+          return { year: 0, name: line.trim() };
+        });
+      };
+
+      // Filter components available by year
+      const filterByYear = (items) => {
+        return items.filter(item => item.year <= year || item.year === 0);
+      };
+
+      const frameOptions = parseYearLines(cd.frame);
+      const drivetrainOptions = parseYearLines(cd.drivetrain);
+      const suspensionOptions = parseYearLines(cd.suspension);
+
+      return {
+        name: c,
+        maxEngine: cd.maxEngine,
+        note: cd.note,
+        ratings: cd.ratings,
+        frameAll: frameOptions,
+        frameAvailable: filterByYear(frameOptions),
+        drivetrainAll: drivetrainOptions,
+        drivetrainAvailable: filterByYear(drivetrainOptions),
+        suspensionAll: suspensionOptions,
+        suspensionAvailable: filterByYear(suspensionOptions),
+      };
+    });
+
+    const engineDetails = engineConcepts.map(c => {
+      const ed = GEARCITY_DATA.engineDesigns[c];
+      if (!ed) return { name: c, notFound: true };
+
+      // Find cost target for the current year
+      let costTarget = null;
+      const eras = Object.keys(ed.costTargets).map(Number).sort((a, b) => a - b);
+      for (const era of eras) {
+        if (year >= era) costTarget = ed.costTargets[String(era)];
       }
-    } else if (cStyle.includes("Truck")) {
-      suspension = "Heavy-Duty Leaf Springs";
-      suspensionYear = 1890;
-      suspensionReason = "Maximum load-bearing capacity designed for high cargo weights and commercial hauling.";
-    } else if (cStyle.includes("Race") || cStyle.includes("Sport")) {
-      if (year >= 1988) {
-        suspension = "Multi-Link Independent";
-        suspensionYear = 1988;
-        suspensionReason = "Multi-axis control arms providing precise wheel geometry under aggressive cornering and high-speed braking.";
-      } else if (year >= 1924) {
-        suspension = "Double Wishbone";
-        suspensionYear = 1924;
-        suspensionReason = "Parallel A-arms maintaining optimal tire contact patch across full suspension travel.";
-      } else if (year >= 1901) {
-        suspension = "Swing Axle";
-        suspensionYear = 1901;
-        suspensionReason = "Early independent rear suspension improving road grip over solid axles.";
-      }
-    } else {
-      if (year >= 1988) {
-        suspension = "Multi-Link Independent";
-        suspensionYear = 1988;
-        suspensionReason = "The modern gold standard balancing ride smoothness and responsive handling.";
-      } else if (year >= 1939 && cStyle.includes("Tiny")) {
-        suspension = "MacPherson Strut";
-        suspensionYear = 1939;
-        suspensionReason = "Compact, cost-effective strut layout leaving maximum space for the engine and passenger cabin.";
-      } else if (year >= 1924) {
-        suspension = "Double Wishbone";
-        suspensionYear = 1924;
-        suspensionReason = "Excellent wheel stability and cornering control for mid-century sedans and wagons.";
-      } else if (year >= 1901) {
-        suspension = "Swing Axle";
-        suspensionYear = 1901;
-        suspensionReason = "Improved wheel articulation over early rutted roads.";
-      }
-    }
 
-    // Transmission selection with detailed rationale
-    let transmission = "Early Direct / Chain Drive";
-    let transmissionYear = 1890;
-    let transmissionReason = "Rudimentary early drivetrain mechanism.";
-    if (year >= 1980 && (gStyle.includes("Race") || gStyle.includes("Sport"))) {
-      transmission = "Dual-Clutch Transmission (DCT) / Sequential";
-      transmissionYear = 1980;
-      transmissionReason = "Instantaneous sub-100ms gear shifts keeping the engine in its peak powerband with zero boost loss.";
-    } else if (year >= 1950 && gStyle.includes("Lux")) {
-      transmission = "Torque Converter Automatic";
-      transmissionYear = 1950;
-      transmissionReason = "Seamless, shift-shock-free gear changes offering maximum comfort for luxury buyers.";
-    } else if (year >= 1935 && (gStyle.includes("Fuel") || gStyle.includes("Balance"))) {
-      transmission = "Semi-Automatic / Overdrive";
-      transmissionYear = 1935;
-      transmissionReason = "Taller highway overdrive gear reducing cruising RPM and improving fuel economy.";
-    } else if (year >= 1925 && gStyle.includes("Lux")) {
-      transmission = "Early Automatic / Pre-Selector";
-      transmissionYear = 1925;
-      transmissionReason = "Effortless gear pre-selection catering to affluent buyers.";
-    } else if (year >= 1912) {
-      transmission = "Synchromesh Manual";
-      transmissionYear = 1912;
-      transmissionReason = "High power transmission efficiency, driver control, and durable mechanical reliability.";
+      return { ...ed, costTarget };
+    });
+
+    const gearDetails = gearConcepts.map(c => {
+      const gd = GEARCITY_DATA.gearboxDesigns[c];
+      if (!gd) return { name: c, notFound: true };
+
+      const parseYearLines = (text) => {
+        if (!text) return [];
+        return text.split('\n').map(line => {
+          const match = line.match(/^(\d{4})\s+(.+)$/);
+          if (match) return { year: parseInt(match[1]), name: match[2].trim() };
+          return { year: 0, name: line.trim() };
+        });
+      };
+
+      const gearboxOptions = parseYearLines(gd.gearboxes);
+      const available = gearboxOptions.filter(g => g.year <= year || g.year === 0);
+
+      return {
+        ...gd,
+        gearboxAll: gearboxOptions,
+        gearboxAvailable: available,
+      };
+    });
+
+    return {
+      vehicle: vc,
+      chassisDetails,
+      engineDetails,
+      gearDetails,
+    };
+  }
+
+  /**
+   * Get optimizer-ready constraints from an Engine Design concept name.
+   */
+  function getEngineDesignConstraints(conceptName, year) {
+    const ed = GEARCITY_DATA.engineDesigns[conceptName];
+    if (!ed) return null;
+
+    let costTarget = null;
+    const eras = Object.keys(ed.costTargets).map(Number).sort((a, b) => a - b);
+    for (const era of eras) {
+      if (year >= era) costTarget = ed.costTargets[String(era)];
     }
 
     return {
-      vehicleType,
-      archetype: arch,
-      recommendedFrame: frame,
-      recommendedFrameYear: frameYear,
-      frameReason,
-      recommendedSuspension: suspension,
-      recommendedSuspensionYear: suspensionYear,
-      suspensionReason,
-      recommendedTransmission: transmission,
-      recommendedTransmissionYear: transmissionYear,
-      transmissionReason,
+      maxWeight: ed.maxWeight,
+      maxCost: costTarget,
+      maxHpTorqueRatio: ed.maxHpTorqueRatio,
+      focus: ed.optimizeFocus === 'HP' ? 'HP' : 'Torque',
+      designDependability: ed.designDependability,
+      performanceFuel: ed.performanceFuel,
+      techComponent: ed.techComponent,
+      techTechnology: ed.techTechnology,
+      techTechnique: ed.techTechnique,
     };
   }
 
@@ -805,7 +818,9 @@ const GearCityEngine = (() => {
     optimizeEngine,
     generateEngineXml,
     evaluateDemographics,
-    getChassisGearboxRecommendations
+    getVehicleDesignAdvice,
+    getEngineDesignConstraints,
+    getChassisGearboxRecommendations: getVehicleDesignAdvice,
   };
 })();
 
