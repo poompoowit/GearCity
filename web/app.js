@@ -197,10 +197,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   btnOpenFilterModal.addEventListener('click', () => {
+    filterModal.style.setProperty('display', 'flex', 'important');
     filterModal.classList.add('active');
   });
 
-  const closeFilterModal = () => filterModal.classList.remove('active');
+  const closeFilterModal = () => {
+    filterModal.style.setProperty('display', 'none', 'important');
+    filterModal.classList.remove('active');
+  };
   btnCloseFilterModal.addEventListener('click', closeFilterModal);
   btnSaveCloseFilters.addEventListener('click', closeFilterModal);
   filterModal.addEventListener('click', (e) => {

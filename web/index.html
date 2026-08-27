@@ -7,8 +7,10 @@
   <meta name="description" content="Free open-source engine designer, optimizer, XML blueprint generator, and demographic calculator for GearCity.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2.2">
+  <style>
+    .modal-overlay { display: none !important; }
+  </style>
 </head>
 <body>
 
@@ -381,7 +383,7 @@
   </main>
 
   <!-- Component Filter Modal -->
-  <div id="filter-modal" class="modal-overlay">
+  <div id="filter-modal" class="modal-overlay" style="display: none !important;">
     <div class="modal-window">
       <div class="modal-header">
         <h2 class="card-title">⚙️ Available Component Filters (Game Unlocks)</h2>
@@ -431,8 +433,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="data.js"></script>
-  <script src="engine.js"></script>
-  <script src="app.js"></script>
+  <script src="data.js?v=2.2"></script>
+  <script src="engine.js?v=2.2"></script>
+  <script src="app.js?v=2.2"></script>
 </body>
 </html>

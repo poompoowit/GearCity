@@ -562,22 +562,22 @@ body {
    Component Filter Modal (GearCity Game Popup Style)
    ========================================================================== */
 .modal-overlay {
-  display: none;
+  display: none !important;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(4px);
-  z-index: 999;
+  z-index: 99999;
   justify-content: center;
   align-items: center;
   padding: 20px;
 }
 
 .modal-overlay.active {
-  display: flex;
+  display: flex !important;
 }
 
 .modal-window {
