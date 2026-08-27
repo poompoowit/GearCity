@@ -2,6 +2,7 @@
 
 A modular toolkit for engine optimization, performance simulation,
 demographic matching, and XML blueprint export for GearCity.
+Calculations are estimated based on logic and equations from https://wiki.gearcity.info/
 """
 
 from gearcity.chassis_gearbox import ChassisGearboxAdvisor, VehicleArchetype

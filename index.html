@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GearCity Engineering & Engine Optimization Suite</title>
+  <meta name="description" content="Free open-source engine designer, optimizer, XML blueprint generator, and demographic calculator for GearCity.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="web/style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-group">
+        <span class="brand-logo">🏎️</span>
+        <div>
+          <h1 class="brand-title">GearCity Engineering Suite</h1>
+        </div>
+        <span class="brand-badge">Free Web Edition</span>
+      </div>
+
+      <nav class="nav-tabs" role="tablist">
+        <button class="nav-tab active" data-tab="tab-optimizer">⚡ Engine Optimizer</button>
+        <button class="nav-tab" data-tab="tab-demographics">👥 Demographics</button>
+        <button class="nav-tab" data-tab="tab-chassis">🛠️ Chassis & Gearbox</button>
+        <button class="nav-tab" data-tab="tab-guide">📖 XML Import Guide</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="main-container">
+
+    <!-- ==================== TAB 1: ENGINE OPTIMIZER ==================== -->
+    <section id="tab-optimizer" class="tab-content active">
+      <div class="optimizer-grid">
+
+        <!-- Column 1: Constraints & Auto-Optimizer Settings -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">🎯 Optimization Goals</h2>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <span>Game Year</span>
+              <span id="label-year-val" class="form-val-badge">1957</span>
+            </label>
+            <input type="range" id="input-year" class="slider-range" min="1900" max="2020" value="1957" step="1">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Target Focus</label>
+            <div class="goal-selector">
+              <div class="goal-option active" data-focus="HP">🚀 Max HP</div>
+              <div class="goal-option" data-focus="Torque">⚙️ Max Torque</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Max Budget ($)</label>
+            <input type="number" id="input-max-cost" class="input-text" placeholder="e.g. 500" value="500">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Max Weight (kg)</label>
+            <input type="number" id="input-max-weight" class="input-text" placeholder="e.g. 110" value="110">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Engine Bay Limits (cm)</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="number" id="input-max-len" class="input-text" placeholder="Max Length (65)" value="65">
+              <input type="number" id="input-max-wid" class="input-text" placeholder="Max Width (40)" value="40">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Fuel Type</label>
+            <select id="select-opt-fuel" class="select-dropdown">
+              <option value="Gasoline" selected>Gasoline</option>
+              <option value="Diesel">Diesel</option>
+              <option value="Natural Gas">Natural Gas</option>
+              <option value="Autogas">Autogas</option>
+              <option value="E85">E85</option>
+            </select>
+          </div>
+
+          <button id="btn-auto-optimize" class="btn-primary">
+            <span>⚡ Run Auto-Optimizer (<50ms)</span>
+          </button>
+          <div id="optimizer-status" style="font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 8px;"></div>
+        </div>
+
+        <!-- Column 2: Components & Live Sliders -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">🎛️ Live Engine Designer</h2>
+            <span id="badge-disp-live" style="font-size: 13px; font-weight: 600; color: var(--accent-cyan);">-- cc</span>
+          </div>
+
+          <!-- Discrete Component Selectors -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Layout</label>
+              <select id="select-layout" class="select-dropdown"></select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Cylinders</label>
+              <select id="select-cylinders" class="select-dropdown"></select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Induction</label>
+              <select id="select-induction" class="select-dropdown"></select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Valvetrain</label>
+              <select id="select-valvetrain" class="select-dropdown"></select>
+            </div>
+          </div>
+
+          <!-- Live Reactive Sliders -->
+          <div class="sliders-container">
+            <div class="form-group">
+              <label class="form-label">
+                <span>Bore</span>
+                <span id="val-bore" class="form-val-badge">50.0 mm</span>
+              </label>
+              <input type="range" id="slider-bore" class="slider-range" min="0" max="1000" value="500">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                <span>Stroke</span>
+                <span id="val-stroke" class="form-val-badge">50.0 mm</span>
+              </label>
+              <input type="range" id="slider-stroke" class="slider-range" min="0" max="1000" value="500">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                <span>RPM Tuning</span>
+                <span id="val-rpm" class="form-val-badge">50%</span>
+              </label>
+              <input type="range" id="slider-rpm" class="slider-range" min="0" max="100" value="50">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                <span>Torque Tuning</span>
+                <span id="val-torq" class="form-val-badge">50%</span>
+              </label>
+              <input type="range" id="slider-torq" class="slider-range" min="0" max="100" value="50">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                <span>Perf Focus</span>
+                <span id="val-perf-focus" class="form-val-badge">50%</span>
+              </label>
+              <input type="range" id="slider-perf-focus" class="slider-range" min="0" max="100" value="50">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                <span>Eco Focus</span>
+                <span id="val-eco-focus" class="form-val-badge">0%</span>
+              </label>
+              <input type="range" id="slider-eco-focus" class="slider-range" min="0" max="100" value="0">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                <span>Materials Tech</span>
+                <span id="val-materials" class="form-val-badge">50%</span>
+              </label>
+              <input type="range" id="slider-materials" class="slider-range" min="0" max="100" value="50">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                <span>Weight Tuning</span>
+                <span id="val-weight" class="form-val-badge">50%</span>
+              </label>
+              <input type="range" id="slider-weight" class="slider-range" min="0" max="100" value="50">
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 3: Live Performance Metrics & XML Export -->
+        <div class="card metrics-card">
+          <div class="card-header">
+            <h2 class="card-title">📊 Live Performance</h2>
+          </div>
+
+          <!-- Hero Metric -->
+          <div class="metric-hero">
+            <div id="stat-hero-hp" class="metric-hero-val">0.0 HP</div>
+            <div id="stat-hero-sub" class="metric-hero-sub">@ 0 RPM</div>
+          </div>
+
+          <!-- Grid of Key Stats -->
+          <div class="metric-grid">
+            <div class="metric-item">
+              <div class="metric-item-label">Torque Output</div>
+              <div id="stat-torque" class="metric-item-val">0.0 Nm</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-item-label">Displacement</div>
+              <div id="stat-disp" class="metric-item-val">0 cc</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-item-label">Estimated Unit Cost</div>
+              <div id="stat-cost" class="metric-item-val" style="color: var(--accent-amber);">$0.00</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-item-label">Engine Weight</div>
+              <div id="stat-weight" class="metric-item-val">0.0 kg</div>
+            </div>
+            <div class="metric-item" style="grid-column: span 2;">
+              <div class="metric-item-label">Engine Dimensions (L x W)</div>
+              <div id="stat-dim" class="metric-item-val">0.0 x 0.0 cm</div>
+            </div>
+          </div>
+
+          <!-- Direct In-Game Blueprint Export -->
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 16px;">
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label class="form-label">Blueprint Model Name</label>
+              <input type="text" id="input-model-name" class="input-text" value="Optima_57">
+            </div>
+            <button id="btn-download-xml" class="btn-primary" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+              <span>💾 Download Blueprint (.xml)</span>
+            </button>
+            <div style="font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 6px;">
+              Drop directly into GearCity Designs/Engines folder!
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: DEMOGRAPHICS ==================== -->
+    <section id="tab-demographics" class="tab-content">
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-header">
+          <h2 class="card-title">👥 Vehicle Target Demographic Analyzer</h2>
+        </div>
+
+        <div style="max-width: 400px; margin-bottom: 20px;">
+          <label class="form-label">Select Vehicle Body Type</label>
+          <select id="select-demo-vehicle" class="select-dropdown"></select>
+        </div>
+
+        <div id="demo-highlight-box" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 20px;">
+          <!-- Injected via JS -->
+        </div>
+
+        <h3 style="font-size: 15px; font-weight: 700; margin: 24px 0 12px; color: var(--text-secondary);">
+          All 30 Vehicle Classes - Optimal Buyer Matrix
+        </h3>
+        <div style="overflow-x: auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Vehicle Class</th>
+                <th>Target Gender</th>
+                <th>Target Age Bracket</th>
+                <th>Demographic Preference Score</th>
+              </tr>
+            </thead>
+            <tbody id="table-demographics-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: CHASSIS & GEARBOX ==================== -->
+    <section id="tab-chassis" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">🛠️ Chassis, Gearbox & Synergy Advisor</h2>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+          <div>
+            <label class="form-label">Vehicle Type</label>
+            <select id="select-synergy-vehicle" class="select-dropdown"></select>
+          </div>
+          <div>
+            <label class="form-label">Game Year</label>
+            <input type="number" id="input-synergy-year" class="input-text" value="1960" min="1900" max="2020">
+          </div>
+        </div>
+
+        <div id="synergy-results-box" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: IN-GAME XML IMPORT GUIDE ==================== -->
+    <section id="tab-guide" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">📖 How to Import XML Blueprints In-Game</h2>
+        </div>
+
+        <div class="guide-step">
+          <div class="step-num">1</div>
+          <div>
+            <h3 style="font-size: 15px; font-weight: 700;">Design & Download Blueprint</h3>
+            <p style="color: var(--text-secondary); font-size: 14px;">
+              Use the <strong>Engine Optimizer</strong> tab to find your optimal engine, then click <strong>"Download Blueprint (.xml)"</strong>.
+            </p>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="step-num">2</div>
+          <div>
+            <h3 style="font-size: 15px; font-weight: 700;">Place the XML file in your GearCity Designs folder</h3>
+            <p style="color: var(--text-secondary); font-size: 14px;">Copy the downloaded XML file to the path for your OS:</p>
+            
+            <div style="margin-top: 12px;">
+              <strong style="color: var(--text-primary); font-size: 13px;">🪟 Windows:</strong>
+              <code class="step-code">Documents\My Games\GearCity\Designs\Engines\</code>
+            </div>
+
+            <div style="margin-top: 12px;">
+              <strong style="color: var(--text-primary); font-size: 13px;">🎮 Steam Deck / Linux:</strong>
+              <code class="step-code">~/.local/share/GearCity/Designs/Engines/</code>
+            </div>
+
+            <div style="margin-top: 12px;">
+              <strong style="color: var(--text-primary); font-size: 13px;">🍏 macOS:</strong>
+              <code class="step-code">~/Library/Application Support/GearCity/Designs/Engines/</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="step-num">3</div>
+          <div>
+            <h3 style="font-size: 15px; font-weight: 700;">Load Directly In-Game!</h3>
+            <p style="color: var(--text-secondary); font-size: 14px;">
+              Launch GearCity $\rightarrow$ open the <strong>Engine Designer</strong> $\rightarrow$ click <strong>Load Blueprint</strong>. Your engineered engine is ready to build immediately with all sliders set perfectly!
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer with Wiki Citation -->
+  <footer style="max-width: 1400px; margin: 40px auto 0; padding: 20px 24px; text-align: center; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 13px;">
+    <div>All calculations and design equations are estimated based on logic provided on the official <a href="https://wiki.gearcity.info/" target="_blank" rel="noopener noreferrer" style="color: var(--accent-cyan); text-decoration: none; font-weight: 600;">GearCity Wiki</a>.</div>
+    <div style="margin-top: 6px; font-size: 12px;">GearCity is developed by <a href="https://store.steampowered.com/app/285110/GearCity/" target="_blank" rel="noopener noreferrer" style="color: var(--text-secondary); text-decoration: none;">Visual Entertainment Services / Eric B</a>.</div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="web/data.js"></script>
+  <script src="web/engine.js"></script>
+  <script src="web/app.js"></script>
+</body>
+</html>

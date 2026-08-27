@@ -14,15 +14,23 @@ A high-performance Python toolkit and CLI designed for **[GearCity](https://stor
 
 ---
 
-## 📦 Installation
+## 🌐 Live Web App & Free GitHub Pages Hosting
 
-Ensure you have Python 3.9+ installed:
+This repository includes a **100% free, zero-server Client-Side Web Application** located in the root / `web/` folder.
 
-```bash
-git clone https://github.com/your-username/GearCity.git
-cd GearCity
-pip install -r requirements.txt
-```
+### How to Enable Free Web Hosting on GitHub Pages:
+1. Push this repository to your GitHub account.
+2. In your GitHub repository, navigate to **Settings** $\rightarrow$ **Pages** (in the left sidebar).
+3. Under **Branch**, select `main` (or `master`) and `/ (root)` folder $\rightarrow$ click **Save**.
+4. Within 1-2 minutes, your web application will be live at:
+   ```
+   https://<your-username>.github.io/GearCity/
+   ```
+5. Players can use the tool in any browser on their desktop, second monitor, tablet, or phone with **zero installation needed**!
+
+---
+
+## 📦 Python Installation (Optional for CLI / Scripting)
 
 ---
 
@@ -169,7 +177,9 @@ python -m unittest discover tests
 
 ## ⚖️ Disclaimer & Credits
 
-This is an open-source, fan-created tool designed for the **GearCity** community. All game balance mechanics and design logic belong to **Visual Entertainment Services / Eric B**, the creator of [GearCity](https://store.steampowered.com/app/285110/GearCity/).
+This is an open-source, fan-created tool designed for the **GearCity** community.
+- **Formulas & Game Logic**: All calculations, tech curves, component unlocking years, demographic preferences, and engineering equations are estimated based on the logic and formulas provided on the official **[GearCity Wiki](https://wiki.gearcity.info/)** (including [Engine Design](https://wiki.gearcity.info/doku.php?id=gearcity:engine_design) and vehicle ratings).
+- **Game Credits**: All game mechanics, names, and assets belong to **Visual Entertainment Services / Eric B**, the developer of [GearCity](https://store.steampowered.com/app/285110/GearCity/).
 
 ---
 
