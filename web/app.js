@@ -80,6 +80,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // DOM Elements - Chassis & Synergies Tab
   const selectSynergyVehicle = document.getElementById('select-synergy-vehicle');
   const inputSynergyYear = document.getElementById('input-synergy-year');
+  const inputSynergyYearNum = document.getElementById('input-synergy-year-num');
+  const btnSynergyYearPrev = document.getElementById('btn-synergy-year-prev');
+  const btnSynergyYearNext = document.getElementById('btn-synergy-year-next');
+  const btnSynergyYearPresets = document.querySelectorAll('.btn-synergy-year-preset');
   const synergyResultsBox = document.getElementById('synergy-results-box');
 
   let currentFocus = 'HP';
@@ -740,8 +744,45 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     }
 
+    function setSynergyYear(val) {
+      const clamped = Math.max(1900, Math.min(2020, Number(val) || 1900));
+      inputSynergyYear.value = clamped;
+      if (inputSynergyYearNum) inputSynergyYearNum.value = clamped;
+      updateSynergies();
+    }
+
     selectSynergyVehicle.addEventListener('change', updateSynergies);
-    inputSynergyYear.addEventListener('input', updateSynergies);
+    inputSynergyYear.addEventListener('input', () => setSynergyYear(inputSynergyYear.value));
+
+    if (inputSynergyYearNum) {
+      inputSynergyYearNum.addEventListener('input', () => {
+        if (inputSynergyYearNum.value.length >= 4) {
+          setSynergyYear(inputSynergyYearNum.value);
+        }
+      });
+      inputSynergyYearNum.addEventListener('change', () => {
+        setSynergyYear(inputSynergyYearNum.value);
+      });
+    }
+
+    if (btnSynergyYearPrev) {
+      btnSynergyYearPrev.addEventListener('click', () => {
+        setSynergyYear(Number(inputSynergyYear.value) - 1);
+      });
+    }
+
+    if (btnSynergyYearNext) {
+      btnSynergyYearNext.addEventListener('click', () => {
+        setSynergyYear(Number(inputSynergyYear.value) + 1);
+      });
+    }
+
+    btnSynergyYearPresets.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        setSynergyYear(Number(btn.dataset.year));
+      });
+    });
+
     updateSynergies();
   }
 
