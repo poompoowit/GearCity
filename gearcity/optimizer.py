@@ -212,7 +212,12 @@ class EngineOptimizer:
                 technology_techniques=default_tech_techniques,
             )
 
-            cfg = EngineConfiguration(components=comp, sliders=sliders, year=year)
+            cfg = EngineConfiguration(
+                components=comp,
+                sliders=sliders,
+                year=year,
+                design_skill=constraints.design_skill,
+            )
             res = self.calculator.calculate_performance(cfg)
 
             # Penalties
@@ -293,6 +298,7 @@ class EngineOptimizer:
             components=best_components,
             sliders=best_sliders,
             year=year,
+            design_skill=constraints.design_skill,
             name=model_name,
         )
         perf_result = self.calculator.calculate_performance(final_config)

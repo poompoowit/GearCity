@@ -108,11 +108,64 @@ const GearCityEngine = (() => {
     return ['OHV'];
   }
 
-  function calculatePerformance(config, year) {
-    const yf = calculateYearFactors(year);
-    const rates = getWorldRates(year);
+  function calculateComponentRatings(config, perf) {
+    const sliders = config.sliders;
+    const comp = config.components;
+    const designSkill = config.designSkill != null ? Number(config.designSkill) : DEFAULT_ENGINE_SKILL;
+    const skillFactor = Math.max(0, Math.min(100, designSkill)) / 100.0;
+
+    const cylRow = GEARCITY_DATA.cylinders.find((c) => c.Name === comp.cylinders);
+    const cylCount = cylRow ? Number(cylRow['Number of Cylinders']) : 4;
+    const indRow = GEARCITY_DATA.induction.find((i) => i.Name === comp.induction);
+    const indCost = indRow ? Number(indRow.Cost) : 1.0;
+
+    // 1. Dependability (0 - 100%)
+    const baseDep = 30.0 + (skillFactor * 40.0);
+    const depFocusBonus = (sliders.designFocusDependability || 0.5) * 25.0;
+    const techCompBonus = ((sliders.technologyComponents || 0.5) + (sliders.technologyMaterials || 0.5)) * 10.0;
+    const indPenalty = (indCost - 1.0) * 8.0;
+    const cylDepPenalty = Math.max(0, cylCount - 6) * 1.5;
+    const dependability = Math.max(5.0, Math.min(99.0, baseDep + depFocusBonus + techCompBonus - indPenalty - cylDepPenalty));
+
+    // 2. Power & Acceleration Rating (0 - 100%)
+    const specificOutput = perf.displacementCc > 0 ? (perf.horsepower / (perf.displacementCc / 1000.0)) : 0;
+    const basePower = (specificOutput / 1.2) * (0.6 + 0.4 * skillFactor);
+    const powerFocusBonus = (sliders.designFocusPerformance || 0.5) * 20.0 + (sliders.performanceRevolutions || 0.5) * 15.0;
+    const powerRating = Math.max(5.0, Math.min(99.0, basePower + powerFocusBonus));
+
+    // 3. Smoothness / Luxury Rating (0 - 100%)
+    let balanceBase = 40.0;
+    if ([6, 8, 12, 16].includes(cylCount)) balanceBase = 65.0;
+    else if ([4, 5, 10].includes(cylCount)) balanceBase = 50.0;
+    else balanceBase = 25.0;
+    const smoothSkillBonus = skillFactor * 25.0;
+    const smoothFocusBonus = (sliders.designFocusDependability || 0.5) * 10.0 - ((sliders.performanceRevolutions || 0.5) * 10.0);
+    const smoothness = Math.max(5.0, Math.min(99.0, balanceBase + smoothSkillBonus + smoothFocusBonus));
+
+    // 4. Fuel Economy Rating (0 - 100%)
+    const dispPenalty = Math.min(45.0, (perf.displacementCc / 150.0));
+    const ecoBonus = ((sliders.designFocusFuelEconomy || 0.5) + (sliders.performanceFuelEconomy || 0.5)) * 25.0;
+    const ecoSkillBonus = skillFactor * 20.0;
+    const fuelEconomy = Math.max(5.0, Math.min(99.0, 75.0 - dispPenalty + ecoBonus + ecoSkillBonus));
+
+    // Overall Rating (Composite)
+    const overall = (dependability * 0.30) + (powerRating * 0.25) + (smoothness * 0.25) + (fuelEconomy * 0.20);
+
+    return {
+      dependability: Math.round(dependability * 10) / 10,
+      power: Math.round(powerRating * 10) / 10,
+      smoothness: Math.round(smoothness * 10) / 10,
+      fuelEconomy: Math.round(fuelEconomy * 10) / 10,
+      overall: Math.round(overall * 10) / 10,
+    };
+  }
+
+  function calculatePerformance(config) {
+    const year = config.year;
     const comp = config.components;
     const sliders = config.sliders;
+    const yf = calculateYearFactors(year);
+    const rates = getWorldRates(year);
 
     const layoutRow = GEARCITY_DATA.layouts.find((l) => l.Name === comp.layout);
     const cylinderRow = GEARCITY_DATA.cylinders.find((c) => c.Name === comp.cylinders);
@@ -121,12 +174,12 @@ const GearCityEngine = (() => {
     const valveRow = GEARCITY_DATA.valvetrain.find((v) => v.Name === comp.valve);
 
     if (!layoutRow || !cylinderRow || !fuelRow || !inductionRow || !valveRow) {
-      throw new Error('Component lookup failure');
+      throw new Error('Invalid component combination');
     }
 
+    const layoutPower = Number(layoutRow.Power);
     const layoutLength = Number(layoutRow.Length);
     const layoutWidth = Number(layoutRow.Width);
-    const layoutPower = Number(layoutRow.Power);
     const layoutCost = Number(layoutRow.Costs);
     const layoutWeight = Number(layoutRow.Weight);
     const cylArrangement = Number(layoutRow['Cylinder Arrangement']);
@@ -160,7 +213,7 @@ const GearCityEngine = (() => {
     const displacementCc = 0.7854 * Math.pow(boreMm / 10.0, 2) * (strokeMm / 10.0) * cylinderCount;
 
     // Torque
-    const designSkill = config.designSkill || DEFAULT_ENGINE_SKILL;
+    const designSkill = config.designSkill != null ? Number(config.designSkill) : DEFAULT_ENGINE_SKILL;
     let torque = 10.0 + (designSkill / 20.0) + (
       (
         (25.0 * ((sliders.performanceTorque - 0.4) * 1.5) * yf.ex_1d01p_year99)
@@ -332,6 +385,20 @@ const GearCityEngine = (() => {
     const hyperCosts = 475.0 * yf.ex_1d04p_year99 * Math.pow(hyperSliders, 4);
     unitCost = unitCost + hyperCosts - ((unitCost / 10.0) * (designSkill / 100.0));
 
+    const ratings = calculateComponentRatings(config, {
+      displacementCc,
+      boreMm,
+      strokeMm,
+      torqueFtLb: torque,
+      torqueNm: torque * 1.3558,
+      rpm,
+      horsepower: hp,
+      lengthCm,
+      widthCm,
+      weightKg,
+      unitCost,
+    });
+
     return {
       displacementCc,
       boreMm,
@@ -344,6 +411,8 @@ const GearCityEngine = (() => {
       widthCm,
       weightKg,
       unitCost,
+      ratings,
+      designSkill,
     };
   }
 
@@ -476,6 +545,8 @@ const GearCityEngine = (() => {
     const rpmSteps = [0.65, 0.85, 1.0];
     const matSteps = [0.25, 0.5, 0.75];
 
+    const designSkill = constraints.designSkill != null ? Number(constraints.designSkill) : DEFAULT_ENGINE_SKILL;
+
     for (const comp of topCandidates) {
       for (const b of boreSteps) {
         for (const s of strokeSteps) {
@@ -500,8 +571,8 @@ const GearCityEngine = (() => {
                   technologyTechniques: 0.0,
                 };
 
-                const testConfig = { components: comp, sliders, year, name: constraints.modelName || `Engine_${year}` };
-                const res = calculatePerformance(testConfig, year);
+                const testConfig = { components: comp, sliders, year, designSkill, name: constraints.modelName || `Engine_${year}` };
+                const res = calculatePerformance(testConfig);
                 const score = (focus === 'Torque' ? res.torqueNm : res.horsepower) - evaluatePenalty(res);
 
                 if (score > bestScore) {
@@ -730,6 +801,7 @@ const GearCityEngine = (() => {
     getWorldRates,
     getValidValvetrains,
     calculatePerformance,
+    calculateComponentRatings,
     optimizeEngine,
     generateEngineXml,
     evaluateDemographics,

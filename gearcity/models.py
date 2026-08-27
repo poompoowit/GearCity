@@ -88,6 +88,7 @@ class OptimizationConstraints:
     allowed_cylinders: Optional[List[str]] = None
     allowed_inductions: Optional[List[str]] = None
     allowed_valves: Optional[List[str]] = None
+    design_skill: float = 70.0
 
 
 @dataclass

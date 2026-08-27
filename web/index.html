@@ -68,6 +68,24 @@
           </div>
 
           <div class="form-group">
+            <label class="form-label" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span>Engineer Design Skill</span>
+              <div style="display: flex; align-items: center; gap: 4px;">
+                <input type="number" id="input-design-skill-num" class="input-text" min="0" max="100" value="70" style="width: 60px; padding: 2px 6px; font-size: 13px; font-weight: 800; text-align: center; height: 26px; color: var(--gc-text-amber); font-family: var(--font-game-mono);">
+                <span style="font-size: 12px; color: var(--gc-text-muted);">/ 100</span>
+              </div>
+            </label>
+            <input type="range" id="slider-design-skill" class="slider-range" min="0" max="100" value="70" step="1">
+            <div style="display: flex; justify-content: space-between; gap: 4px; margin-top: 6px;">
+              <button type="button" class="btn-skill-preset btn-secondary" data-skill="5" style="margin-top: 0; padding: 3px 4px; font-size: 10px; flex: 1;">5 (Rookie)</button>
+              <button type="button" class="btn-skill-preset btn-secondary" data-skill="25" style="margin-top: 0; padding: 3px 4px; font-size: 10px; flex: 1;">25</button>
+              <button type="button" class="btn-skill-preset btn-secondary" data-skill="50" style="margin-top: 0; padding: 3px 4px; font-size: 10px; flex: 1;">50</button>
+              <button type="button" class="btn-skill-preset btn-secondary" data-skill="75" style="margin-top: 0; padding: 3px 4px; font-size: 10px; flex: 1;">75</button>
+              <button type="button" class="btn-skill-preset btn-secondary" data-skill="100" style="margin-top: 0; padding: 3px 4px; font-size: 10px; flex: 1;">100 (Master)</button>
+            </div>
+          </div>
+
+          <div class="form-group">
             <label class="form-label">Optimization Goal</label>
             <div class="goal-selector">
               <div class="goal-option active" data-focus="HP">🚀 Max HP</div>
@@ -248,6 +266,56 @@
             <div class="metric-item" style="grid-column: span 2;">
               <div class="metric-item-label">Engine Dimensions (Length x Width)</div>
               <div id="stat-dim" class="metric-item-val">0 x 0 mm</div>
+            </div>
+          </div>
+
+          <!-- In-Game Quality & Rating Breakdown -->
+          <div style="margin-top: 16px; margin-bottom: 16px; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid var(--gc-border-brown); border-radius: 4px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <span style="font-size: 13px; font-weight: 700; color: var(--gc-text-gold);">⭐ In-Game Rating Breakdown</span>
+              <span id="rating-overall-badge" class="filter-year-tag" style="background: rgba(212, 175, 55, 0.2); color: var(--gc-text-gold); font-size: 13px; font-weight: 800;">Overall: 0.0</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
+              <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                  <span style="color: var(--gc-text-muted);">🛡️ Dependability</span>
+                  <span id="val-rating-dep" style="color: var(--gc-text-green); font-weight: 700;">0%</span>
+                </div>
+                <div style="background: #111; height: 6px; border-radius: 3px; overflow: hidden; border: 1px solid #3d2314;">
+                  <div id="bar-rating-dep" style="background: var(--gc-text-green); height: 100%; width: 0%; transition: width 0.2s ease;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                  <span style="color: var(--gc-text-muted);">⚡ Power / Speed</span>
+                  <span id="val-rating-power" style="color: var(--gc-text-amber); font-weight: 700;">0%</span>
+                </div>
+                <div style="background: #111; height: 6px; border-radius: 3px; overflow: hidden; border: 1px solid #3d2314;">
+                  <div id="bar-rating-power" style="background: var(--gc-text-amber); height: 100%; width: 0%; transition: width 0.2s ease;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                  <span style="color: var(--gc-text-muted);">🛋️ Smoothness</span>
+                  <span id="val-rating-smooth" style="color: #64b5f6; font-weight: 700;">0%</span>
+                </div>
+                <div style="background: #111; height: 6px; border-radius: 3px; overflow: hidden; border: 1px solid #3d2314;">
+                  <div id="bar-rating-smooth" style="background: #64b5f6; height: 100%; width: 0%; transition: width 0.2s ease;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                  <span style="color: var(--gc-text-muted);">⛽ Fuel Economy</span>
+                  <span id="val-rating-eco" style="color: var(--gc-text-gold); font-weight: 700;">0%</span>
+                </div>
+                <div style="background: #111; height: 6px; border-radius: 3px; overflow: hidden; border: 1px solid #3d2314;">
+                  <div id="bar-rating-eco" style="background: var(--gc-text-gold); height: 100%; width: 0%; transition: width 0.2s ease;"></div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -560,8 +628,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="data.js?v=2.5"></script>
-  <script src="engine.js?v=2.5"></script>
-  <script src="app.js?v=2.5"></script>
+  <script src="data.js?v=2.6"></script>
+  <script src="engine.js?v=2.6"></script>
+  <script src="app.js?v=2.6"></script>
 </body>
 </html>

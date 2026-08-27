@@ -39,6 +39,7 @@ def command_optimize(args: argparse.Namespace) -> None:
         design_focus=args.focus,
         allowed_layouts=args.layouts.split(",") if args.layouts else None,
         allowed_fuels=args.fuels.split(",") if args.fuels else None,
+        design_skill=args.skill,
     )
 
     optimizer = EngineOptimizer()
@@ -137,6 +138,7 @@ def main() -> None:
     # Optimize command
     opt_parser = subparsers.add_parser("optimize", help="Optimize engine design under constraints")
     opt_parser.add_argument("--year", type=int, required=True, help="Target game year (e.g. 1957)")
+    opt_parser.add_argument("--skill", type=float, default=70.0, help="Engineer design skill (0-100)")
     opt_parser.add_argument("--name", type=str, default=None, help="Engine model name")
     opt_parser.add_argument("--focus", type=str, default="HP", choices=["HP", "Torque"], help="Optimization goal")
     opt_parser.add_argument("--max-cost", type=float, default=None, help="Max unit cost ($)")

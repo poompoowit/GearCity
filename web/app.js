@@ -60,6 +60,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const sliderWeight = document.getElementById('slider-weight');
   const valWeight = document.getElementById('val-weight');
 
+  // DOM Elements - Design Skill
+  const inputDesignSkillNum = document.getElementById('input-design-skill-num');
+  const sliderDesignSkill = document.getElementById('slider-design-skill');
+  const btnSkillPresets = document.querySelectorAll('.btn-skill-preset');
+
+  // DOM Elements - In-Game Quality Ratings
+  const ratingOverallBadge = document.getElementById('rating-overall-badge');
+  const valRatingDep = document.getElementById('val-rating-dep');
+  const barRatingDep = document.getElementById('bar-rating-dep');
+  const valRatingPower = document.getElementById('val-rating-power');
+  const barRatingPower = document.getElementById('bar-rating-power');
+  const valRatingSmooth = document.getElementById('val-rating-smooth');
+  const barRatingSmooth = document.getElementById('bar-rating-smooth');
+  const valRatingEco = document.getElementById('val-rating-eco');
+  const barRatingEco = document.getElementById('bar-rating-eco');
+
   // DOM Elements - Metrics
   const statHeroHp = document.getElementById('stat-hero-hp');
   const statHeroSub = document.getElementById('stat-hero-sub');
@@ -368,6 +384,8 @@ document.addEventListener('DOMContentLoaded', () => {
     valMaterials.textContent = `${sliderMaterials.value}%`;
     valWeight.textContent = `${sliderWeight.value}%`;
 
+    const designSkill = Number(sliderDesignSkill ? sliderDesignSkill.value : (inputDesignSkillNum ? inputDesignSkillNum.value : 70));
+
     const config = {
       components: {
         layout: layoutName,
@@ -394,11 +412,12 @@ document.addEventListener('DOMContentLoaded', () => {
         technologyTechniques: 0.0,
       },
       year,
+      designSkill,
       name: inputModelName.value || `Engine_${year}`,
     };
 
     try {
-      const res = GearCityEngine.calculatePerformance(config, year);
+      const res = GearCityEngine.calculatePerformance(config);
       statHeroHp.textContent = `${res.horsepower.toFixed(1)} HP`;
       statHeroSub.textContent = `@ ${res.rpm.toFixed(0)} RPM`;
       statTorque.textContent = `${res.torqueNm.toFixed(1)} Nm (${res.torqueFtLb.toFixed(1)} lb-ft)`;
@@ -407,6 +426,18 @@ document.addEventListener('DOMContentLoaded', () => {
       statCost.textContent = `$${res.unitCost.toFixed(2)}`;
       statWeight.textContent = `${res.weightKg.toFixed(1)} kg`;
       statDim.textContent = `L: ${(res.lengthCm * 10).toFixed(0)} mm | W: ${(res.widthCm * 10).toFixed(0)} mm (${res.lengthCm.toFixed(1)} x ${res.widthCm.toFixed(1)} cm)`;
+
+      if (res.ratings && ratingOverallBadge) {
+        ratingOverallBadge.textContent = `Overall: ${res.ratings.overall.toFixed(1)} ⭐`;
+        if (valRatingDep) valRatingDep.textContent = `${res.ratings.dependability.toFixed(0)}%`;
+        if (barRatingDep) barRatingDep.style.width = `${res.ratings.dependability}%`;
+        if (valRatingPower) valRatingPower.textContent = `${res.ratings.power.toFixed(0)}%`;
+        if (barRatingPower) barRatingPower.style.width = `${res.ratings.power}%`;
+        if (valRatingSmooth) valRatingSmooth.textContent = `${res.ratings.smoothness.toFixed(0)}%`;
+        if (barRatingSmooth) barRatingSmooth.style.width = `${res.ratings.smoothness}%`;
+        if (valRatingEco) valRatingEco.textContent = `${res.ratings.fuelEconomy.toFixed(0)}%`;
+        if (barRatingEco) barRatingEco.style.width = `${res.ratings.fuelEconomy}%`;
+      }
     } catch (err) {
       console.error('Calculation error:', err);
     }
@@ -425,6 +456,14 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCalculations();
   }
 
+  // Function to set Design Skill
+  function setDesignSkill(val) {
+    const clamped = Math.max(0, Math.min(100, Number(val) || 70));
+    if (sliderDesignSkill) sliderDesignSkill.value = clamped;
+    if (inputDesignSkillNum) inputDesignSkillNum.value = clamped;
+    updateCalculations();
+  }
+
   // Event Listeners for Live Updates
   inputYear.addEventListener('input', () => {
     setGameYear(inputYear.value, false);
@@ -440,6 +479,23 @@ document.addEventListener('DOMContentLoaded', () => {
       setGameYear(inputYearNum.value, false);
     });
   }
+
+  if (sliderDesignSkill) {
+    sliderDesignSkill.addEventListener('input', () => setDesignSkill(sliderDesignSkill.value));
+  }
+
+  if (inputDesignSkillNum) {
+    inputDesignSkillNum.addEventListener('input', () => {
+      if (inputDesignSkillNum.value !== '') setDesignSkill(inputDesignSkillNum.value);
+    });
+    inputDesignSkillNum.addEventListener('change', () => setDesignSkill(inputDesignSkillNum.value));
+  }
+
+  btnSkillPresets.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      setDesignSkill(Number(btn.dataset.skill));
+    });
+  });
 
   if (btnYearPrev) {
     btnYearPrev.addEventListener('click', () => {
@@ -499,6 +555,7 @@ document.addEventListener('DOMContentLoaded', () => {
           allowedFuels: Array.from(userAllowed.fuels),
           allowedInductions: Array.from(userAllowed.inductions),
           allowedValves: Array.from(userAllowed.valves),
+          designSkill: Number(sliderDesignSkill ? sliderDesignSkill.value : 70),
           modelName: inputModelName.value || `Optima_${year}`,
         });
 
