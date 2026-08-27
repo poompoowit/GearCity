@@ -941,8 +941,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectVehicle = document.getElementById('select-vopt-vehicle');
     const selectConcept = document.getElementById('select-vopt-concept');
     const inputYear = document.getElementById('input-vopt-year');
-    const inputSkill = document.getElementById('input-vopt-skill');
-    const constraintsBox = document.getElementById('vopt-constraints-box');
+    const inputYearNum = document.getElementById('input-vopt-year-num');
+    const btnYearPrev = document.getElementById('btn-vopt-year-prev');
+    const btnYearNext = document.getElementById('btn-vopt-year-next');
+    const inputSkillNum = document.getElementById('input-vopt-skill-num');
+    const sliderSkill = document.getElementById('slider-vopt-skill');
+
+    const inputMaxCost = document.getElementById('input-vopt-max-cost');
+    const inputMaxWeight = document.getElementById('input-vopt-max-weight');
+    const inputMaxRatio = document.getElementById('input-vopt-max-ratio');
+    const selectFocus = document.getElementById('select-vopt-focus');
+    const selectFuel = document.getElementById('select-vopt-fuel');
+    const inputMaxLen = document.getElementById('input-vopt-max-len');
+    const inputMaxWid = document.getElementById('input-vopt-max-wid');
+
+    const sliderDepend = document.getElementById('slider-vopt-depend');
+    const valDepend = document.getElementById('val-vopt-depend');
+    const sliderFuel = document.getElementById('slider-vopt-fuel');
+    const valFuel = document.getElementById('val-vopt-fuel');
+    const sliderTechComp = document.getElementById('slider-vopt-tech-comp');
+    const valTechComp = document.getElementById('val-vopt-tech-comp');
+    const sliderTechTech = document.getElementById('slider-vopt-tech-tech');
+    const valTechTech = document.getElementById('val-vopt-tech-tech');
+    const sliderTechTechq = document.getElementById('slider-vopt-tech-techq');
+    const valTechTechq = document.getElementById('val-vopt-tech-techq');
+
+    const btnResetDefaults = document.getElementById('btn-vopt-reset-defaults');
     const btnOptimize = document.getElementById('btn-vopt-optimize');
     const statusEl = document.getElementById('vopt-status');
     const resultsBox = document.getElementById('vopt-results-box');
@@ -956,6 +980,45 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     selectVehicle.value = 'Sedan';
 
+    function syncSliders() {
+      if (valDepend && sliderDepend) valDepend.textContent = sliderDepend.value;
+      if (valFuel && sliderFuel) valFuel.textContent = sliderFuel.value;
+      if (valTechComp && sliderTechComp) valTechComp.textContent = sliderTechComp.value;
+      if (valTechTech && sliderTechTech) valTechTech.textContent = sliderTechTech.value;
+      if (valTechTechq && sliderTechTechq) valTechTechq.textContent = sliderTechTechq.value;
+    }
+
+    [sliderDepend, sliderFuel, sliderTechComp, sliderTechTech, sliderTechTechq].forEach(s => {
+      if (s) s.addEventListener('input', syncSliders);
+    });
+
+    // Skill slider sync
+    if (sliderSkill && inputSkillNum) {
+      sliderSkill.addEventListener('input', () => { inputSkillNum.value = sliderSkill.value; });
+      inputSkillNum.addEventListener('input', () => {
+        const val = Math.max(0, Math.min(100, Number(inputSkillNum.value) || 0));
+        sliderSkill.value = val;
+      });
+    }
+
+    // Year slider sync
+    function setVoptYear(val) {
+      const clamped = Math.max(1900, Math.min(2020, Number(val) || 1900));
+      if (inputYear) inputYear.value = clamped;
+      if (inputYearNum) inputYearNum.value = clamped;
+      populateConceptDefaults();
+    }
+
+    if (inputYear) inputYear.addEventListener('input', () => setVoptYear(inputYear.value));
+    if (inputYearNum) {
+      inputYearNum.addEventListener('input', () => {
+        if (inputYearNum.value.length >= 4) setVoptYear(inputYearNum.value);
+      });
+      inputYearNum.addEventListener('change', () => setVoptYear(inputYearNum.value));
+    }
+    if (btnYearPrev) btnYearPrev.addEventListener('click', () => setVoptYear(Number(inputYear.value) - 1));
+    if (btnYearNext) btnYearNext.addEventListener('click', () => setVoptYear(Number(inputYear.value) + 1));
+
     function updateConceptDropdown() {
       const vc = GEARCITY_DATA.vehicleClasses.find(v => v.carType === selectVehicle.value);
       selectConcept.innerHTML = '';
@@ -967,43 +1030,40 @@ document.addEventListener('DOMContentLoaded', () => {
         opt.textContent = c + (GEARCITY_DATA.engineDesigns[c] ? ` — ${GEARCITY_DATA.engineDesigns[c].concept}` : '');
         selectConcept.appendChild(opt);
       });
-      updateConstraintsDisplay();
+      populateConceptDefaults();
     }
 
-    function updateConstraintsDisplay() {
+    function populateConceptDefaults() {
       const concept = selectConcept.value;
       const year = Number(inputYear.value) || 1960;
       const constraints = GearCityEngine.getEngineDesignConstraints(concept, year);
-      if (!constraints) {
-        constraintsBox.innerHTML = '<span style="color: var(--gc-text-muted);">Select a valid concept.</span>';
-        return;
-      }
-      constraintsBox.innerHTML = `
-        <div style="font-weight: 700; color: var(--gc-text-gold); margin-bottom: 8px; font-size: 13px;">📋 Auto-Configured Constraints for "${concept}"</div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 6px;">
-          <div>Max Weight: <strong style="color: var(--gc-text-ivory);">${constraints.maxWeight} kg</strong></div>
-          <div>Max Cost: <strong style="color: var(--gc-text-ivory);">$${constraints.maxCost || '—'}</strong></div>
-          <div>Focus: <strong style="color: var(--gc-text-ivory);">${constraints.focus}</strong></div>
-          <div>HP:Torque Ratio: <strong style="color: var(--gc-text-ivory);">${constraints.maxHpTorqueRatio != null ? '≤ ' + constraints.maxHpTorqueRatio : 'No limit'}</strong></div>
-          <div>Design Depend.: <strong style="color: var(--gc-text-ivory);">${constraints.designDependability != null ? constraints.designDependability : 'Free'}</strong></div>
-          <div>Perf Fuel: <strong style="color: var(--gc-text-ivory);">${constraints.performanceFuel != null ? constraints.performanceFuel : 'Free'}</strong></div>
-        </div>
-      `;
+      if (!constraints) return;
+
+      if (inputMaxCost) inputMaxCost.value = constraints.maxCost != null ? constraints.maxCost : '';
+      if (inputMaxWeight) inputMaxWeight.value = constraints.maxWeight != null ? constraints.maxWeight : '';
+      if (inputMaxRatio) inputMaxRatio.value = constraints.maxHpTorqueRatio != null ? constraints.maxHpTorqueRatio : '';
+      if (selectFocus) selectFocus.value = constraints.focus === 'HP' ? 'HP' : 'Torque';
+      if (selectFuel) selectFuel.value = 'Any';
+      if (inputMaxLen) inputMaxLen.value = '';
+      if (inputMaxWid) inputMaxWid.value = '';
+
+      if (sliderDepend) sliderDepend.value = constraints.designDependability != null ? constraints.designDependability : 50;
+      if (sliderFuel) sliderFuel.value = constraints.performanceFuel != null ? constraints.performanceFuel : 0;
+      if (sliderTechComp) sliderTechComp.value = constraints.techComponent != null ? constraints.techComponent : 0;
+      if (sliderTechTech) sliderTechTech.value = constraints.techTechnology != null ? constraints.techTechnology : 0;
+      if (sliderTechTechq) sliderTechTechq.value = constraints.techTechnique != null ? constraints.techTechnique : 0;
+
+      syncSliders();
     }
 
     selectVehicle.addEventListener('change', updateConceptDropdown);
-    selectConcept.addEventListener('change', updateConstraintsDisplay);
-    inputYear.addEventListener('change', updateConstraintsDisplay);
+    selectConcept.addEventListener('change', populateConceptDefaults);
+    if (btnResetDefaults) btnResetDefaults.addEventListener('click', populateConceptDefaults);
 
     btnOptimize.addEventListener('click', async () => {
       const concept = selectConcept.value;
       const year = Number(inputYear.value) || 1960;
-      const skill = Number(inputSkill.value) || 0;
-      const constraints = GearCityEngine.getEngineDesignConstraints(concept, year);
-      if (!constraints) {
-        statusEl.textContent = '❌ Invalid concept selected.';
-        return;
-      }
+      const skill = Number(sliderSkill?.value || inputSkillNum?.value || 70);
 
       statusEl.textContent = '⏳ Optimizing...';
       btnOptimize.disabled = true;
@@ -1012,21 +1072,24 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const result = GearCityEngine.optimizeEngine({
           year,
-          focus: constraints.focus === 'HP' ? 'HP' : 'Torque',
-          maxWeight: constraints.maxWeight,
-          maxCost: constraints.maxCost,
-          maxHpTorqueRatio: constraints.maxHpTorqueRatio,
-          designDependability: constraints.designDependability,
-          performanceFuel: constraints.performanceFuel,
-          techComponent: constraints.techComponent,
-          techTechnology: constraints.techTechnology,
-          techTechnique: constraints.techTechnique,
+          focus: selectFocus ? selectFocus.value : 'Torque',
+          maxWeight: inputMaxWeight && inputMaxWeight.value ? Number(inputMaxWeight.value) : null,
+          maxCost: inputMaxCost && inputMaxCost.value ? Number(inputMaxCost.value) : null,
+          maxHpTorqueRatio: inputMaxRatio && inputMaxRatio.value ? Number(inputMaxRatio.value) : null,
+          maxLength: inputMaxLen && inputMaxLen.value ? Number(inputMaxLen.value) / 10.0 : null,
+          maxWidth: inputMaxWid && inputMaxWid.value ? Number(inputMaxWid.value) / 10.0 : null,
+          allowedFuels: selectFuel && selectFuel.value !== 'Any' ? [selectFuel.value] : null,
+          designDependability: sliderDepend ? Number(sliderDepend.value) : 50,
+          performanceFuel: sliderFuel ? Number(sliderFuel.value) : 0,
+          techComponent: sliderTechComp ? Number(sliderTechComp.value) : 0,
+          techTechnology: sliderTechTech ? Number(sliderTechTech.value) : 0,
+          techTechnique: sliderTechTechq ? Number(sliderTechTechq.value) : 0,
           designSkill: skill,
           modelName: `${selectVehicle.value}_${concept}_${year}`,
         });
 
         if (!result || !result.best) {
-          statusEl.textContent = '❌ No valid engine found within constraints.';
+          statusEl.textContent = '❌ No valid engine found within constraints. Try relaxing cost/weight limits.';
           btnOptimize.disabled = false;
           return;
         }
