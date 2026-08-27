@@ -333,9 +333,9 @@ document.addEventListener('DOMContentLoaded', () => {
           sliderWeight.value = Math.round(cfg.sliders.layoutWeight * 100);
 
           updateCalculations();
-          optimizerStatus.textContent = `⚡ Optimized in ${optRes.elapsedMs} ms! Found ${cfg.components.layout} ${cfg.components.cylinders}-cyl setup.`;
+          optimizerStatus.textContent = `Optimal setup found: ${cfg.components.layout} ${cfg.components.cylinders}-cyl (${cfg.components.induction}, ${cfg.components.valve}).`;
         } else {
-          optimizerStatus.textContent = 'Could not find a valid engine within tight constraints.';
+          optimizerStatus.textContent = 'No configuration found matching all limits. Try adjusting budget or weight.';
         }
       } catch (err) {
         optimizerStatus.textContent = 'Optimization error occurred.';

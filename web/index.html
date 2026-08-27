@@ -20,7 +20,7 @@
         <div>
           <h1 class="brand-title">GearCity Engineering Suite</h1>
         </div>
-        <span class="brand-badge">Free Web Edition</span>
+        <span class="brand-badge">Tool</span>
       </div>
 
       <nav class="nav-tabs" role="tablist">
@@ -42,7 +42,7 @@
         <!-- Column 1: Constraints & Auto-Optimizer Settings -->
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">🎯 Optimization Goals</h2>
+            <h2 class="card-title">🎯 Design Targets & Limits</h2>
           </div>
 
           <div class="form-group">
@@ -54,7 +54,7 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Target Focus</label>
+            <label class="form-label">Optimization Goal</label>
             <div class="goal-selector">
               <div class="goal-option active" data-focus="HP">🚀 Max HP</div>
               <div class="goal-option" data-focus="Torque">⚙️ Max Torque</div>
@@ -62,12 +62,12 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Max Budget ($)</label>
+            <label class="form-label">Max Unit Cost ($)</label>
             <input type="number" id="input-max-cost" class="input-text" placeholder="e.g. 500" value="500">
           </div>
 
           <div class="form-group">
-            <label class="form-label">Max Weight (kg)</label>
+            <label class="form-label">Max Engine Weight (kg)</label>
             <input type="number" id="input-max-weight" class="input-text" placeholder="e.g. 110" value="110">
           </div>
 
@@ -91,7 +91,7 @@
           </div>
 
           <button id="btn-auto-optimize" class="btn-primary">
-            <span>⚡ Run Auto-Optimizer (<50ms)</span>
+            <span>⚡ Find Optimal Configuration</span>
           </button>
           <div id="optimizer-status" style="font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 8px;"></div>
         </div>
@@ -99,7 +99,7 @@
         <!-- Column 2: Components & Live Sliders -->
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">🎛️ Live Engine Designer</h2>
+            <h2 class="card-title">🎛️ Engine Configuration & Sliders</h2>
             <span id="badge-disp-live" style="font-size: 13px; font-weight: 600; color: var(--accent-cyan);">-- cc</span>
           </div>
 
@@ -191,10 +191,10 @@
           </div>
         </div>
 
-        <!-- Column 3: Live Performance Metrics & XML Export -->
+        <!-- Column 3: Engine Specs Output & XML Export -->
         <div class="card metrics-card">
           <div class="card-header">
-            <h2 class="card-title">📊 Live Performance</h2>
+            <h2 class="card-title">📊 Calculated Engine Specs</h2>
           </div>
 
           <!-- Hero Metric -->

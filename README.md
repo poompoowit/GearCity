@@ -11,24 +11,24 @@ It models game mechanics to design optimal engines, export direct in-game XML bl
 
 ---
 
-## 🌐 Try the Web Application (No Installation Needed)
+## 🌐 Web Application (Browser Tool)
 
 👉 **[https://poompoowit.github.io/GearCity/](https://poompoowit.github.io/GearCity/)**
 
-- ⚡ **Instant Auto-Optimizer (< 100ms)**: Set your year, budget ($), weight (kg), and engine bay size $\rightarrow$ click Optimize.
-- 🎛️ **Live 60 FPS Engine Designer**: Real-time recalculation of Horsepower, Torque, RPM, Weight, Dimensions, and Unit Cost as you move sliders.
-- 💾 **Direct In-Game XML Download**: Click **"Download Blueprint (.xml)"** to generate a blueprint file you can immediately load in GearCity!
-- 👥 **Demographic Targeter**: Interactive preference rankings for all 30 vehicle body types.
-- 🛠️ **Chassis & Gearbox Guide**: Historical unlock timelines and vehicle synergy recommendations.
+- ⚡ **Auto-Optimizer**: Finds the highest Horsepower or Torque engine configuration within your target year, budget ($), weight (kg), and engine bay size limits.
+- 🎛️ **Interactive Engine Designer**: Adjust bore, stroke, layout, materials, and tuning sliders with real-time spec updates.
+- 💾 **Direct XML Blueprint Export**: Download ready-to-use `.xml` blueprint files you can load directly in GearCity!
+- 👥 **Demographic Targeter**: View the optimal buyer demographics (Gender and Age bracket) for all 30 vehicle body types.
+- 🛠️ **Chassis & Gearbox Guide**: View historical component unlock timelines and vehicle synergy recommendations.
 
 ---
 
 ## ✨ Features
 
-- **🚀 Differential Evolution Engine Optimizer**: Solves for optimal Layout, Cylinder count, Fuel type, Induction, Valvetrain, Bore/Stroke, and design sliders within constraints.
-- **📄 Direct XML Blueprint Exporter**: Automatically generates valid `.xml` engine save files compatible with GearCity's `Designs/Engines/` folder.
-- **👥 Vehicle Demographic Targeter**: Evaluates optimal buyer demographics (Gender and Age brackets) across all 30 vehicle classes.
-- **🛠️ Chassis & Gearbox Advisor**: Recommends frame, drivetrain, suspension, and transmission upgrades based on vehicle archetypes.
+- **🚀 Engine Optimizer**: Solves for the optimal Layout, Cylinder count, Fuel type, Induction, Valvetrain, Bore/Stroke, and design sliders to meet your specific performance and cost targets.
+- **📄 Direct XML Blueprint Exporter**: Automatically generates valid `.xml` engine save files compatible with GearCity's `Designs/Engines/` directory.
+- **👥 Vehicle Demographic Targeter**: Evaluates optimal buyer demographics across all 30 vehicle classes.
+- **🛠️ Chassis & Gearbox Advisor**: Recommends frame, drivetrain, suspension, and transmission upgrades based on vehicle archetypes and year.
 - **📈 Historical Game Balances**: Game-accurate component unlock years (1900–2020), world economic modifiers, and 5-year bore/stroke metallurgical limit scaling.
 
 ---
