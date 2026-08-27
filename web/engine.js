@@ -603,45 +603,124 @@ const GearCityEngine = (() => {
 
     const cStyle = arch.chassis_style;
     const gStyle = arch.gearbox_style;
+    const eStyle = arch.engine_style;
 
-    // Frame
-    let frame = "Wood/Basic Frame";
-    if (cStyle.includes("Race") && year >= 1924) frame = "Superleggera";
-    else if (year >= 1930) frame = "Unibody";
-    else if (year >= 1902) frame = "Ladder";
-
-    // Suspension
-    let suspension = "Solid Axle / Leaf";
-    if (cStyle.includes("Lux")) {
-      if (year >= 1990) suspension = "Magnetorheological";
-      else if (year >= 1944) suspension = "Hydropneumatic";
-      else if (year >= 1915) suspension = "Air Suspension";
-    } else if (cStyle.includes("Truck")) {
-      suspension = "Leaf Spring";
-    } else {
-      if (year >= 1988) suspension = "MultiLink";
-      else if (year >= 1939 && cStyle.includes("Tiny")) suspension = "MacPherson";
-      else if (year >= 1924) suspension = "Wishbone";
-      else if (year >= 1901) suspension = "Swing Axle";
+    // Frame selection with detailed rationale
+    let frame = "Wood / Basic Frame";
+    let frameYear = 1890;
+    let frameReason = "Basic historical carriage frame suitable for early 1890s horseless carriages.";
+    if (cStyle.includes("Race") && year >= 1924) {
+      frame = "Superleggera / Spaceframe";
+      frameYear = 1924;
+      frameReason = "Ultra-lightweight tubular truss design offering maximum torsional rigidity and agile cornering for sports and racing vehicles.";
+    } else if (cStyle.includes("Truck") || (cStyle.includes("Drive") && (vehicleType.includes("Pickup") || vehicleType.includes("Van") || vehicleType.includes("Sport Utility")))) {
+      frame = year >= 1902 ? "Ladder Frame" : "Heavy Wood Frame";
+      frameYear = 1902;
+      frameReason = "High-tensile steel perimeter rails capable of handling extreme payloads, rough terrain, and heavy towing without chassis twist.";
+    } else if (year >= 1930) {
+      frame = "Unibody (Monocoque)";
+      frameYear = 1930;
+      frameReason = "Integrated body-and-frame structure providing superior passenger safety, significant weight reduction, and low manufacturing costs.";
+    } else if (year >= 1902) {
+      frame = "Ladder Frame";
+      frameYear = 1902;
+      frameReason = "Sturdy steel frame providing durable structural support for early road vehicles.";
     }
 
-    // Transmission
-    let transmission = "Early Direct/Chain Drive";
-    if (year >= 1950 && (gStyle.includes("Race") || gStyle.includes("Sport"))) {
-      transmission = "Dual Clutch Transmission (DCT)";
+    // Suspension selection with detailed rationale
+    let suspension = "Solid Axle / Leaf Springs";
+    let suspensionYear = 1890;
+    let suspensionReason = "Rugged, low-cost suspension ideal for heavy cargo and rough roads.";
+    if (cStyle.includes("Lux")) {
+      if (year >= 1990) {
+        suspension = "Magnetorheological / Adaptive";
+        suspensionYear = 1990;
+        suspensionReason = "Electromagnetic fluid dampers adjusting damping rates thousands of times per second for the ultimate luxury ride quality.";
+      } else if (year >= 1944) {
+        suspension = "Hydropneumatic Suspension";
+        suspensionYear = 1944;
+        suspensionReason = "Self-leveling nitrogen gas and hydraulic fluid system that completely isolates the passenger cabin from road bumps.";
+      } else if (year >= 1915) {
+        suspension = "Air Suspension";
+        suspensionYear = 1915;
+        suspensionReason = "Pressurized air bellows absorbing high-frequency road vibrations for premium comfort.";
+      }
+    } else if (cStyle.includes("Truck")) {
+      suspension = "Heavy-Duty Leaf Springs";
+      suspensionYear = 1890;
+      suspensionReason = "Maximum load-bearing capacity designed for high cargo weights and commercial hauling.";
+    } else if (cStyle.includes("Race") || cStyle.includes("Sport")) {
+      if (year >= 1988) {
+        suspension = "Multi-Link Independent";
+        suspensionYear = 1988;
+        suspensionReason = "Multi-axis control arms providing precise wheel geometry under aggressive cornering and high-speed braking.";
+      } else if (year >= 1924) {
+        suspension = "Double Wishbone";
+        suspensionYear = 1924;
+        suspensionReason = "Parallel A-arms maintaining optimal tire contact patch across full suspension travel.";
+      } else if (year >= 1901) {
+        suspension = "Swing Axle";
+        suspensionYear = 1901;
+        suspensionReason = "Early independent rear suspension improving road grip over solid axles.";
+      }
+    } else {
+      if (year >= 1988) {
+        suspension = "Multi-Link Independent";
+        suspensionYear = 1988;
+        suspensionReason = "The modern gold standard balancing ride smoothness and responsive handling.";
+      } else if (year >= 1939 && cStyle.includes("Tiny")) {
+        suspension = "MacPherson Strut";
+        suspensionYear = 1939;
+        suspensionReason = "Compact, cost-effective strut layout leaving maximum space for the engine and passenger cabin.";
+      } else if (year >= 1924) {
+        suspension = "Double Wishbone";
+        suspensionYear = 1924;
+        suspensionReason = "Excellent wheel stability and cornering control for mid-century sedans and wagons.";
+      } else if (year >= 1901) {
+        suspension = "Swing Axle";
+        suspensionYear = 1901;
+        suspensionReason = "Improved wheel articulation over early rutted roads.";
+      }
+    }
+
+    // Transmission selection with detailed rationale
+    let transmission = "Early Direct / Chain Drive";
+    let transmissionYear = 1890;
+    let transmissionReason = "Rudimentary early drivetrain mechanism.";
+    if (year >= 1980 && (gStyle.includes("Race") || gStyle.includes("Sport"))) {
+      transmission = "Dual-Clutch Transmission (DCT) / Sequential";
+      transmissionYear = 1980;
+      transmissionReason = "Instantaneous sub-100ms gear shifts keeping the engine in its peak powerband with zero boost loss.";
+    } else if (year >= 1950 && gStyle.includes("Lux")) {
+      transmission = "Torque Converter Automatic";
+      transmissionYear = 1950;
+      transmissionReason = "Seamless, shift-shock-free gear changes offering maximum comfort for luxury buyers.";
     } else if (year >= 1935 && (gStyle.includes("Fuel") || gStyle.includes("Balance"))) {
-      transmission = "Semi-Automatic";
+      transmission = "Semi-Automatic / Overdrive";
+      transmissionYear = 1935;
+      transmissionReason = "Taller highway overdrive gear reducing cruising RPM and improving fuel economy.";
     } else if (year >= 1925 && gStyle.includes("Lux")) {
-      transmission = "Automatic";
+      transmission = "Early Automatic / Pre-Selector";
+      transmissionYear = 1925;
+      transmissionReason = "Effortless gear pre-selection catering to affluent buyers.";
     } else if (year >= 1912) {
-      transmission = "Manual";
+      transmission = "Synchromesh Manual";
+      transmissionYear = 1912;
+      transmissionReason = "High power transmission efficiency, driver control, and durable mechanical reliability.";
     }
 
     return {
+      vehicleType,
       archetype: arch,
       recommendedFrame: frame,
+      recommendedFrameYear: frameYear,
+      frameReason,
       recommendedSuspension: suspension,
-      recommendedTransmission: transmission
+      recommendedSuspensionYear: suspensionYear,
+      suspensionReason,
+      recommendedTransmission: transmission,
+      recommendedTransmissionYear: transmissionYear,
+      transmissionReason,
     };
   }
 

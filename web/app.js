@@ -649,21 +649,93 @@ document.addEventListener('DOMContentLoaded', () => {
       const rec = GearCityEngine.getChassisGearboxRecommendations(v, year);
       if (!rec) return;
 
+      const arch = rec.archetype;
+
+      // Decode Engine Style Acronyms
+      let engineExplanation = "";
+      if (arch.engine_style.includes("SmallB")) {
+        engineExplanation += "• <strong>SmallB</strong>: Small-Bore, high fuel efficiency engine (sub-2.0L) to minimize displacement taxes and fuel costs.<br>";
+      }
+      if (arch.engine_style.includes("Power")) {
+        engineExplanation += "• <strong>Power</strong>: High torque & horsepower output (V8/I6) for effortless highway passing and hauling.<br>";
+      }
+      if (arch.engine_style.includes("SafeLux") || arch.engine_style.includes("Lux")) {
+        engineExplanation += "• <strong>SafeLux</strong>: Ultra-smooth, quiet, highly dependable multi-cylinder architecture (V8/V12/I6).<br>";
+      }
+      if (arch.engine_style.includes("Sport") || arch.engine_style.includes("Race")) {
+        engineExplanation += "• <strong>Sport/Race</strong>: High-revving, responsive powerband with optimized intake flow and lightweight materials.<br>";
+      }
+      if (arch.engine_style.includes("Truck")) {
+        engineExplanation += "• <strong>Truck</strong>: High low-end torque curve, rugged cast materials, and high thermal dependability.<br>";
+      }
+      if (arch.engine_style.includes("Balance")) {
+        engineExplanation += "• <strong>Balance</strong>: Moderate displacement inline/flat engine offering optimal cost-to-performance ratio.<br>";
+      }
+      if (!engineExplanation) {
+        engineExplanation = "• Balanced output tailored for general passenger transport.";
+      }
+
       synergyResultsBox.innerHTML = `
-        <div class="metric-item">
-          <div class="metric-item-label">Chassis / Suspension Archetype</div>
-          <div class="metric-item-val" style="color: var(--gc-text-gold);">${rec.archetype.chassis_style}</div>
-          <div style="font-size: 12px; color: var(--gc-text-muted); margin-top: 4px;">Recommended: <strong>${rec.recommendedFrame}</strong> with <strong>${rec.recommendedSuspension}</strong> (${year})</div>
+        <!-- Card 1: Frame Selection -->
+        <div class="metric-item" style="display: flex; flex-direction: column; justify-content: space-between; text-align: left; padding: 18px;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <div class="metric-item-label" style="font-size: 13px;">🏗️ Recommended Frame</div>
+              <span class="filter-year-tag">${rec.recommendedFrameYear} Unlocked</span>
+            </div>
+            <div class="metric-item-val" style="color: var(--gc-text-gold); font-size: 18px; margin-bottom: 8px;">${rec.recommendedFrame}</div>
+            <div style="font-size: 12px; color: var(--gc-text-ivory); line-height: 1.5;">${rec.frameReason}</div>
+          </div>
+          <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #3d2314; font-size: 11px; color: var(--gc-text-muted);">
+            Target Tuning: <strong style="color: var(--gc-text-amber);">${arch.chassis_style}</strong>
+          </div>
         </div>
-        <div class="metric-item">
-          <div class="metric-item-label">Engine Archetype</div>
-          <div class="metric-item-val" style="color: var(--gc-text-amber);">${rec.archetype.engine_style}</div>
-          <div style="font-size: 12px; color: var(--gc-text-muted); margin-top: 4px;">Wealth Tier: <strong>${rec.archetype.wealth_demographic}</strong> | Fleet: <strong>${rec.archetype.civilian_fleet ? 'Civilian' : 'Private'}</strong></div>
+
+        <!-- Card 2: Suspension Selection -->
+        <div class="metric-item" style="display: flex; flex-direction: column; justify-content: space-between; text-align: left; padding: 18px;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <div class="metric-item-label" style="font-size: 13px;">🌀 Recommended Suspension</div>
+              <span class="filter-year-tag">${rec.recommendedSuspensionYear} Unlocked</span>
+            </div>
+            <div class="metric-item-val" style="color: var(--gc-text-amber); font-size: 18px; margin-bottom: 8px;">${rec.recommendedSuspension}</div>
+            <div style="font-size: 12px; color: var(--gc-text-ivory); line-height: 1.5;">${rec.suspensionReason}</div>
+          </div>
+          <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #3d2314; font-size: 11px; color: var(--gc-text-muted);">
+            Ride Profile: <strong style="color: var(--gc-text-amber);">${arch.chassis_style}</strong>
+          </div>
         </div>
-        <div class="metric-item">
-          <div class="metric-item-label">Gearbox Style</div>
-          <div class="metric-item-val" style="color: var(--gc-text-green);">${rec.archetype.gearbox_style}</div>
-          <div style="font-size: 12px; color: var(--gc-text-muted); margin-top: 4px;">Recommended: <strong>${rec.recommendedTransmission}</strong> (${year})</div>
+
+        <!-- Card 3: Transmission Selection -->
+        <div class="metric-item" style="display: flex; flex-direction: column; justify-content: space-between; text-align: left; padding: 18px;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <div class="metric-item-label" style="font-size: 13px;">⚙️ Recommended Transmission</div>
+              <span class="filter-year-tag">${rec.recommendedTransmissionYear} Unlocked</span>
+            </div>
+            <div class="metric-item-val" style="color: var(--gc-text-green); font-size: 18px; margin-bottom: 8px;">${rec.recommendedTransmission}</div>
+            <div style="font-size: 12px; color: var(--gc-text-ivory); line-height: 1.5;">${rec.transmissionReason}</div>
+          </div>
+          <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #3d2314; font-size: 11px; color: var(--gc-text-muted);">
+            Gearbox Behavior: <strong style="color: var(--gc-text-green);">${arch.gearbox_style}</strong>
+          </div>
+        </div>
+
+        <!-- Card 4: Target Engine Pairing Profile -->
+        <div class="metric-item" style="display: flex; flex-direction: column; justify-content: space-between; text-align: left; padding: 18px;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <div class="metric-item-label" style="font-size: 13px;">🏎️ Target Engine Synergy Profile</div>
+              <span class="filter-year-tag">Archetype: ${arch.engine_style}</span>
+            </div>
+            <div style="font-size: 12px; color: var(--gc-text-ivory); line-height: 1.6; margin-top: 4px;">
+              ${engineExplanation}
+            </div>
+          </div>
+          <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #3d2314; font-size: 11px; color: var(--gc-text-muted); display: flex; justify-content: space-between;">
+            <span>Wealth Tier: <strong style="color: var(--gc-text-gold);">Tier ${arch.wealth_demographic} / 6</strong></span>
+            <span>Fleet: <strong style="color: ${arch.civilian_fleet ? 'var(--gc-text-green)' : 'var(--gc-text-muted)'};">${arch.civilian_fleet ? 'Civilian Fleet OK' : 'Private Only'}</strong></span>
+          </div>
         </div>
       `;
     }

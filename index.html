@@ -306,10 +306,15 @@
 
     <!-- ==================== TAB 3: CHASSIS & GEARBOX ==================== -->
     <section id="tab-chassis" class="tab-content">
+      <!-- Interactive Advisor -->
       <div class="card">
         <div class="card-header">
           <h2 class="card-title">🛠️ Chassis, Gearbox & Synergy Advisor</h2>
         </div>
+
+        <p style="font-size: 13px; color: var(--gc-text-muted); margin-bottom: 20px; line-height: 1.5;">
+          Select any vehicle archetype and target design year to view recommended frame architectures, suspension types, transmission pairings, and target engine profiles based on in-game buyer synergies.
+        </p>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
           <div>
@@ -324,6 +329,113 @@
 
         <div id="synergy-results-box" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
           <!-- Injected via JS -->
+        </div>
+      </div>
+
+      <!-- Synergy Mechanics & Design Rules -->
+      <div class="card" style="margin-top: 24px;">
+        <div class="card-header">
+          <h2 class="card-title">💡 How Chassis & Gearbox Synergies Work in GearCity</h2>
+        </div>
+
+        <div style="font-size: 13px; color: var(--gc-text-ivory); line-height: 1.6;">
+          <p style="margin-bottom: 14px;">
+            In <em>GearCity</em>, a vehicle's overall appeal and market score are heavily influenced by the <strong>coherence between its Chassis, Engine, and Gearbox</strong>. Vehicle buyers have strict expectations based on their socioeconomic class and intended usage:
+          </p>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 20px;">
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--gc-border-brown); border-radius: 4px; padding: 14px;">
+              <div style="font-weight: 700; color: var(--gc-text-gold); margin-bottom: 6px;">🏗️ Frame vs. Body Rigidity</div>
+              <div style="font-size: 12px; color: var(--gc-text-muted);">
+                • <strong>Ladder Frame (1902)</strong>: Highest payload and rough-road durability; essential for Trucks, Heavy SUVs, and Commercial Vans.<br>
+                • <strong>Unibody (1930)</strong>: Lighter, cheaper to produce, and provides superior passenger cabin safety for Sedans, Coupes, and Hatchbacks.<br>
+                • <strong>Spaceframe / Superleggera (1924)</strong>: Maximum torsional stiffness at minimum weight; ideal for Sports Cars and Supercars.
+              </div>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--gc-border-brown); border-radius: 4px; padding: 14px;">
+              <div style="font-weight: 700; color: var(--gc-text-amber); margin-bottom: 6px;">🌀 Suspension vs. Handling & Comfort</div>
+              <div style="font-size: 12px; color: var(--gc-text-muted);">
+                • <strong>Leaf Springs</strong>: Heavy load capacity and rock-solid durability at the expense of ride comfort.<br>
+                • <strong>Double Wishbone (1924)</strong>: Superior camber stability and cornering control for sports vehicles.<br>
+                • <strong>MacPherson Strut (1939)</strong>: Compact and affordable; the foundation for economy compacts.<br>
+                • <strong>Hydropneumatic / Adaptive (1944/1990)</strong>: Isolates road bumps for top-tier Luxury Sedans and Limousines.
+              </div>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--gc-border-brown); border-radius: 4px; padding: 14px;">
+              <div style="font-weight: 700; color: var(--gc-text-green); margin-bottom: 6px;">⚙️ Gearbox vs. Driving Dynamics</div>
+              <div style="font-size: 12px; color: var(--gc-text-muted);">
+                • <strong>Manual (Synchromesh 1912)</strong>: High mechanical efficiency, low cost, and driver control for sports & economy.<br>
+                • <strong>Automatic (1925/1950)</strong>: Smooth torque-converter shifting preferred by luxury & high-wealth buyers.<br>
+                • <strong>Dual-Clutch / DCT (1980)</strong>: Ultra-fast sub-100ms gear shifts without power interruption for performance sports cars.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Archetype Code Glossary Table -->
+      <div class="card" style="margin-top: 24px;">
+        <div class="card-header">
+          <h2 class="card-title">📖 In-Game Archetype Code Glossary</h2>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 140px;">Code / Style</th>
+                <th style="width: 200px;">Core Philosophy</th>
+                <th>Target Engineering Characteristics</th>
+                <th style="width: 200px;">Best Vehicle Classes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span style="font-weight: 700; color: var(--gc-text-gold);">Balance</span></td>
+                <td>Cost / Performance Harmony</td>
+                <td>Moderate displacement, dependable inline/flat engines, standard unibody, balanced gear ratios.</td>
+                <td>Sedan, Hatchback, Wagon, Crossover</td>
+              </tr>
+              <tr>
+                <td><span style="font-weight: 700; color: var(--gc-text-amber);">SmallB</span></td>
+                <td>Small-Bore Fuel Saver</td>
+                <td>Bore under 75mm, sub-2.0L displacement, lightweight materials, tall overdrive economy gearing.</td>
+                <td>Compact, Subcompact, Microcar, Minivan</td>
+              </tr>
+              <tr>
+                <td><span style="font-weight: 700; color: var(--gc-text-green);">Power</span></td>
+                <td>High Torque & Output</td>
+                <td>Large displacement V8/V12/I6, reinforced crankshaft, wide powerband for effortless acceleration.</td>
+                <td>Full Sized Sedan, Fastback, Coupe</td>
+              </tr>
+              <tr>
+                <td><span style="font-weight: 700; color: #64b5f6);">SafeLux / CLux</span></td>
+                <td>Whisper-Quiet Luxury</td>
+                <td>Ultra-smooth multi-cylinder engines, soft air/hydraulic suspension, seamless automatic transmission.</td>
+                <td>Luxury Sedan, Limousine, Town Car, Landaulet</td>
+              </tr>
+              <tr>
+                <td><span style="font-weight: 700; color: #ff8a80);">Sport / Race</span></td>
+                <td>High-G Cornering & Track Speed</td>
+                <td>High-revving lightweight engine, double wishbone/multi-link suspension, close-ratio manual/DCT.</td>
+                <td>Roadster, Sports, Supercar, Coupe</td>
+              </tr>
+              <tr>
+                <td><span style="font-weight: 700; color: #d7ccc8);">Truck</span></td>
+                <td>Heavy Hauling & Durability</td>
+                <td>Ladder frame, heavy-duty leaf springs, high low-end torque engine, high thermal durability.</td>
+                <td>Pickup Truck, Van, SUV, Coupe Utility</td>
+              </tr>
+              <tr>
+                <td><span style="font-weight: 700; color: #ffd54f);">Tiny</span></td>
+                <td>Ultra-Compact Packaging</td>
+                <td>1–2 cylinder engines (under 1.0L), MacPherson front struts, minimalist short wheelbase.</td>
+                <td>Microcar, Microvan, Subcompact</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -433,8 +545,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="web/data.js?v=2.3"></script>
-  <script src="web/engine.js?v=2.3"></script>
-  <script src="web/app.js?v=2.3"></script>
+  <script src="web/data.js?v=2.4"></script>
+  <script src="web/engine.js?v=2.4"></script>
+  <script src="web/app.js?v=2.4"></script>
 </body>
 </html>
