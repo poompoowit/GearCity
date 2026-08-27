@@ -579,9 +579,14 @@
           </div>
         </div>
 
-        <button id="btn-vopt-optimize" class="btn-primary" style="background: linear-gradient(135deg, #b06f40, #754425); margin-bottom: 12px;">
-          ⚡ Optimize Engine for Vehicle
-        </button>
+        <div style="display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;">
+          <button type="button" id="btn-vopt-open-filter-modal" class="btn-secondary" style="flex: 1; margin-top: 0; min-width: 200px; height: 42px;">
+            <span>⚙️ Custom Component Filters</span>
+          </button>
+          <button type="button" id="btn-vopt-optimize" class="btn-primary" style="flex: 2; min-width: 240px; height: 42px; background: linear-gradient(135deg, #b06f40, #754425); margin-top: 0;">
+            <span>⚡ Optimize Engine for Vehicle</span>
+          </button>
+        </div>
         <div id="vopt-status" style="font-size: 12px; color: var(--gc-text-muted); margin-bottom: 16px;"></div>
 
         <!-- Results -->

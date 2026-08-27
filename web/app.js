@@ -209,10 +209,16 @@ document.addEventListener('DOMContentLoaded', () => {
     renderFilterCategory(filterListValves, GEARCITY_DATA.valvetrain, userAllowed.valves);
   }
 
-  btnOpenFilterModal.addEventListener('click', () => {
+  const btnVoptOpenFilterModal = document.getElementById('btn-vopt-open-filter-modal');
+  const openFilterModal = () => {
     filterModal.style.setProperty('display', 'flex', 'important');
     filterModal.classList.add('active');
-  });
+  };
+
+  btnOpenFilterModal.addEventListener('click', openFilterModal);
+  if (btnVoptOpenFilterModal) {
+    btnVoptOpenFilterModal.addEventListener('click', openFilterModal);
+  }
 
   const closeFilterModal = () => {
     filterModal.style.setProperty('display', 'none', 'important');
@@ -225,7 +231,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   btnResetFiltersYear.addEventListener('click', () => {
-    const year = Number(inputYear.value);
+    const isVoptTab = document.getElementById('tab-vehicle-engine')?.classList.contains('active');
+    const voptYearInput = document.getElementById('input-vopt-year');
+    const year = isVoptTab && voptYearInput ? Number(voptYearInput.value) || 1960 : Number(inputYear.value) || 1957;
     initFiltersForYear(year, true);
     populateComponentDropdowns();
     updateCalculations();
@@ -1070,6 +1078,10 @@ document.addEventListener('DOMContentLoaded', () => {
       resultsBox.style.display = 'none';
 
       try {
+        const allowedFuelsList = selectFuel && selectFuel.value !== 'Any'
+          ? [selectFuel.value]
+          : (userAllowed.fuels.size > 0 ? Array.from(userAllowed.fuels) : null);
+
         const result = GearCityEngine.optimizeEngine({
           year,
           focus: selectFocus ? selectFocus.value : 'Torque',
@@ -1078,7 +1090,11 @@ document.addEventListener('DOMContentLoaded', () => {
           maxHpTorqueRatio: inputMaxRatio && inputMaxRatio.value ? Number(inputMaxRatio.value) : null,
           maxLength: inputMaxLen && inputMaxLen.value ? Number(inputMaxLen.value) / 10.0 : null,
           maxWidth: inputMaxWid && inputMaxWid.value ? Number(inputMaxWid.value) / 10.0 : null,
-          allowedFuels: selectFuel && selectFuel.value !== 'Any' ? [selectFuel.value] : null,
+          allowedLayouts: userAllowed.layouts.size > 0 ? Array.from(userAllowed.layouts) : null,
+          allowedCylinders: userAllowed.cylinders.size > 0 ? Array.from(userAllowed.cylinders) : null,
+          allowedFuels: allowedFuelsList,
+          allowedInductions: userAllowed.inductions.size > 0 ? Array.from(userAllowed.inductions) : null,
+          allowedValves: userAllowed.valves.size > 0 ? Array.from(userAllowed.valves) : null,
           designDependability: sliderDepend ? Number(sliderDepend.value) : 50,
           performanceFuel: sliderFuel ? Number(sliderFuel.value) : 0,
           techComponent: sliderTechComp ? Number(sliderTechComp.value) : 0,
