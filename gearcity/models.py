@@ -85,6 +85,9 @@ class OptimizationConstraints:
     design_focus: str = "HP"  # 'HP' or 'Torque'
     allowed_layouts: Optional[List[str]] = None
     allowed_fuels: Optional[List[str]] = None
+    allowed_cylinders: Optional[List[str]] = None
+    allowed_inductions: Optional[List[str]] = None
+    allowed_valves: Optional[List[str]] = None
 
 
 @dataclass

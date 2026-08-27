@@ -19,6 +19,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnAutoOptimize = document.getElementById('btn-auto-optimize');
   const optimizerStatus = document.getElementById('optimizer-status');
 
+  // DOM Elements - Component Filters Modal
+  const filterModal = document.getElementById('filter-modal');
+  const btnOpenFilterModal = document.getElementById('btn-open-filter-modal');
+  const btnCloseFilterModal = document.getElementById('btn-close-filter-modal');
+  const btnSaveCloseFilters = document.getElementById('btn-save-close-filters');
+  const btnResetFiltersYear = document.getElementById('btn-reset-filters-year');
+  const btnSelectAllFilters = document.getElementById('btn-select-all-filters');
+
+  const filterListLayouts = document.getElementById('filter-list-layouts');
+  const filterListCylinders = document.getElementById('filter-list-cylinders');
+  const filterListFuel = document.getElementById('filter-list-fuel');
+  const filterListInduction = document.getElementById('filter-list-induction');
+  const filterListValves = document.getElementById('filter-list-valves');
+
   // DOM Elements - Component Dropdowns
   const selectLayout = document.getElementById('select-layout');
   const selectCylinders = document.getElementById('select-cylinders');
@@ -67,6 +81,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let currentFocus = 'HP';
 
+  // User Filter State (Allowed components)
+  const userAllowed = {
+    layouts: new Set(),
+    cylinders: new Set(),
+    fuels: new Set(),
+    inductions: new Set(),
+    valves: new Set(),
+  };
+
   /* ==========================================================================
      Tab Navigation
      ========================================================================== */
@@ -93,13 +116,117 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ==========================================================================
-     Dynamic Dropdown Population based on Target Year
+     Component Filters Modal & Checkbox Management
+     ========================================================================== */
+  function initFiltersForYear(year, forceReset = true) {
+    if (forceReset) {
+      userAllowed.layouts.clear();
+      GEARCITY_DATA.layouts.forEach((l) => {
+        if (Number(l.Year) <= year) userAllowed.layouts.add(l.Name);
+      });
+
+      userAllowed.cylinders.clear();
+      GEARCITY_DATA.cylinders.forEach((c) => {
+        if (Number(c.Year) <= year) userAllowed.cylinders.add(c.Name);
+      });
+
+      userAllowed.fuels.clear();
+      GEARCITY_DATA.fuel.forEach((f) => {
+        if (Number(f.Year) <= year) userAllowed.fuels.add(f.Name);
+      });
+
+      userAllowed.inductions.clear();
+      GEARCITY_DATA.induction.forEach((i) => {
+        if (Number(i.Year) <= year) userAllowed.inductions.add(i.Name);
+      });
+
+      userAllowed.valves.clear();
+      GEARCITY_DATA.valvetrain.forEach((v) => {
+        if (Number(v.Year) <= year) userAllowed.valves.add(v.Name);
+      });
+    }
+
+    renderFilterCheckboxes();
+  }
+
+  function renderFilterCategory(container, items, allowedSet) {
+    container.innerHTML = '';
+    items.forEach((item) => {
+      const div = document.createElement('div');
+      div.className = 'filter-item';
+
+      const label = document.createElement('label');
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = allowedSet.has(item.Name);
+
+      checkbox.addEventListener('change', () => {
+        if (checkbox.checked) {
+          allowedSet.add(item.Name);
+        } else {
+          allowedSet.delete(item.Name);
+        }
+        populateComponentDropdowns();
+        updateCalculations();
+      });
+
+      const spanName = document.createElement('span');
+      spanName.textContent = item.Name;
+
+      const spanYear = document.createElement('span');
+      spanYear.className = 'filter-year-tag';
+      spanYear.textContent = `${item.Year}`;
+
+      label.appendChild(checkbox);
+      label.appendChild(spanName);
+      div.appendChild(label);
+      div.appendChild(spanYear);
+      container.appendChild(div);
+    });
+  }
+
+  function renderFilterCheckboxes() {
+    renderFilterCategory(filterListLayouts, GEARCITY_DATA.layouts, userAllowed.layouts);
+    renderFilterCategory(filterListCylinders, GEARCITY_DATA.cylinders, userAllowed.cylinders);
+    renderFilterCategory(filterListFuel, GEARCITY_DATA.fuel, userAllowed.fuels);
+    renderFilterCategory(filterListInduction, GEARCITY_DATA.induction, userAllowed.inductions);
+    renderFilterCategory(filterListValves, GEARCITY_DATA.valvetrain, userAllowed.valves);
+  }
+
+  btnOpenFilterModal.addEventListener('click', () => {
+    filterModal.classList.add('active');
+  });
+
+  const closeFilterModal = () => filterModal.classList.remove('active');
+  btnCloseFilterModal.addEventListener('click', closeFilterModal);
+  btnSaveCloseFilters.addEventListener('click', closeFilterModal);
+  filterModal.addEventListener('click', (e) => {
+    if (e.target === filterModal) closeFilterModal();
+  });
+
+  btnResetFiltersYear.addEventListener('click', () => {
+    const year = Number(inputYear.value);
+    initFiltersForYear(year, true);
+    populateComponentDropdowns();
+    updateCalculations();
+  });
+
+  btnSelectAllFilters.addEventListener('click', () => {
+    GEARCITY_DATA.layouts.forEach((l) => userAllowed.layouts.add(l.Name));
+    GEARCITY_DATA.cylinders.forEach((c) => userAllowed.cylinders.add(c.Name));
+    GEARCITY_DATA.fuel.forEach((f) => userAllowed.fuels.add(f.Name));
+    GEARCITY_DATA.induction.forEach((i) => userAllowed.inductions.add(i.Name));
+    GEARCITY_DATA.valvetrain.forEach((v) => userAllowed.valves.add(v.Name));
+    renderFilterCheckboxes();
+    populateComponentDropdowns();
+    updateCalculations();
+  });
+
+  /* ==========================================================================
+     Dynamic Dropdown Population based on Year & User Allowed Filters
      ========================================================================== */
   function populateComponentDropdowns(selectedValues = {}) {
-    const year = Number(inputYear.value);
-
-    // Layouts
-    const validLayouts = GEARCITY_DATA.layouts.filter((l) => Number(l.Year) <= year);
+    const validLayouts = GEARCITY_DATA.layouts.filter((l) => userAllowed.layouts.has(l.Name));
     selectLayout.innerHTML = '';
     validLayouts.forEach((l) => {
       const opt = document.createElement('option');
@@ -119,13 +246,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateCylinderAndFuelOptions(selectedValues = {}) {
-    const year = Number(inputYear.value);
     const layoutName = selectLayout.value;
     const layoutRow = GEARCITY_DATA.layouts.find((l) => l.Name === layoutName);
+    if (!layoutRow) return;
+
     // Fuels
     const allowedFuelNames = layoutRow.Fuel_Types || layoutRow['Fuel Types'] || [];
     const validFuels = GEARCITY_DATA.fuel.filter(
-      (f) => Number(f.Year) <= year && allowedFuelNames.includes(f.Name)
+      (f) => userAllowed.fuels.has(f.Name) && allowedFuelNames.includes(f.Name)
     );
     selectOptFuel.innerHTML = '';
     validFuels.forEach((f) => {
@@ -145,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cylinders
     const allowedCylNames = layoutRow.Cylinders || [];
     const validCylinders = GEARCITY_DATA.cylinders.filter(
-      (c) => Number(c.Year) <= year && allowedCylNames.includes(c.Name)
+      (c) => userAllowed.cylinders.has(c.Name) && allowedCylNames.includes(c.Name)
     );
     selectCylinders.innerHTML = '';
     validCylinders.forEach((c) => {
@@ -165,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Induction
     const allowedIndNames = layoutRow.Inductions || [];
     const validInductions = GEARCITY_DATA.induction.filter(
-      (i) => Number(i.Year) <= year && allowedIndNames.includes(i.Name)
+      (i) => userAllowed.inductions.has(i.Name) && allowedIndNames.includes(i.Name)
     );
     selectInduction.innerHTML = '';
     validInductions.forEach((i) => {
@@ -181,9 +309,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Valvetrain
-    const validValveNames = GearCityEngine.getValidValvetrains(layoutRow, year);
+    const validValveNames = GearCityEngine.getValidValvetrains(layoutRow, Number(inputYear.value));
     const validValves = GEARCITY_DATA.valvetrain.filter(
-      (v) => Number(v.Year) <= year && validValveNames.includes(v.Name)
+      (v) => userAllowed.valves.has(v.Name) && validValveNames.includes(v.Name)
     );
     selectValvetrain.innerHTML = '';
     validValves.forEach((v) => {
@@ -276,6 +404,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Event Listeners for Live Updates
   inputYear.addEventListener('input', () => {
+    const year = Number(inputYear.value);
+    initFiltersForYear(year, true);
     populateComponentDropdowns();
     updateCalculations();
   });
@@ -294,7 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ==========================================================================
-     Auto-Optimizer Trigger
+     Auto-Optimizer Trigger (Respecting User Allowed Filters)
      ========================================================================== */
   btnAutoOptimize.addEventListener('click', () => {
     const year = Number(inputYear.value);
@@ -302,7 +432,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const maxWeight = inputMaxWeight.value ? Number(inputMaxWeight.value) : null;
     const maxLength = inputMaxLen.value ? Number(inputMaxLen.value) : null;
     const maxWidth = inputMaxWid.value ? Number(inputMaxWid.value) : null;
-    const fuel = selectOptFuel.value || 'Gasoline';
 
     optimizerStatus.textContent = 'Optimizing blueprint...';
     btnAutoOptimize.disabled = true;
@@ -315,7 +444,11 @@ document.addEventListener('DOMContentLoaded', () => {
           maxLength,
           maxWidth,
           focus: currentFocus,
-          allowedFuels: [fuel],
+          allowedLayouts: Array.from(userAllowed.layouts),
+          allowedCylinders: Array.from(userAllowed.cylinders),
+          allowedFuels: Array.from(userAllowed.fuels),
+          allowedInductions: Array.from(userAllowed.inductions),
+          allowedValves: Array.from(userAllowed.valves),
           modelName: inputModelName.value || `Optima_${year}`,
         });
 
@@ -335,7 +468,7 @@ document.addEventListener('DOMContentLoaded', () => {
           updateCalculations();
           optimizerStatus.textContent = `Optimal setup found: ${cfg.components.layout} ${cfg.components.cylinders}-cyl (${cfg.components.induction}, ${cfg.components.valve}).`;
         } else {
-          optimizerStatus.textContent = 'No configuration found matching all limits. Try adjusting budget or weight.';
+          optimizerStatus.textContent = 'No configuration found matching all limits. Try adjusting budget, weight, or filters.';
         }
       } catch (err) {
         optimizerStatus.textContent = 'Optimization error occurred.';
@@ -441,7 +574,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
       <div class="metric-item">
         <div class="metric-item-label">Optimal Age Bracket</div>
-        <div class="metric-item-val" style="color: var(--accent-cyan); font-size: 18px;">${res.bestAge}</div>
+        <div class="metric-item-val" style="color: var(--gc-text-amber); font-size: 18px;">${res.bestAge}</div>
       </div>
       <div class="metric-item">
         <div class="metric-item-label">Top Preference Score</div>
@@ -473,18 +606,18 @@ document.addEventListener('DOMContentLoaded', () => {
       synergyResultsBox.innerHTML = `
         <div class="metric-item">
           <div class="metric-item-label">Chassis / Suspension Archetype</div>
-          <div class="metric-item-val" style="color: var(--accent-cyan);">${rec.archetype.chassis_style}</div>
-          <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Recommended: <strong>${rec.recommendedFrame}</strong> with <strong>${rec.recommendedSuspension}</strong> (${year})</div>
+          <div class="metric-item-val" style="color: var(--gc-text-gold);">${rec.archetype.chassis_style}</div>
+          <div style="font-size: 12px; color: var(--gc-text-muted); margin-top: 4px;">Recommended: <strong>${rec.recommendedFrame}</strong> with <strong>${rec.recommendedSuspension}</strong> (${year})</div>
         </div>
         <div class="metric-item">
           <div class="metric-item-label">Engine Archetype</div>
-          <div class="metric-item-val" style="color: var(--accent-amber);">${rec.archetype.engine_style}</div>
-          <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Wealth Tier: <strong>${rec.archetype.wealth_demographic}</strong> | Fleet: <strong>${rec.archetype.civilian_fleet ? 'Civilian' : 'Private'}</strong></div>
+          <div class="metric-item-val" style="color: var(--gc-text-amber);">${rec.archetype.engine_style}</div>
+          <div style="font-size: 12px; color: var(--gc-text-muted); margin-top: 4px;">Wealth Tier: <strong>${rec.archetype.wealth_demographic}</strong> | Fleet: <strong>${rec.archetype.civilian_fleet ? 'Civilian' : 'Private'}</strong></div>
         </div>
         <div class="metric-item">
           <div class="metric-item-label">Gearbox Style</div>
-          <div class="metric-item-val" style="color: var(--accent-emerald);">${rec.archetype.gearbox_style}</div>
-          <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Recommended: <strong>${rec.recommendedTransmission}</strong> (${year})</div>
+          <div class="metric-item-val" style="color: var(--gc-text-green);">${rec.archetype.gearbox_style}</div>
+          <div style="font-size: 12px; color: var(--gc-text-muted); margin-top: 4px;">Recommended: <strong>${rec.recommendedTransmission}</strong> (${year})</div>
         </div>
       `;
     }
@@ -494,7 +627,9 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSynergies();
   }
 
-  // Initialize all tabs & calculations on load
+  // Initialize filters, dropdowns & calculations on load
+  const initialYear = Number(inputYear.value) || 1957;
+  initFiltersForYear(initialYear, true);
   populateComponentDropdowns();
   updateCalculations();
   initDemographics();

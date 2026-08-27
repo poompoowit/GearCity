@@ -557,3 +557,140 @@ body {
   margin-top: 6px;
   display: block;
 }
+
+/* ==========================================================================
+   Component Filter Modal (GearCity Game Popup Style)
+   ========================================================================== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 999;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-window {
+  background: 
+    radial-gradient(circle at 50% 0%, rgba(80, 45, 25, 0.25) 0%, transparent 80%),
+    linear-gradient(180deg, #22252a 0%, #17191d 100%);
+  border: 2px solid #5a341e;
+  border-radius: 6px;
+  box-shadow: 
+    inset 0 0 0 1px #7d4a2b,
+    inset 0 0 0 4px #1c1e22,
+    0 20px 50px rgba(0, 0, 0, 0.95);
+  width: 100%;
+  max-width: 960px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  background: linear-gradient(180deg, var(--gc-header-red-mid) 0%, var(--gc-header-red-dark) 100%);
+  border-bottom: 2px solid #aa3926;
+  padding: 12px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.filter-category {
+  background: #131518;
+  border: 1px solid #4a2b18;
+  border-radius: 4px;
+  padding: 12px;
+  box-shadow: var(--shadow-bevel-inner);
+}
+
+.filter-category-title {
+  font-family: var(--font-game-title);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--gc-text-gold);
+  border-bottom: 1px solid #3d2314;
+  padding-bottom: 6px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.filter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--gc-text-ivory);
+  padding: 4px 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  user-select: none;
+}
+
+.filter-item:hover {
+  background: rgba(229, 147, 68, 0.1);
+}
+
+.filter-item label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.filter-item input[type="checkbox"] {
+  accent-color: var(--gc-copper-highlight);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+.filter-year-tag {
+  font-size: 10px;
+  font-family: var(--font-game-mono);
+  color: var(--gc-text-muted);
+  background: #1f2227;
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid #333842;
+}
+
+.modal-footer {
+  background: #17191d;
+  border-top: 1px solid #4a2b18;
+  padding: 12px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+

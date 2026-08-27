@@ -90,6 +90,10 @@
             </select>
           </div>
 
+          <button type="button" id="btn-open-filter-modal" class="btn-secondary" style="margin-bottom: 12px; margin-top: 0;">
+            <span>⚙️ Custom Component Filters</span>
+          </button>
+
           <button id="btn-auto-optimize" class="btn-primary">
             <span>⚡ Find Optimal Configuration</span>
           </button>
@@ -357,6 +361,50 @@
     </section>
 
   </main>
+
+  <!-- Component Filter Modal -->
+  <div id="filter-modal" class="modal-overlay">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h2 class="card-title">⚙️ Available Component Filters (Game Unlocks)</h2>
+        <button type="button" id="btn-close-filter-modal" style="background: none; border: none; color: #fff; font-size: 20px; font-weight: bold; cursor: pointer;">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- Layouts -->
+        <div class="filter-category">
+          <div class="filter-category-title">📐 Layouts</div>
+          <div id="filter-list-layouts" class="filter-list"></div>
+        </div>
+        <!-- Cylinders -->
+        <div class="filter-category">
+          <div class="filter-category-title">🔢 Cylinders</div>
+          <div id="filter-list-cylinders" class="filter-list"></div>
+        </div>
+        <!-- Fuel Types -->
+        <div class="filter-category">
+          <div class="filter-category-title">⛽ Fuel Types</div>
+          <div id="filter-list-fuel" class="filter-list"></div>
+        </div>
+        <!-- Induction -->
+        <div class="filter-category">
+          <div class="filter-category-title">💨 Induction Systems</div>
+          <div id="filter-list-induction" class="filter-list"></div>
+        </div>
+        <!-- Valvetrain -->
+        <div class="filter-category">
+          <div class="filter-category-title">⚙️ Valvetrains</div>
+          <div id="filter-list-valves" class="filter-list"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div style="display: flex; gap: 8px;">
+          <button type="button" id="btn-reset-filters-year" class="btn-secondary" style="margin-top: 0; padding: 8px 12px; font-size: 12px;">🔄 Reset to Year Defaults</button>
+          <button type="button" id="btn-select-all-filters" class="btn-secondary" style="margin-top: 0; padding: 8px 12px; font-size: 12px;">Select All</button>
+        </div>
+        <button type="button" id="btn-save-close-filters" class="btn-primary" style="width: auto; padding: 8px 24px; font-size: 13px;">Done</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Footer with Wiki Citation -->
   <footer style="max-width: 1400px; margin: 40px auto 0; padding: 20px 24px; text-align: center; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 13px;">

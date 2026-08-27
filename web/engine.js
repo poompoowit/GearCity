@@ -358,15 +358,18 @@ const GearCityEngine = (() => {
     const maxLength = constraints.maxLength != null && !isNaN(constraints.maxLength) ? Number(constraints.maxLength) : null;
     const maxWidth = constraints.maxWidth != null && !isNaN(constraints.maxWidth) ? Number(constraints.maxWidth) : null;
     const focus = constraints.focus || 'HP';
-    const allowedFuels = constraints.allowedFuels && constraints.allowedFuels.length > 0 ? constraints.allowedFuels : ['Gasoline'];
     const allowedLayouts = constraints.allowedLayouts && constraints.allowedLayouts.length > 0 ? constraints.allowedLayouts : null;
+    const allowedCylinders = constraints.allowedCylinders && constraints.allowedCylinders.length > 0 ? constraints.allowedCylinders : null;
+    const allowedFuels = constraints.allowedFuels && constraints.allowedFuels.length > 0 ? constraints.allowedFuels : null;
+    const allowedInductions = constraints.allowedInductions && constraints.allowedInductions.length > 0 ? constraints.allowedInductions : null;
+    const allowedValves = constraints.allowedValves && constraints.allowedValves.length > 0 ? constraints.allowedValves : null;
 
-    // 1. Gather all valid unlocked components for this year
-    const validLayouts = GEARCITY_DATA.layouts.filter((l) => Number(l.Year) <= year && (!allowedLayouts || allowedLayouts.includes(l.Name)));
-    const validCylinders = GEARCITY_DATA.cylinders.filter((c) => Number(c.Year) <= year);
-    const validFuels = GEARCITY_DATA.fuel.filter((f) => Number(f.Year) <= year && (allowedFuels.length === 0 || allowedFuels.includes(f.Name)));
-    const validInductions = GEARCITY_DATA.induction.filter((i) => Number(i.Year) <= year);
-    const validValves = GEARCITY_DATA.valvetrain.filter((v) => Number(v.Year) <= year);
+    // 1. Gather all valid unlocked components (respecting year and manual overrides)
+    const validLayouts = GEARCITY_DATA.layouts.filter((l) => (!allowedLayouts ? Number(l.Year) <= year : allowedLayouts.includes(l.Name)));
+    const validCylinders = GEARCITY_DATA.cylinders.filter((c) => (!allowedCylinders ? Number(c.Year) <= year : allowedCylinders.includes(c.Name)));
+    const validFuels = GEARCITY_DATA.fuel.filter((f) => (!allowedFuels ? Number(f.Year) <= year : allowedFuels.includes(f.Name)));
+    const validInductions = GEARCITY_DATA.induction.filter((i) => (!allowedInductions ? Number(i.Year) <= year : allowedInductions.includes(i.Name)));
+    const validValves = GEARCITY_DATA.valvetrain.filter((v) => (!allowedValves ? Number(v.Year) <= year : allowedValves.includes(v.Name)));
 
     const candidateComponents = [];
 

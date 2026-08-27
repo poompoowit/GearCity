@@ -43,6 +43,9 @@ class EngineOptimizer:
         # 1. Filter unlocked components up to target year
         allowed_layouts = constraints.allowed_layouts
         allowed_fuels = constraints.allowed_fuels
+        allowed_cylinders = constraints.allowed_cylinders
+        allowed_inductions = constraints.allowed_inductions
+        allowed_valves = constraints.allowed_valves
 
         layouts_df = self.data_loader.layouts
         cylinders_df = self.data_loader.cylinders
@@ -77,9 +80,10 @@ class EngineOptimizer:
         naw_index = 0
         for _, cyl_row in cylinders_df.iterrows():
             if cyl_row["Year"] <= year + 1:
-                cylinders_list.append(cyl_row)
-                cylinder_mapping[cyl_row["Name"]] = naw_index
-                naw_index += 1
+                if allowed_cylinders is None or cyl_row["Name"] in allowed_cylinders:
+                    cylinders_list.append(cyl_row)
+                    cylinder_mapping[cyl_row["Name"]] = naw_index
+                    naw_index += 1
 
         # Fuel
         fuel_list = []
@@ -98,9 +102,10 @@ class EngineOptimizer:
         naw_index = 0
         for _, ind_row in induction_df.iterrows():
             if ind_row["Year"] <= year + 1:
-                induction_list.append(ind_row)
-                induction_mapping[ind_row["Name"]] = naw_index
-                naw_index += 1
+                if allowed_inductions is None or ind_row["Name"] in allowed_inductions:
+                    induction_list.append(ind_row)
+                    induction_mapping[ind_row["Name"]] = naw_index
+                    naw_index += 1
 
         # Valvetrain
         valve_list = []
@@ -108,9 +113,10 @@ class EngineOptimizer:
         naw_index = 0
         for _, v_row in valve_df.iterrows():
             if v_row["Year"] <= year + 1:
-                valve_list.append(v_row)
-                valve_mapping[v_row["Name"]] = naw_index
-                naw_index += 1
+                if allowed_valves is None or v_row["Name"] in allowed_valves:
+                    valve_list.append(v_row)
+                    valve_mapping[v_row["Name"]] = naw_index
+                    naw_index += 1
 
         # Build index-based pairing lookups
         cylinder_pairing_idx = {
