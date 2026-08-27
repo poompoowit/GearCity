@@ -3,6 +3,8 @@
    ========================================================================== */
 
 :root {
+  color-scheme: dark;
+
   /* Game Authentic Color Palette */
   --gc-bg-leather: #141619;
   --gc-bg-desk: #1e1510;
@@ -277,6 +279,7 @@ body {
 .input-text, .select-dropdown {
   width: 100%;
   background: linear-gradient(180deg, #101214 0%, #17191d 100%);
+  background-color: #17191d;
   border: 1px solid #5a341e;
   border-radius: 4px;
   color: var(--gc-text-ivory);
@@ -287,11 +290,28 @@ body {
   outline: none;
   box-shadow: var(--shadow-bevel-inner);
   transition: all 0.15s ease;
+  color-scheme: dark;
 }
 
 .input-text:focus, .select-dropdown:focus {
   border-color: var(--gc-copper-highlight);
   box-shadow: inset 1px 1px 3px rgba(0,0,0,0.9), 0 0 6px rgba(229, 147, 68, 0.4);
+}
+
+/* Windows & Cross-Platform Dropdown Menu Dark Theme Fix */
+select option, .select-dropdown option, optgroup {
+  background-color: #181b20 !important;
+  color: #f4ebd9 !important;
+  font-family: var(--font-game-ui);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 10px;
+}
+
+select option:hover, select option:focus, select option:checked,
+.select-dropdown option:hover, .select-dropdown option:focus, .select-dropdown option:checked {
+  background-color: #3b2214 !important;
+  color: #ffcc00 !important;
 }
 
 /* ==========================================================================
