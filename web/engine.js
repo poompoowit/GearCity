@@ -363,10 +363,10 @@ const GearCityEngine = (() => {
 
     // 1. Gather all valid unlocked components for this year
     const validLayouts = GEARCITY_DATA.layouts.filter((l) => Number(l.Year) <= year && (!allowedLayouts || allowedLayouts.includes(l.Name)));
-    const validCylinders = GEARCITY_DATA.cylinders.filter((c) => Number(c.Year) <= year + 1);
-    const validFuels = GEARCITY_DATA.fuel.filter((f) => Number(f.Year) <= year + 1 && (allowedFuels.length === 0 || allowedFuels.includes(f.Name)));
-    const validInductions = GEARCITY_DATA.induction.filter((i) => Number(i.Year) <= year + 1);
-    const validValves = GEARCITY_DATA.valvetrain.filter((v) => Number(v.Year) <= year + 1);
+    const validCylinders = GEARCITY_DATA.cylinders.filter((c) => Number(c.Year) <= year);
+    const validFuels = GEARCITY_DATA.fuel.filter((f) => Number(f.Year) <= year && (allowedFuels.length === 0 || allowedFuels.includes(f.Name)));
+    const validInductions = GEARCITY_DATA.induction.filter((i) => Number(i.Year) <= year);
+    const validValves = GEARCITY_DATA.valvetrain.filter((v) => Number(v.Year) <= year);
 
     const candidateComponents = [];
 

@@ -122,12 +122,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const year = Number(inputYear.value);
     const layoutName = selectLayout.value;
     const layoutRow = GEARCITY_DATA.layouts.find((l) => l.Name === layoutName);
-    if (!layoutRow) return;
+    // Fuels
+    const allowedFuelNames = layoutRow.Fuel_Types || layoutRow['Fuel Types'] || [];
+    const validFuels = GEARCITY_DATA.fuel.filter(
+      (f) => Number(f.Year) <= year && allowedFuelNames.includes(f.Name)
+    );
+    selectOptFuel.innerHTML = '';
+    validFuels.forEach((f) => {
+      const opt = document.createElement('option');
+      opt.value = f.Name;
+      opt.textContent = f.Name;
+      selectOptFuel.appendChild(opt);
+    });
+    if (selectedValues.fuel && validFuels.some((f) => f.Name === selectedValues.fuel)) {
+      selectOptFuel.value = selectedValues.fuel;
+    } else if (validFuels.some((f) => f.Name === 'Gasoline')) {
+      selectOptFuel.value = 'Gasoline';
+    } else if (validFuels.length > 0) {
+      selectOptFuel.value = validFuels[0].Name;
+    }
 
     // Cylinders
     const allowedCylNames = layoutRow.Cylinders || [];
     const validCylinders = GEARCITY_DATA.cylinders.filter(
-      (c) => Number(c.Year) <= year + 1 && allowedCylNames.includes(c.Name)
+      (c) => Number(c.Year) <= year && allowedCylNames.includes(c.Name)
     );
     selectCylinders.innerHTML = '';
     validCylinders.forEach((c) => {
@@ -147,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Induction
     const allowedIndNames = layoutRow.Inductions || [];
     const validInductions = GEARCITY_DATA.induction.filter(
-      (i) => Number(i.Year) <= year + 1 && allowedIndNames.includes(i.Name)
+      (i) => Number(i.Year) <= year && allowedIndNames.includes(i.Name)
     );
     selectInduction.innerHTML = '';
     validInductions.forEach((i) => {
@@ -165,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Valvetrain
     const validValveNames = GearCityEngine.getValidValvetrains(layoutRow, year);
     const validValves = GEARCITY_DATA.valvetrain.filter(
-      (v) => Number(v.Year) <= year + 1 && validValveNames.includes(v.Name)
+      (v) => Number(v.Year) <= year && validValveNames.includes(v.Name)
     );
     selectValvetrain.innerHTML = '';
     validValves.forEach((v) => {
