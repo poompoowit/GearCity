@@ -450,7 +450,7 @@
           <h2 class="card-title">🏭 Vehicle-Guided Engine Optimizer</h2>
         </div>
         <p style="font-size: 13px; color: var(--gc-text-muted); margin-bottom: 20px; line-height: 1.5;">
-          Select a vehicle type and game year to auto-fill recommended engine constraints and design sliders from the design spreadsheet. You can customize any field before optimizing.
+          Select a vehicle type and game year to automatically load recommended engine targets and design sliders for this vehicle class. You can customize any value before optimizing.
         </p>
 
         <!-- Top Selection Bar -->
@@ -489,8 +489,8 @@
         <!-- Customizable Target Constraints Grid -->
         <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--gc-border-brown); border-radius: 6px; padding: 16px; margin-bottom: 20px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #3d2314; padding-bottom: 8px; flex-wrap: wrap; gap: 8px;">
-            <div style="font-weight: 800; color: var(--gc-text-gold); font-size: 14px;">🎯 Optimization Constraints & Limits (Pre-filled from Sheet)</div>
-            <button type="button" id="btn-vopt-reset-defaults" class="btn-secondary" style="margin-top: 0; padding: 3px 10px; font-size: 11px;">🔄 Reset to Concept Defaults</button>
+            <div style="font-weight: 800; color: var(--gc-text-gold); font-size: 14px;">🎯 Optimization Constraints & Targets (Class Recommendations)</div>
+            <button type="button" id="btn-vopt-reset-defaults" class="btn-secondary" style="margin-top: 0; padding: 3px 10px; font-size: 11px;">🔄 Reset to Recommended Defaults</button>
           </div>
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;">
@@ -537,7 +537,7 @@
         <!-- Customizable Design Sliders (from sheet) -->
         <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--gc-border-brown); border-radius: 6px; padding: 16px; margin-bottom: 20px;">
           <div style="font-weight: 800; color: var(--gc-text-amber); font-size: 14px; margin-bottom: 12px; border-bottom: 1px solid #3d2314; padding-bottom: 8px;">
-            📊 In-Game Design Slider Presets (0–100, Pre-filled from Sheet)
+            📊 Recommended In-Game Design Sliders (0–100)
           </div>
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;">
