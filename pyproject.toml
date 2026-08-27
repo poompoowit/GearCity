@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gearcity-calculator"
+version = "1.0.0"
+description = "GearCity engine optimization, performance simulation, demographic targeting, and XML blueprint exporter suite."
+readme = "README.md"
+authors = [{ name = "GearCity Tools Community" }]
+license = { text = "MIT" }
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "pandas>=2.0.0"
+]
+
+[project.scripts]
+gearcity-calc = "cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["gearcity*"]
