@@ -1,36 +1,47 @@
 /* ==========================================================================
-   GearCity Web Suite - Design System & Styles
+   GearCity Game Authentic Theme - Retro Executive & Factory Workshop UI
    ========================================================================== */
 
 :root {
-  --bg-main: #090d16;
-  --bg-card: rgba(22, 31, 48, 0.7);
-  --bg-card-hover: rgba(30, 42, 65, 0.85);
-  --bg-input: #0f172a;
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-active: rgba(0, 240, 255, 0.4);
+  /* Game Authentic Color Palette */
+  --gc-bg-leather: #141619;
+  --gc-bg-desk: #1e1510;
+  --gc-panel-leather: #202226;
+  --gc-panel-inner: #18191c;
+  --gc-panel-stitch: #383b42;
   
-  --accent-cyan: #00f0ff;
-  --accent-cyan-glow: rgba(0, 240, 255, 0.25);
-  --accent-amber: #ffb800;
-  --accent-emerald: #10b981;
-  --accent-violet: #8b5cf6;
-  --accent-rose: #f43f5e;
+  /* Wood / Copper / Bronze Accents */
+  --gc-wood-dark: #3b2214;
+  --gc-wood-mid: #5c351f;
+  --gc-wood-light: #8c5331;
+  --gc-copper-border: #754425;
+  --gc-copper-highlight: #b06f40;
+  
+  /* Header Crimson & Burnt Orange Gradients */
+  --gc-header-red-dark: #5c1409;
+  --gc-header-red-mid: #852112;
+  --gc-header-red-light: #b3321d;
+  
+  /* Blueprint Blue */
+  --gc-blueprint-bg: #1e457a;
+  --gc-blueprint-border: #3b74be;
+  --gc-blueprint-grid: rgba(255, 255, 255, 0.15);
+  
+  /* Typography & Highlights */
+  --gc-text-ivory: #f4ebd9;
+  --gc-text-gold: #ffcc00;
+  --gc-text-amber: #e59344;
+  --gc-text-muted: #a39c90;
+  --gc-text-green: #5cd85c;
+  --gc-text-red: #ff5555;
 
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  --font-game-title: 'Outfit', 'Trebuchet MS', sans-serif;
+  --font-game-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-game-mono: 'Consolas', 'Courier New', monospace;
 
-  --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
-  --radius-xl: 24px;
-
-  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 25px rgba(0, 240, 255, 0.2);
+  --shadow-bevel-outer: inset 1px 1px 0 rgba(255, 255, 255, 0.2), inset -1px -1px 0 rgba(0, 0, 0, 0.7), 0 4px 12px rgba(0, 0, 0, 0.6);
+  --shadow-bevel-inner: inset 1px 1px 3px rgba(0, 0, 0, 0.8), inset -1px -1px 1px rgba(255, 255, 255, 0.1);
+  --shadow-button: inset 1px 1px 1px rgba(255, 255, 255, 0.35), inset -1px -1px 2px rgba(0, 0, 0, 0.6), 0 2px 5px rgba(0, 0, 0, 0.4);
 }
 
 * {
@@ -40,31 +51,35 @@
 }
 
 body {
-  background-color: var(--bg-main);
+  background-color: var(--gc-bg-leather);
   background-image: 
-    radial-gradient(circle at 15% 15%, rgba(0, 240, 255, 0.06) 0%, transparent 40%),
-    radial-gradient(circle at 85% 85%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
-  color: var(--text-primary);
-  font-family: var(--font-body);
+    radial-gradient(circle at 50% 20%, rgba(140, 83, 49, 0.12) 0%, transparent 60%),
+    radial-gradient(circle at 10% 80%, rgba(92, 20, 9, 0.1) 0%, transparent 50%),
+    linear-gradient(rgba(20, 22, 25, 0.95), rgba(12, 14, 16, 0.98)),
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px);
+  color: var(--gc-text-ivory);
+  font-family: var(--font-game-ui);
   line-height: 1.5;
   min-height: 100vh;
   padding-bottom: 60px;
   overflow-x: hidden;
 }
 
-/* Header */
+/* ==========================================================================
+   Header Bar (Game Menu Style)
+   ========================================================================== */
 .app-header {
-  border-bottom: 1px solid var(--border-subtle);
-  background: rgba(9, 13, 22, 0.85);
-  backdrop-filter: blur(12px);
+  background: linear-gradient(180deg, #422515 0%, #29160c 100%);
+  border-bottom: 2px solid var(--gc-copper-highlight);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
   position: sticky;
   top: 0;
   z-index: 100;
-  padding: 16px 24px;
+  padding: 10px 24px;
 }
 
 .header-container {
-  max-width: 1400px;
+  max-width: 1440px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
@@ -74,78 +89,81 @@ body {
 .brand-group {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .brand-logo {
-  font-size: 28px;
-  filter: drop-shadow(0 0 12px var(--accent-cyan-glow));
+  font-size: 26px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
 }
 
 .brand-title {
-  font-family: var(--font-heading);
+  font-family: var(--font-game-title);
   font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  background: linear-gradient(135deg, #ffffff 40%, var(--accent-cyan) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #fff;
+  text-shadow: 1px 1px 2px #000, 0 0 10px rgba(229, 147, 68, 0.4);
 }
 
 .brand-badge {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  background: rgba(0, 240, 255, 0.12);
-  color: var(--accent-cyan);
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  background: linear-gradient(180deg, var(--gc-header-red-light) 0%, var(--gc-header-red-dark) 100%);
+  color: var(--gc-text-ivory);
+  border: 1px solid #d45237;
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: 4px;
+  box-shadow: var(--shadow-button);
 }
 
-/* Nav Tabs */
+/* ==========================================================================
+   Navigation Tabs (GearCity Game Window Headers)
+   ========================================================================== */
 .nav-tabs {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .nav-tab {
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  font-family: var(--font-heading);
-  font-size: 14px;
-  font-weight: 600;
+  background: linear-gradient(180deg, #4f2d19 0%, #2e180c 100%);
+  border: 1px solid #6b3e23;
+  color: #d1c7b8;
+  font-family: var(--font-game-title);
+  font-size: 13px;
+  font-weight: 700;
   padding: 8px 16px;
-  border-radius: var(--radius-sm);
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  transition: all 0.15s ease;
+  box-shadow: var(--shadow-button);
+  text-shadow: 1px 1px 2px #000;
 }
 
 .nav-tab:hover {
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.05);
+  background: linear-gradient(180deg, #6e3e23 0%, #3d2010 100%);
+  color: #ffffff;
+  border-color: var(--gc-copper-highlight);
 }
 
 .nav-tab.active {
-  color: var(--accent-cyan);
-  background: rgba(0, 240, 255, 0.1);
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  background: linear-gradient(180deg, var(--gc-header-red-light) 0%, var(--gc-header-red-dark) 100%);
+  border: 1px solid #e05b41;
+  color: #ffffff;
+  box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3), 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
 /* Container */
 .main-container {
-  max-width: 1400px;
-  margin: 30px auto 0;
-  padding: 0 24px;
+  max-width: 1440px;
+  margin: 24px auto 0;
+  padding: 0 20px;
 }
 
 .tab-content {
   display: none;
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.25s ease-out;
 }
 
 .tab-content.active {
@@ -153,15 +171,17 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Grid Layouts */
+/* ==========================================================================
+   Layout Grids
+   ========================================================================== */
 .optimizer-grid {
   display: grid;
-  grid-template-columns: 340px 1fr 380px;
-  gap: 24px;
+  grid-template-columns: 320px 1fr 380px;
+  gap: 20px;
   align-items: start;
 }
 
@@ -183,329 +203,357 @@ body {
   }
   .header-container {
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
   }
 }
 
-/* Glassmorphism Cards */
+/* ==========================================================================
+   Game Windows / Leather & Copper Beveled Panels
+   ========================================================================== */
 .card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: 24px;
-  box-shadow: var(--shadow-card);
-  backdrop-filter: blur(16px);
+  background: 
+    radial-gradient(circle at 50% 0%, rgba(80, 45, 25, 0.15) 0%, transparent 80%),
+    linear-gradient(180deg, #24272c 0%, #1a1c20 100%);
+  border: 2px solid #5a341e;
+  border-radius: 6px;
+  padding: 18px;
+  box-shadow: 
+    inset 0 0 0 1px #7d4a2b,
+    inset 0 0 0 4px #1c1e22,
+    0 10px 30px rgba(0, 0, 0, 0.85);
   position: relative;
-  overflow: hidden;
 }
 
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.3), transparent);
-}
-
+/* Crimson Title Bar for Cards */
 .card-header {
+  background: linear-gradient(180deg, var(--gc-header-red-mid) 0%, var(--gc-header-red-dark) 100%);
+  border: 1px solid #aa3926;
+  border-radius: 4px;
+  margin: -10px -10px 16px -10px;
+  padding: 8px 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-bevel-outer);
 }
 
 .card-title {
-  font-family: var(--font-heading);
-  font-size: 17px;
-  font-weight: 700;
+  font-family: var(--font-game-title);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: var(--gc-text-ivory);
+  text-shadow: 1px 1px 2px #000;
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--text-primary);
 }
 
-/* Form Controls */
+/* ==========================================================================
+   Forms, Inputs & Dropdowns
+   ========================================================================== */
 .form-group {
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .form-label {
   display: flex;
   justify-content: space-between;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #c9bfb0;
+  text-shadow: 1px 1px 1px #000;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
 }
 
 .form-val-badge {
-  font-weight: 600;
-  color: var(--accent-cyan);
-  font-family: var(--font-heading);
+  font-weight: 800;
+  color: var(--gc-text-gold);
+  font-family: var(--font-game-mono);
 }
 
 .input-text, .select-dropdown {
   width: 100%;
-  background: var(--bg-input);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-primary);
-  padding: 10px 14px;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-body);
-  font-size: 14px;
+  background: linear-gradient(180deg, #101214 0%, #17191d 100%);
+  border: 1px solid #5a341e;
+  border-radius: 4px;
+  color: var(--gc-text-ivory);
+  padding: 8px 10px;
+  font-family: var(--font-game-ui);
+  font-size: 13px;
+  font-weight: 600;
   outline: none;
-  transition: border-color 0.2s;
+  box-shadow: var(--shadow-bevel-inner);
+  transition: all 0.15s ease;
 }
 
 .input-text:focus, .select-dropdown:focus {
-  border-color: var(--accent-cyan);
-  box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.2);
+  border-color: var(--gc-copper-highlight);
+  box-shadow: inset 1px 1px 3px rgba(0,0,0,0.9), 0 0 6px rgba(229, 147, 68, 0.4);
 }
 
-/* Modern Range Slider */
+/* ==========================================================================
+   Game Slider Styling (Copper Rail & Square Bronze Thumb)
+   ========================================================================== */
 .slider-range {
   -webkit-appearance: none;
   width: 100%;
-  height: 6px;
-  background: #1e293b;
-  border-radius: 999px;
+  height: 10px;
+  background: linear-gradient(180deg, #0d0e10 0%, #202328 100%);
+  border: 1px solid #4a2b18;
+  border-radius: 3px;
+  box-shadow: inset 1px 1px 2px #000;
   outline: none;
-  margin: 8px 0 4px;
+  margin: 6px 0 2px;
 }
 
 .slider-range::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--accent-cyan);
+  width: 16px;
+  height: 20px;
+  background: linear-gradient(180deg, #a36136 0%, #5e331a 100%);
+  border: 1px solid #d48753;
+  border-radius: 2px;
   cursor: pointer;
-  box-shadow: 0 0 10px var(--accent-cyan);
-  transition: transform 0.1s ease;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.8), inset 1px 1px 0 rgba(255,255,255,0.4);
+  transition: filter 0.1s ease;
 }
 
 .slider-range::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
+  filter: brightness(1.25);
 }
 
-/* Goal Selector Pills */
+/* Goal Selector Buttons */
 .goal-selector {
   display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: 6px;
+  margin-bottom: 12px;
 }
 
 .goal-option {
   flex: 1;
   text-align: center;
-  padding: 10px;
-  border: 1px solid var(--border-subtle);
-  background: var(--bg-input);
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  font-weight: 600;
+  padding: 8px 6px;
+  border: 1px solid #5a341e;
+  background: linear-gradient(180deg, #381e0f 0%, #201108 100%);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #bfb2a0;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
+  box-shadow: var(--shadow-button);
   user-select: none;
+  text-shadow: 1px 1px 1px #000;
 }
 
 .goal-option.active {
-  border-color: var(--accent-cyan);
-  background: rgba(0, 240, 255, 0.15);
-  color: var(--accent-cyan);
+  background: linear-gradient(180deg, var(--gc-header-red-light) 0%, var(--gc-header-red-dark) 100%);
+  border-color: #e05b41;
+  color: #ffffff;
+  box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.4), 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
-/* Primary Action Buttons */
+/* ==========================================================================
+   Primary Action Buttons (GearCity "Design It" Bronze Style)
+   ========================================================================== */
 .btn-primary {
   width: 100%;
-  padding: 14px 20px;
-  background: linear-gradient(135deg, #00f0ff 0%, #0284c7 100%);
-  color: #000000;
-  border: none;
-  border-radius: var(--radius-md);
-  font-family: var(--font-heading);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
-}
-
-.btn-primary:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(0, 240, 255, 0.45);
-}
-
-.btn-secondary {
-  width: 100%;
   padding: 12px 18px;
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text-primary);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  font-family: var(--font-heading);
-  font-size: 14px;
-  font-weight: 600;
+  background: linear-gradient(180deg, #874b28 0%, #472412 100%);
+  color: #ffffff;
+  border: 1px solid #ab673b;
+  border-radius: 4px;
+  font-family: var(--font-game-title);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-top: 10px;
+  box-shadow: var(--shadow-bevel-outer);
+  text-shadow: 1px 1px 2px #000;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(180deg, #a65f35 0%, #592e17 100%);
+  border-color: #d1824d;
+  box-shadow: 0 0 12px rgba(229, 147, 68, 0.5);
+}
+
+.btn-secondary {
+  width: 100%;
+  padding: 10px 16px;
+  background: linear-gradient(180deg, #3d2417 0%, #20110a 100%);
+  color: var(--gc-text-ivory);
+  border: 1px solid #5a341e;
+  border-radius: 4px;
+  font-family: var(--font-game-title);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: var(--shadow-button);
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: linear-gradient(180deg, #573421 0%, #2e190f 100%);
+  border-color: #8c5331;
 }
 
-/* Metric Display Cards */
+/* ==========================================================================
+   Live Metric Cards & Hero Box
+   ========================================================================== */
 .metric-hero {
-  background: linear-gradient(135deg, rgba(0, 240, 255, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-  border: 1px solid rgba(0, 240, 255, 0.3);
-  border-radius: var(--radius-md);
-  padding: 20px;
+  background: 
+    radial-gradient(circle at 50% 50%, rgba(229, 147, 68, 0.15) 0%, transparent 80%),
+    linear-gradient(180deg, #181b1f 0%, #0e1012 100%);
+  border: 2px solid var(--gc-copper-highlight);
+  border-radius: 4px;
+  padding: 16px;
   text-align: center;
-  margin-bottom: 20px;
-  box-shadow: var(--shadow-glow);
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-bevel-inner);
 }
 
 .metric-hero-val {
-  font-family: var(--font-heading);
-  font-size: 42px;
-  font-weight: 800;
+  font-family: var(--font-game-title);
+  font-size: 38px;
+  font-weight: 900;
   line-height: 1.1;
-  color: #ffffff;
-  text-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+  color: var(--gc-text-gold);
+  text-shadow: 0 0 15px rgba(255, 204, 0, 0.4), 1px 1px 3px #000;
 }
 
 .metric-hero-sub {
-  font-size: 14px;
-  color: var(--accent-cyan);
-  font-weight: 600;
+  font-size: 13px;
+  color: var(--gc-text-amber);
+  font-weight: 700;
   margin-top: 4px;
+  letter-spacing: 0.5px;
 }
 
 .metric-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: 16px;
 }
 
 .metric-item {
-  background: var(--bg-input);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 12px 16px;
+  background: linear-gradient(180deg, #1c1f24 0%, #121417 100%);
+  border: 1px solid #472b1a;
+  border-radius: 4px;
+  padding: 10px 12px;
+  box-shadow: var(--shadow-bevel-inner);
 }
 
 .metric-item-label {
-  font-size: 12px;
-  color: var(--text-muted);
-  font-weight: 500;
+  font-size: 11px;
+  color: var(--gc-text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .metric-item-val {
-  font-family: var(--font-heading);
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-primary);
+  font-family: var(--font-game-title);
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--gc-text-ivory);
   margin-top: 2px;
+  text-shadow: 1px 1px 1px #000;
 }
 
-/* Slider Controls Grid */
-.sliders-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px 20px;
-}
-
-@media (max-width: 600px) {
-  .sliders-container {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Demographics Table */
+/* ==========================================================================
+   Demographics Table & Star Ratings
+   ========================================================================== */
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 16px;
-  font-size: 14px;
+  margin-top: 12px;
+  font-size: 13px;
 }
 
 .data-table th {
-  background: var(--bg-input);
-  color: var(--text-secondary);
-  font-weight: 600;
+  background: linear-gradient(180deg, var(--gc-header-red-mid) 0%, var(--gc-header-red-dark) 100%);
+  color: #ffffff;
+  font-family: var(--font-game-title);
+  font-weight: 700;
   text-align: left;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border-subtle);
+  padding: 10px 14px;
+  border: 1px solid #aa3926;
+  text-shadow: 1px 1px 1px #000;
 }
 
 .data-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border-subtle);
-  color: var(--text-primary);
+  padding: 10px 14px;
+  border: 1px solid #333842;
+  background: #181b1f;
+  color: var(--gc-text-ivory);
+}
+
+.data-table tr:nth-child(even) td {
+  background: #14161a;
 }
 
 .data-table tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
+  background: #232830;
 }
 
 .tag-badge {
   display: inline-block;
-  padding: 3px 8px;
-  border-radius: 4px;
+  padding: 2px 8px;
+  border-radius: 3px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
+  text-shadow: 1px 1px 1px #000;
 }
 
-.tag-female { background: rgba(244, 63, 94, 0.15); color: #fb7185; }
-.tag-male { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-.tag-score { background: rgba(16, 185, 129, 0.15); color: #34d399; font-weight: 700; }
+.tag-female { background: #8a243a; color: #ffd6df; border: 1px solid #b83754; }
+.tag-male { background: #1e457a; color: #d6e8ff; border: 1px solid #3b74be; }
+.tag-score { background: #235c23; color: #a4f4a4; border: 1px solid #368a36; font-weight: 800; }
 
-/* In-Game Import Guide Cards */
+/* Guide steps */
 .guide-step {
   display: flex;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 14px;
+  margin-bottom: 18px;
 }
 
 .step-num {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--accent-cyan);
-  color: #000;
-  font-weight: 700;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #874b28 0%, #472412 100%);
+  border: 1px solid #ab673b;
+  color: #fff;
+  font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: var(--shadow-button);
 }
 
 .step-code {
-  background: var(--bg-input);
-  border: 1px solid var(--border-subtle);
+  background: #0d0f12;
+  border: 1px solid #5a341e;
   padding: 8px 12px;
-  border-radius: 6px;
-  font-family: monospace;
+  border-radius: 4px;
+  font-family: var(--font-game-mono);
   font-size: 13px;
-  color: var(--accent-cyan);
+  color: var(--gc-text-amber);
   margin-top: 6px;
   display: block;
 }
