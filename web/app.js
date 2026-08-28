@@ -789,7 +789,7 @@ document.addEventListener('DOMContentLoaded', () => {
         row.addEventListener('click', () => {
           const vt = row.dataset.vehicle;
           selectVehicle.value = vt;
-          updateDetail();
+          selectVehicle.dispatchEvent(new Event('change'));
           // Highlight row
           tableBody.querySelectorAll('.vehicle-class-row').forEach(r => r.style.background = '');
           row.style.background = 'rgba(176, 111, 64, 0.15)';
