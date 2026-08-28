@@ -4626,7 +4626,7 @@ vehicleClasses: [
 ],
 
 chassisDesigns: {
-  "Sport": { name: "Sport", maxEngine: "Sport/Power", note: "", ratings: { driveability: "High", safety: "Mid", luxury: "Low", dependability: "Mid +" }, frame: "1902 Ladder\n1930 Unibody", drivetrain: "F4\n1940 RMR?", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink" },
+  "Sport": { name: "Sport", maxEngine: "Sport/Power", note: "*Wishbone could replace with MacPherson 1939 for cheaper cost", ratings: { driveability: "High", safety: "Mid", luxury: "Low", dependability: "Mid +" }, frame: "1902 Ladder\n1930 Unibody", drivetrain: "F4\n1940 RMR?", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink" },
   "Race": { name: "Race", maxEngine: "Race", note: "", ratings: { driveability: "Highest", safety: "Low", luxury: "Minimum", dependability: "Low" }, frame: "1902 Ladder\n1924 Superleggera", drivetrain: "F4\n1945 M4?", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink" },
   "Drive": { name: "Drive", maxEngine: "Power/Truck", note: "", ratings: { driveability: "Very High", safety: "Mid", luxury: "Low Mid", dependability: "Mid +" }, frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR\n1940 RMR?", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink" },
   "CLux": { name: "CLux", maxEngine: "Power/LuxTruck", note: "", ratings: { driveability: "Very low", safety: "Very High", luxury: "Very High", dependability: "Mid +" }, frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR", suspension: "1901 Swing Axle\n1924 Wishbone\n1990 Magnetorheological" },
@@ -4648,14 +4648,14 @@ engineDesigns: {
 },
 
 gearboxDesigns: {
-  "Race": { name: "Race", concept: "Max", maxEngineType: "Race", ratings: { luxury: "Minimum", performance: "Highest", dependability: "Low", power: "Highest" }, gearboxes: "1912 Manual\n1950 DCT" },
-  "Sport": { name: "Sport", concept: "High HP", maxEngineType: "Sport", ratings: { luxury: "Very low", performance: "Very High", dependability: "Low", power: "Mid +" }, gearboxes: "1912 Manual\n1950 DCT" },
-  "Drive": { name: "Drive", concept: "High Driveability", maxEngineType: "Power", ratings: { luxury: "Very low", performance: "Highest", dependability: "Mid", power: "Mid" }, gearboxes: "1912 Manual\n1950 DCT" },
-  "SportLux": { name: "SportLux", concept: "High Luxury - Low Drive", maxEngineType: "Sport", ratings: { luxury: "Highest", performance: "Highest", dependability: "Very High", power: "Highest" }, gearboxes: "1912 Manual\n1925 Automatic\n1950 DCT" },
-  "Lux": { name: "Lux", concept: "High Luxury - Low Drive", maxEngineType: "Power", ratings: { luxury: "Highest", performance: "Very low", dependability: "Mid +", power: "Mid" }, gearboxes: "1912 Manual\n1925 Automatic" },
-  "Truck": { name: "Truck", concept: "High torque - Low speed", maxEngineType: "Truck", ratings: { luxury: "Very low", performance: "Mid", dependability: "Very High", power: "Highest" }, gearboxes: "1912 Manual" },
-  "Balance": { name: "Balance", concept: "Balance - Medium Lux", maxEngineType: "Power", ratings: { luxury: "Low", performance: "High", dependability: "High", power: "Mid +" }, gearboxes: "1912 Manual\n1925 Automatic?\n1950 DCT" },
-  "Fuel": { name: "Fuel", concept: "Aim for Fuel Saving VSmall", maxEngineType: "Balance", ratings: { luxury: "Very low", performance: "Very low", dependability: "Very High", power: "Very low" }, gearboxes: "1912 Manual\n1950 DCT" }
+  "Race": { name: "Race", concept: "Max", maxEngineType: "Race", cost: "$200 - $300", note: "", ratings: { luxury: "Minimum", performance: "Highest", dependability: "Low", power: "Highest" }, gearboxes: "1912 Manual\n1950 DCT" },
+  "Sport": { name: "Sport", concept: "High HP", maxEngineType: "Sport", cost: "$200 - $300", note: "", ratings: { luxury: "Very low", performance: "Very High", dependability: "Low", power: "Mid +" }, gearboxes: "1912 Manual\n1950 DCT" },
+  "Drive": { name: "Drive", concept: "High Driveability", maxEngineType: "Power", cost: "$200 - $300", note: "", ratings: { luxury: "Very low", performance: "Highest", dependability: "Mid", power: "Mid" }, gearboxes: "1912 Manual\n1950 DCT" },
+  "SportLux": { name: "SportLux", concept: "High Luxury - Low Drive", maxEngineType: "Sport", cost: "$200 - $300", note: "", ratings: { luxury: "Highest", performance: "Highest", dependability: "Very High", power: "Highest" }, gearboxes: "1912 Manual\n1925 Automatic\n1950 DCT" },
+  "Lux": { name: "Lux", concept: "High Luxury - Low Drive", maxEngineType: "Power", cost: "$200 - $300", note: "Change to use Race for Premium Luxury Sedan. Consider Semi-Automatic after 1935.", ratings: { luxury: "Highest", performance: "Very low", dependability: "Mid +", power: "Mid" }, gearboxes: "1912 Manual\n1925 Automatic" },
+  "Truck": { name: "Truck", concept: "High torque - Low speed", maxEngineType: "Truck", cost: "$200 - $300", note: "", ratings: { luxury: "Very low", performance: "Mid", dependability: "Very High", power: "Highest" }, gearboxes: "1912 Manual" },
+  "Balance": { name: "Balance", concept: "Balance - Medium Lux", maxEngineType: "Power", cost: "$200 - $300", note: "Consider Semi-Automatic after 1935.", ratings: { luxury: "Low", performance: "High", dependability: "High", power: "Mid +" }, gearboxes: "1912 Manual\n1925 Automatic?\n1950 DCT" },
+  "Fuel": { name: "Fuel", concept: "Aim for Fuel Saving VSmall", maxEngineType: "Balance", cost: "$200 - $300", note: "Consider Semi-Automatic after 1935.", ratings: { luxury: "Very low", performance: "Very low", dependability: "Very High", power: "Very low" }, gearboxes: "1912 Manual\n1950 DCT" }
 }
 
 };

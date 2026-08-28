@@ -835,8 +835,11 @@ document.addEventListener('DOMContentLoaded', () => {
               <div style="font-weight: 800; font-size: 15px; color: var(--gc-text-gold);">🏗️ Chassis: ${ch.name}</div>
               ${advice.chassisDetails.length > 1 ? `<span class="filter-year-tag" style="font-size: 10px;">Option ${idx+1}</span>` : ''}
             </div>
-            ${ch.note ? `<div style="font-size: 11px; color: var(--gc-text-amber); margin-bottom: 8px;">📝 ${ch.note}</div>` : ''}
-            <div style="font-size: 11px; color: var(--gc-text-muted); margin-bottom: 8px;">Engine: <strong style="color: var(--gc-text-ivory);">${ch.maxEngine}</strong></div>
+            <div style="background: rgba(255,183,77,0.1); border: 1px solid rgba(255,183,77,0.25); border-radius: 4px; padding: 6px 10px; margin-bottom: 10px; font-size: 12px;">
+              <span style="color: var(--gc-text-amber); font-weight: 700;">🎯 Engine Compatibility:</span>
+              <span style="color: var(--gc-text-gold); font-weight: 800;"> Designed for "${ch.maxEngine}" Engine</span>
+            </div>
+            ${ch.note ? `<div style="font-size: 11px; color: var(--gc-text-amber); margin-bottom: 8px;">📝 <strong>Note:</strong> ${ch.note}</div>` : ''}
             <div style="margin-bottom: 12px;">
               ${Object.entries(ch.ratings).map(([k,v]) => ratingBar(k.charAt(0).toUpperCase() + k.slice(1), v, k)).join('')}
             </div>
@@ -866,6 +869,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
               <div style="font-weight: 800; font-size: 15px; color: var(--gc-text-green);">🔥 Engine: ${ed.name}</div>
               ${advice.engineDetails.length > 1 ? `<span class="filter-year-tag" style="font-size: 10px;">Option ${idx+1}</span>` : ''}
+            </div>
+            <div style="background: rgba(129,199,132,0.1); border: 1px solid rgba(129,199,132,0.25); border-radius: 4px; padding: 6px 10px; margin-bottom: 10px; font-size: 12px;">
+              <span style="color: #81c784; font-weight: 700;">🎯 Optimization Focus:</span>
+              <span style="color: var(--gc-text-gold); font-weight: 800;"> Max ${ed.optimizeFocus || 'Torque'} (${ed.maxWeight} kg, Ratio ≤ ${ed.maxHpTorqueRatio || 'None'})</span>
             </div>
             <div style="font-size: 12px; color: var(--gc-text-ivory); margin-bottom: 8px;">💡 ${ed.concept}</div>
             ${ed.ratingNeed ? `<div style="font-size: 11px; color: var(--gc-text-amber); margin-bottom: 8px;">⚠️ Prioritize: <strong>${ed.ratingNeed}</strong></div>` : ''}
@@ -903,13 +910,20 @@ document.addEventListener('DOMContentLoaded', () => {
               <div style="font-weight: 800; font-size: 15px; color: #64b5f6;">⚙️ Gearbox: ${gd.name}</div>
               ${advice.gearDetails.length > 1 ? `<span class="filter-year-tag" style="font-size: 10px;">Option ${idx+1}</span>` : ''}
             </div>
+            <div style="background: rgba(100,181,246,0.1); border: 1px solid rgba(100,181,246,0.3); border-radius: 4px; padding: 6px 10px; margin-bottom: 10px; font-size: 12px;">
+              <span style="color: #64b5f6; font-weight: 700;">🎯 Max T from Engine:</span>
+              <span style="color: var(--gc-text-gold); font-weight: 800;"> Must handle Max T from "${gd.maxEngineType}" Engine</span>
+            </div>
             <div style="font-size: 12px; color: var(--gc-text-ivory); margin-bottom: 8px;">💡 ${gd.concept}</div>
-            <div style="font-size: 11px; color: var(--gc-text-muted); margin-bottom: 8px;">Engine Type: <strong style="color: var(--gc-text-ivory);">${gd.maxEngineType}</strong></div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--gc-text-muted); margin-bottom: 8px;">
+              <span>Est. Cost: <strong style="color: var(--gc-text-ivory);">${gd.cost || '$200 - $300'}</strong></span>
+            </div>
+            ${gd.note ? `<div style="font-size: 11px; color: var(--gc-text-amber); margin-bottom: 8px;">📝 <strong>Note:</strong> ${gd.note}</div>` : ''}
             <div style="margin-bottom: 10px;">
               ${Object.entries(gd.ratings).map(([k,v]) => ratingBar(k.charAt(0).toUpperCase() + k.slice(1), v, k)).join('')}
             </div>
             <div style="border-top: 1px solid #3d2314; padding-top: 8px;">
-              <div style="font-weight: 700; font-size: 11px; color: #64b5f6; margin-bottom: 4px;">🔧 Gearbox Types</div>
+              <div style="font-weight: 700; font-size: 11px; color: #64b5f6; margin-bottom: 4px;">🔧 Gearbox Types (Year Unlocks)</div>
               ${yearTag(gd.gearboxAvailable)}
               ${unavailableTag(unavailGears)}
             </div>
@@ -919,6 +933,93 @@ document.addEventListener('DOMContentLoaded', () => {
 
       designCards.innerHTML = html;
     }
+
+    // Concept Reference Tables Rendering
+    function renderRefTables() {
+      // 1. Gearbox Concepts Reference Table
+      const tbGearbox = document.getElementById('table-ref-gearbox-body');
+      if (tbGearbox) {
+        tbGearbox.innerHTML = '';
+        Object.values(GEARCITY_DATA.gearboxDesigns).forEach(g => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="font-weight: 800; color: #64b5f6;">${g.name}</td>
+            <td style="font-size: 12px;">${g.concept}</td>
+            <td><strong style="color: var(--gc-text-gold); background: rgba(100,181,246,0.1); padding: 2px 6px; border-radius: 3px; border: 1px solid rgba(100,181,246,0.2);">${g.maxEngineType}</strong></td>
+            <td>${g.ratings.luxury}</td>
+            <td>${g.ratings.performance}</td>
+            <td>${g.ratings.dependability}</td>
+            <td>${g.ratings.power}</td>
+            <td style="font-size: 11px; white-space: pre-line;">${g.gearboxes}</td>
+            <td style="font-size: 11px; color: var(--gc-text-muted);">${g.cost || '$200 - $300'}${g.note ? `<div style="color: var(--gc-text-amber); margin-top: 4px;">${g.note}</div>` : ''}</td>
+          `;
+          tbGearbox.appendChild(tr);
+        });
+      }
+
+      // 2. Chassis Concepts Reference Table
+      const tbChassis = document.getElementById('table-ref-chassis-body');
+      if (tbChassis) {
+        tbChassis.innerHTML = '';
+        Object.values(GEARCITY_DATA.chassisDesigns).forEach(c => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="font-weight: 800; color: var(--gc-text-gold);">${c.name}</td>
+            <td><strong style="color: var(--gc-text-amber); background: rgba(255,183,77,0.1); padding: 2px 6px; border-radius: 3px; border: 1px solid rgba(255,183,77,0.2);">${c.maxEngine}</strong></td>
+            <td>${c.ratings.driveability}</td>
+            <td>${c.ratings.safety}</td>
+            <td>${c.ratings.luxury}</td>
+            <td>${c.ratings.dependability}</td>
+            <td style="font-size: 11px; white-space: pre-line;">${c.frame}</td>
+            <td style="font-size: 11px; white-space: pre-line;">${c.drivetrain}</td>
+            <td style="font-size: 11px; white-space: pre-line;">${c.suspension}</td>
+            <td style="font-size: 11px; color: var(--gc-text-amber);">${c.note || '—'}</td>
+          `;
+          tbChassis.appendChild(tr);
+        });
+      }
+
+      // 3. Engine Concepts Reference Table
+      const tbEngine = document.getElementById('table-ref-engine-body');
+      if (tbEngine) {
+        tbEngine.innerHTML = '';
+        Object.values(GEARCITY_DATA.engineDesigns).forEach(e => {
+          const tr = document.createElement('tr');
+          const costStr = `$${e.costTargets['1932'] || '—'} / $${e.costTargets['1944'] || '—'} / $${e.costTargets['1954'] || '—'}`;
+          const sliderStr = `Dep: ${e.designDependability ?? '—'}, Fuel: ${e.performanceFuel ?? '—'}, Comp: ${e.techComponent ?? '—'}, Tech: ${e.techTechnology ?? '—'}, Techq: ${e.techTechnique ?? '—'}`;
+          tr.innerHTML = `
+            <td style="font-weight: 800; color: var(--gc-text-green);">${e.name}</td>
+            <td style="font-size: 12px;">${e.concept}</td>
+            <td><strong style="color: var(--gc-text-gold);">${e.optimizeFocus}</strong></td>
+            <td>${e.maxWeight} kg</td>
+            <td>${e.maxHpTorqueRatio != null ? '≤ ' + e.maxHpTorqueRatio : 'No limit'}</td>
+            <td>${e.ratingNeed ? `<strong style="color: var(--gc-text-amber);">${e.ratingNeed}</strong>` : '—'}</td>
+            <td style="font-size: 11px; color: var(--gc-text-muted);">${sliderStr}</td>
+            <td style="font-size: 11px; font-weight: 700; color: var(--gc-text-ivory);">${costStr}</td>
+          `;
+          tbEngine.appendChild(tr);
+        });
+      }
+    }
+
+    // Tab switching for Reference Directory
+    const btnRefGearbox = document.getElementById('btn-ref-tab-gearbox');
+    const btnRefChassis = document.getElementById('btn-ref-tab-chassis');
+    const btnRefEngine = document.getElementById('btn-ref-tab-engine');
+    const panelRefGearbox = document.getElementById('ref-panel-gearbox');
+    const panelRefChassis = document.getElementById('ref-panel-chassis');
+    const panelRefEngine = document.getElementById('ref-panel-engine');
+
+    function switchRefTab(activeBtn, activePanel) {
+      [btnRefGearbox, btnRefChassis, btnRefEngine].forEach(b => b?.classList.remove('active'));
+      [panelRefGearbox, panelRefChassis, panelRefEngine].forEach(p => { if (p) p.style.display = 'none'; });
+      activeBtn?.classList.add('active');
+      if (activePanel) activePanel.style.display = 'block';
+    }
+
+    if (btnRefGearbox) btnRefGearbox.addEventListener('click', () => switchRefTab(btnRefGearbox, panelRefGearbox));
+    if (btnRefChassis) btnRefChassis.addEventListener('click', () => switchRefTab(btnRefChassis, panelRefChassis));
+    if (btnRefEngine) btnRefEngine.addEventListener('click', () => switchRefTab(btnRefEngine, panelRefEngine));
 
     function setAdvisorYear(val) {
       const clamped = Math.max(1900, Math.min(2020, Number(val) || 1900));
@@ -940,6 +1041,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderTable();
     updateDetail();
+    renderRefTables();
   }
 
   // ============================================================

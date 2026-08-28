@@ -6,7 +6,7 @@
   <title>GearCity Calculation & Engine Optimization Suite</title>
   <meta name="description" content="Free open-source engine designer, optimizer, XML blueprint generator, and demographic calculator for GearCity.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="web/style.css?v=2.8">
+  <link rel="stylesheet" href="web/style.css?v=3.0">
   <style>
     .modal-overlay { display: none !important; }
   </style>
@@ -441,6 +441,83 @@
           <!-- Injected via JS: Chassis, Engine, Gearbox cards -->
         </div>
       </div>
+
+      <!-- Design Concepts Reference Tables (Chassis, Engine, Gearbox) -->
+      <div class="card" style="margin-top: 24px;">
+        <div class="card-header">
+          <h2 class="card-title">📚 Design Concepts Reference Directory</h2>
+        </div>
+        <p style="font-size: 13px; color: var(--gc-text-muted); margin-bottom: 14px; line-height: 1.5;">
+          Complete canonical data specifications from GearCity game reference sheets across all chassis, engine, and gearbox design types.
+        </p>
+
+        <!-- Directory Tab Switcher -->
+        <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
+          <button type="button" class="btn-secondary active" id="btn-ref-tab-gearbox" style="flex: 1; min-width: 160px; height: 38px; font-size: 13px;">⚙️ Gearbox Concepts</button>
+          <button type="button" class="btn-secondary" id="btn-ref-tab-chassis" style="flex: 1; min-width: 160px; height: 38px; font-size: 13px;">🏗️ Chassis Concepts</button>
+          <button type="button" class="btn-secondary" id="btn-ref-tab-engine" style="flex: 1; min-width: 160px; height: 38px; font-size: 13px;">🔥 Engine Concepts</button>
+        </div>
+
+        <!-- Gearbox Reference Table -->
+        <div id="ref-panel-gearbox" class="table-container" style="max-height: 480px; overflow-y: auto;">
+          <table class="data-table">
+            <thead style="position: sticky; top: 0; z-index: 2;">
+              <tr>
+                <th>Gearbox Concept</th>
+                <th>Description</th>
+                <th style="color: var(--gc-text-gold);">Max T from Engine</th>
+                <th>Luxury</th>
+                <th>Performance</th>
+                <th>Dependability</th>
+                <th>Power</th>
+                <th>Gearbox Types</th>
+                <th>Notes / Est. Cost</th>
+              </tr>
+            </thead>
+            <tbody id="table-ref-gearbox-body"></tbody>
+          </table>
+        </div>
+
+        <!-- Chassis Reference Table -->
+        <div id="ref-panel-chassis" class="table-container" style="display: none; max-height: 480px; overflow-y: auto;">
+          <table class="data-table">
+            <thead style="position: sticky; top: 0; z-index: 2;">
+              <tr>
+                <th>Chassis Type</th>
+                <th style="color: var(--gc-text-amber);">Max Engine Compatibility</th>
+                <th>Driveability</th>
+                <th>Safety</th>
+                <th>Luxury</th>
+                <th>Dependability</th>
+                <th>Frame Options</th>
+                <th>Drivetrain</th>
+                <th>Suspension</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody id="table-ref-chassis-body"></tbody>
+          </table>
+        </div>
+
+        <!-- Engine Reference Table -->
+        <div id="ref-panel-engine" class="table-container" style="display: none; max-height: 480px; overflow-y: auto;">
+          <table class="data-table">
+            <thead style="position: sticky; top: 0; z-index: 2;">
+              <tr>
+                <th>Engine Design</th>
+                <th>Concept</th>
+                <th>Goal</th>
+                <th>Max Weight</th>
+                <th>HP:Torque Ratio</th>
+                <th>Priority Need</th>
+                <th>Design Sliders (Dep/Fuel/Comp/Tech/Techq)</th>
+                <th>Cost Targets (1932 / 1944 / 1954)</th>
+              </tr>
+            </thead>
+            <tbody id="table-ref-engine-body"></tbody>
+          </table>
+        </div>
+      </div>
     </section>
 
     <!-- ==================== TAB 5: VEHICLE ENGINE OPTIMIZER ==================== -->
@@ -702,8 +779,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="web/data.js?v=2.8"></script>
-  <script src="web/engine.js?v=2.8"></script>
-  <script src="web/app.js?v=2.8"></script>
+  <script src="web/data.js?v=3.0"></script>
+  <script src="web/engine.js?v=3.0"></script>
+  <script src="web/app.js?v=3.0"></script>
 </body>
 </html>

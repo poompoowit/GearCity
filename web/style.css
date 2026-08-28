@@ -431,6 +431,13 @@ select option:hover, select option:focus, select option:checked,
   border-color: #8c5331;
 }
 
+.btn-secondary.active {
+  background: linear-gradient(180deg, #94532b 0%, #522712 100%) !important;
+  border-color: #ffd54f !important;
+  color: #fff !important;
+  box-shadow: 0 0 10px rgba(255, 213, 79, 0.4), inset 0 1px 0 rgba(255,255,255,0.3) !important;
+}
+
 /* ==========================================================================
    Live Metric Cards & Hero Box
    ========================================================================== */
