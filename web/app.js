@@ -3,6 +3,21 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Usage / Analytics Event Logging (GoatCounter)
+  function trackUsageEvent(name, title) {
+    try {
+      if (window.goatcounter && typeof window.goatcounter.count === 'function') {
+        window.goatcounter.count({
+          path: name,
+          title: title || name,
+          event: true,
+        });
+      }
+    } catch (err) {
+      // Graceful fallback if analytics is blocked or unavailable
+    }
+  }
+
   // DOM Elements - Tabs
   const navTabs = document.querySelectorAll('.nav-tab');
   const tabContents = document.querySelectorAll('.tab-content');
@@ -117,6 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
       tab.classList.add('active');
       const target = document.getElementById(tab.dataset.tab);
       if (target) target.classList.add('active');
+      trackUsageEvent('tab_' + tab.dataset.tab, 'Tab: ' + (tab.innerText.trim() || tab.dataset.tab));
     });
   });
 
@@ -540,6 +556,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const maxLength = inputMaxLen.value ? Number(inputMaxLen.value) / 10.0 : null; // mm to cm
     const maxWidth = inputMaxWid.value ? Number(inputMaxWid.value) / 10.0 : null;   // mm to cm
 
+    trackUsageEvent('optimize_engine_base', `Base Optimizer (${year} - ${currentFocus})`);
+
     optimizerStatus.textContent = 'Optimizing blueprint...';
     btnAutoOptimize.disabled = true;
 
@@ -593,6 +611,8 @@ document.addEventListener('DOMContentLoaded', () => {
   btnDownloadXml.addEventListener('click', () => {
     const year = Number(inputYear.value);
     const modelName = (inputModelName.value || `Engine_${year}`).replace(/\s+/g, '_');
+
+    trackUsageEvent('download_xml_base', `Download XML: ${modelName} (${year})`);
 
     const config = {
       components: {
@@ -1010,16 +1030,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const panelRefChassis = document.getElementById('ref-panel-chassis');
     const panelRefEngine = document.getElementById('ref-panel-engine');
 
-    function switchRefTab(activeBtn, activePanel) {
+    function switchRefTab(activeBtn, activePanel, type) {
       [btnRefGearbox, btnRefChassis, btnRefEngine].forEach(b => b?.classList.remove('active'));
       [panelRefGearbox, panelRefChassis, panelRefEngine].forEach(p => { if (p) p.style.display = 'none'; });
       activeBtn?.classList.add('active');
       if (activePanel) activePanel.style.display = 'block';
+      if (type) trackUsageEvent('ref_directory_' + type, 'Reference Directory: ' + type);
     }
 
-    if (btnRefGearbox) btnRefGearbox.addEventListener('click', () => switchRefTab(btnRefGearbox, panelRefGearbox));
-    if (btnRefChassis) btnRefChassis.addEventListener('click', () => switchRefTab(btnRefChassis, panelRefChassis));
-    if (btnRefEngine) btnRefEngine.addEventListener('click', () => switchRefTab(btnRefEngine, panelRefEngine));
+    if (btnRefGearbox) btnRefGearbox.addEventListener('click', () => switchRefTab(btnRefGearbox, panelRefGearbox, 'gearbox'));
+    if (btnRefChassis) btnRefChassis.addEventListener('click', () => switchRefTab(btnRefChassis, panelRefChassis, 'chassis'));
+    if (btnRefEngine) btnRefEngine.addEventListener('click', () => switchRefTab(btnRefEngine, panelRefEngine, 'engine'));
 
     function setAdvisorYear(val) {
       const clamped = Math.max(1900, Math.min(2020, Number(val) || 1900));
@@ -1028,7 +1049,10 @@ document.addEventListener('DOMContentLoaded', () => {
       updateDetail();
     }
 
-    selectVehicle.addEventListener('change', updateDetail);
+    selectVehicle.addEventListener('change', () => {
+      trackUsageEvent('advisor_select_' + selectVehicle.value, 'Advisor Model: ' + selectVehicle.value);
+      updateDetail();
+    });
     inputYear.addEventListener('input', () => setAdvisorYear(inputYear.value));
     if (inputYearNum) {
       inputYearNum.addEventListener('input', () => {
@@ -1175,6 +1199,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const year = Number(inputYear.value) || 1960;
       const skill = Number(sliderSkill?.value || inputSkillNum?.value || 70);
 
+      trackUsageEvent('optimize_engine_vehicle', `Vehicle Optimizer: ${selectVehicle.value} - ${concept} (${year})`);
+
       statusEl.textContent = '⏳ Optimizing...';
       btnOptimize.disabled = true;
       resultsBox.style.display = 'none';
@@ -1294,6 +1320,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const btnXml = document.getElementById('btn-vopt-download-xml');
         if (btnXml && result.config) {
           btnXml.addEventListener('click', () => {
+            trackUsageEvent('download_xml_vehicle', `Download Vehicle XML: ${selectVehicle.value}_${concept}_${year}`);
             const xml = GearCityEngine.generateEngineXml(result.config);
             const blob = new Blob([xml], { type: 'application/xml' });
             const url = URL.createObjectURL(blob);
