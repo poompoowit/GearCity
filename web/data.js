@@ -4628,6 +4628,7 @@ vehicleClasses: [
 chassisDesigns: {
   "Sport": {
     name: "Sport",
+    category: "Sport",
     maxEngine: "Sport/Power",
     note: "*Wishbone could replace with MacPherson 1939 for cheaper cost",
     ratings: { performance: "High", strength: "Mid", comfort: "Low", durability: "Mid +" },
@@ -4640,6 +4641,7 @@ chassisDesigns: {
   },
   "Race": {
     name: "Race",
+    category: "Sport",
     maxEngine: "Race",
     note: "",
     ratings: { performance: "Highest", strength: "Low", comfort: "Minimum", durability: "Low" },
@@ -4652,6 +4654,7 @@ chassisDesigns: {
   },
   "Drive": {
     name: "Drive",
+    category: "Sport",
     maxEngine: "Power/Truck",
     note: "",
     ratings: { performance: "Very High", strength: "Mid", comfort: "Low Mid", durability: "Mid +" },
@@ -4664,6 +4667,7 @@ chassisDesigns: {
   },
   "CLux": {
     name: "CLux",
+    category: "Luxury",
     maxEngine: "Power/LuxTruck",
     note: "",
     ratings: { performance: "Very low", strength: "Very High", comfort: "Very High", durability: "Mid +" },
@@ -4676,6 +4680,7 @@ chassisDesigns: {
   },
   "Lux": {
     name: "Lux",
+    category: "Luxury",
     maxEngine: "Sport",
     note: "",
     ratings: { performance: "Highest", strength: "Highest", comfort: "Highest", durability: "Highest" },
@@ -4688,6 +4693,7 @@ chassisDesigns: {
   },
   "Truck": {
     name: "Truck",
+    category: "Truck",
     maxEngine: "Truck",
     note: "",
     ratings: { performance: "Low", strength: "High", comfort: "Low", durability: "Very High" },
@@ -4700,6 +4706,7 @@ chassisDesigns: {
   },
   "Balance": {
     name: "Balance",
+    category: "General",
     maxEngine: "Truck",
     note: "",
     ratings: { performance: "Mid", strength: "Very High", comfort: "Mid", durability: "Very High" },
@@ -4712,6 +4719,7 @@ chassisDesigns: {
   },
   "Tiny": {
     name: "Tiny",
+    category: "Micro",
     maxEngine: "Balance",
     note: "Low Weight",
     ratings: { performance: "High", strength: "Mid +", comfort: "Very low", durability: "Very High" },
@@ -4724,6 +4732,7 @@ chassisDesigns: {
   },
   "SafLux": {
     name: "SafLux",
+    category: "Luxury",
     maxEngine: "Power/Truck/LuxTruck",
     note: "Large Safe",
     ratings: { performance: "Low", strength: "Highest", comfort: "High", durability: "Mid +" },
@@ -4733,6 +4742,132 @@ chassisDesigns: {
     designFocus: { performance: 25.0, control: 60.0, strength: 95.0, dependability: 55.0 },
     techSliders: { materials: 80.0, components: 70.0, techniques: 70.0, technology: 70.0 },
     frame: "1902 Ladder\n1930 Unibody", drivetrain: "1902 FF", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink"
+  }
+},
+
+// Historical Decade Structural Chassis Benchmarks (1900–2020)
+decadeChassisBenchmarks: {
+  "1900s": {
+    Micro: { avgChassisKg: 90, chassisRangeKg: "60 – 120", curbRangeKg: "150 – 350", frame: "Carriage", drivetrain: "RR", notes: "Carriage / Light Wooden Frame" },
+    Sport: { avgChassisKg: 170, chassisRangeKg: "120 – 220", curbRangeKg: "350 – 700", frame: "Ladder", drivetrain: "FR", notes: "Light Carriage / Early Ladder" },
+    General: { avgChassisKg: 215, chassisRangeKg: "150 – 280", curbRangeKg: "500 – 900", frame: "Carriage", drivetrain: "FR", notes: "Wood/Iron Carriage Frame" },
+    Luxury: { avgChassisKg: 350, chassisRangeKg: "250 – 450", curbRangeKg: "1,000 – 1,600", frame: "Ladder", drivetrain: "FR", notes: "Heavy Carriage / Early Ladder" },
+    Truck: { avgChassisKg: 450, chassisRangeKg: "300 – 600", curbRangeKg: "1,200 – 2,500", frame: "Ladder", drivetrain: "FR", notes: "Heavy Oak / Iron Ladder Frame" }
+  },
+  "1910s": {
+    Micro: { avgChassisKg: 105, chassisRangeKg: "70 – 140", curbRangeKg: "200 – 400", frame: "Tubular", drivetrain: "RR", notes: "Light Tubular / Carriage" },
+    Sport: { avgChassisKg: 190, chassisRangeKg: "130 – 250", curbRangeKg: "500 – 950", frame: "Backbone", drivetrain: "FMR", notes: "Backbone / Light Ladder" },
+    General: { avgChassisKg: 250, chassisRangeKg: "180 – 320", curbRangeKg: "700 – 1,200", frame: "Ladder", drivetrain: "FR", notes: "Steel Ladder Frame" },
+    Luxury: { avgChassisKg: 450, chassisRangeKg: "350 – 550", curbRangeKg: "1,300 – 2,000", frame: "Ladder", drivetrain: "FR", notes: "Heavy Steel Ladder / Backbone" },
+    Truck: { avgChassisKg: 600, chassisRangeKg: "400 – 800", curbRangeKg: "1,500 – 3,000", frame: "Ladder", drivetrain: "FR", notes: "Industrial Channel Ladder Frame" }
+  },
+  "1920s": {
+    Micro: { avgChassisKg: 120, chassisRangeKg: "80 – 160", curbRangeKg: "300 – 550", frame: "Ladder", drivetrain: "RR", notes: "Light Ladder Frame" },
+    Sport: { avgChassisKg: 170, chassisRangeKg: "120 – 220", curbRangeKg: "600 – 1,100", frame: "Superleggera", drivetrain: "FMR", notes: "Superleggera / Light Ladder" },
+    General: { avgChassisKg: 280, chassisRangeKg: "200 – 360", curbRangeKg: "900 – 1,400", frame: "Ladder", drivetrain: "FR", notes: "Pressed Steel Ladder Frame" },
+    Luxury: { avgChassisKg: 525, chassisRangeKg: "400 – 650", curbRangeKg: "1,600 – 2,400", frame: "Perimeter", drivetrain: "FR", notes: "Heavy Perimeter / Ladder" },
+    Truck: { avgChassisKg: 675, chassisRangeKg: "450 – 900", curbRangeKg: "1,800 – 3,500", frame: "Ladder", drivetrain: "FR", notes: "Reinforced Steel Ladder Frame" }
+  },
+  "1930s": {
+    Micro: { avgChassisKg: 140, chassisRangeKg: "100 – 180", curbRangeKg: "400 – 650", frame: "Unibody", drivetrain: "FF", notes: "Light Steel Ladder / Monocoque" },
+    Sport: { avgChassisKg: 165, chassisRangeKg: "110 – 220", curbRangeKg: "700 – 1,200", frame: "Superleggera", drivetrain: "FMR", notes: "Superleggera / Early Unibody" },
+    General: { avgChassisKg: 300, chassisRangeKg: "220 – 380", curbRangeKg: "1,000 – 1,500", frame: "Unibody", drivetrain: "FR", notes: "Early Unibody / Ladder" },
+    Luxury: { avgChassisKg: 575, chassisRangeKg: "450 – 700", curbRangeKg: "1,700 – 2,500", frame: "Perimeter", drivetrain: "FR", notes: "Heavy Perimeter Frame" },
+    Truck: { avgChassisKg: 750, chassisRangeKg: "500 – 1,000", curbRangeKg: "2,000 – 4,000", frame: "Ladder", drivetrain: "F4", notes: "Heavy-Duty Ladder Frame" }
+  },
+  "1940s": {
+    Micro: { avgChassisKg: 125, chassisRangeKg: "90 – 160", curbRangeKg: "350 – 550", frame: "Tubular", drivetrain: "RR", notes: "Tubular Spaceframe / Monocoque" },
+    Sport: { avgChassisKg: 180, chassisRangeKg: "120 – 240", curbRangeKg: "650 – 1,100", frame: "Superleggera", drivetrain: "FMR", notes: "Superleggera / Tubular Frame" },
+    General: { avgChassisKg: 320, chassisRangeKg: "240 – 400", curbRangeKg: "1,100 – 1,600", frame: "Unibody", drivetrain: "FR", notes: "Unibody / Perimeter Frame" },
+    Luxury: { avgChassisKg: 600, chassisRangeKg: "450 – 750", curbRangeKg: "1,750 – 2,600", frame: "Perimeter", drivetrain: "FR", notes: "Perimeter Frame" },
+    Truck: { avgChassisKg: 825, chassisRangeKg: "550 – 1,100", curbRangeKg: "2,200 – 4,500", frame: "Ladder", drivetrain: "FR", notes: "Heavy-Duty Ladder Frame" }
+  },
+  "1950s": {
+    Micro: { avgChassisKg: 115, chassisRangeKg: "80 – 150", curbRangeKg: "300 – 500", frame: "Unibody", drivetrain: "RR", notes: "Minimalist Monocoque / Tubular" },
+    Sport: { avgChassisKg: 195, chassisRangeKg: "130 – 260", curbRangeKg: "750 – 1,250", frame: "Superleggera", drivetrain: "RMR", notes: "Superleggera / Fiberglass Body" },
+    General: { avgChassisKg: 340, chassisRangeKg: "260 – 420", curbRangeKg: "1,200 – 1,700", frame: "Unibody", drivetrain: "FR", notes: "Unibody / Perimeter Frame" },
+    Luxury: { avgChassisKg: 675, chassisRangeKg: "500 – 850", curbRangeKg: "1,800 – 2,700", frame: "Perimeter", drivetrain: "FR", notes: "Heavy Boxed Perimeter Frame" },
+    Truck: { avgChassisKg: 900, chassisRangeKg: "600 – 1,200", curbRangeKg: "2,400 – 5,000", frame: "Ladder", drivetrain: "FR", notes: "Boxed-Section Ladder Frame" }
+  },
+  "1960s": {
+    Micro: { avgChassisKg: 140, chassisRangeKg: "100 – 180", curbRangeKg: "400 – 650", frame: "Unibody", drivetrain: "FF", notes: "Lightweight Unibody (Kei)" },
+    Sport: { avgChassisKg: 210, chassisRangeKg: "140 – 280", curbRangeKg: "800 – 1,300", frame: "Unibody", drivetrain: "RMR", notes: "Unibody / Superleggera" },
+    General: { avgChassisKg: 335, chassisRangeKg: "250 – 420", curbRangeKg: "1,100 – 1,550", frame: "Unibody", drivetrain: "FR", notes: "Integrated Steel Unibody" },
+    Luxury: { avgChassisKg: 640, chassisRangeKg: "480 – 800", curbRangeKg: "1,750 – 2,500", frame: "Perimeter", drivetrain: "FR", notes: "Perimeter / Full Unibody" },
+    Truck: { avgChassisKg: 925, chassisRangeKg: "600 – 1,250", curbRangeKg: "2,200 – 5,200", frame: "Ladder", drivetrain: "FR", notes: "Heavy-Duty Ladder Frame" }
+  },
+  "1970s": {
+    Micro: { avgChassisKg: 160, chassisRangeKg: "120 – 200", curbRangeKg: "500 – 750", frame: "Unibody", drivetrain: "FF", notes: "Transverse Unibody" },
+    Sport: { avgChassisKg: 230, chassisRangeKg: "160 – 300", curbRangeKg: "850 – 1,350", frame: "Unibody", drivetrain: "RMR", notes: "Steel Unibody" },
+    General: { avgChassisKg: 320, chassisRangeKg: "240 – 400", curbRangeKg: "1,050 – 1,500", frame: "Unibody", drivetrain: "FF", notes: "Downsized Unibody" },
+    Luxury: { avgChassisKg: 600, chassisRangeKg: "450 – 750", curbRangeKg: "1,650 – 2,350", frame: "Unibody", drivetrain: "FR", notes: "Downsized Perimeter / Unibody" },
+    Truck: { avgChassisKg: 975, chassisRangeKg: "650 – 1,300", curbRangeKg: "2,200 – 5,000", frame: "Ladder", drivetrain: "FR", notes: "Reinforced Ladder Frame" }
+  },
+  "1980s": {
+    Micro: { avgChassisKg: 175, chassisRangeKg: "130 – 220", curbRangeKg: "600 – 850", frame: "Unibody", drivetrain: "FF", notes: "Optimized Compact Unibody" },
+    Sport: { avgChassisKg: 250, chassisRangeKg: "180 – 320", curbRangeKg: "900 – 1,400", frame: "Unibody", drivetrain: "RMR", notes: "Aerodynamic Steel Unibody" },
+    General: { avgChassisKg: 305, chassisRangeKg: "230 – 380", curbRangeKg: "950 – 1,350", frame: "Unibody", drivetrain: "FF", notes: "Lightweight FWD Unibody" },
+    Luxury: { avgChassisKg: 540, chassisRangeKg: "400 – 680", curbRangeKg: "1,450 – 2,000", frame: "Unibody", drivetrain: "FR", notes: "Unibody / Aluminum Subframes" },
+    Truck: { avgChassisKg: 900, chassisRangeKg: "600 – 1,200", curbRangeKg: "2,000 – 4,800", frame: "Ladder", drivetrain: "FR", notes: "High-Tensile Steel Ladder Frame" }
+  },
+  "1990s": {
+    Micro: { avgChassisKg: 200, chassisRangeKg: "150 – 250", curbRangeKg: "700 – 950", frame: "Unibody", drivetrain: "FF", notes: "High-Strength Safety Cell" },
+    Sport: { avgChassisKg: 290, chassisRangeKg: "220 – 360", curbRangeKg: "1,050 – 1,500", frame: "Unibody", drivetrain: "RMR", notes: "Rigid Monocoque / Spaceframe" },
+    General: { avgChassisKg: 340, chassisRangeKg: "260 – 420", curbRangeKg: "1,100 – 1,450", frame: "Unibody", drivetrain: "FF", notes: "Safety-Optimized FWD Unibody" },
+    Luxury: { avgChassisKg: 570, chassisRangeKg: "420 – 720", curbRangeKg: "1,550 – 2,100", frame: "Unibody", drivetrain: "FR", notes: "Advanced Unibody / Aluminum" },
+    Truck: { avgChassisKg: 1000, chassisRangeKg: "650 – 1,350", curbRangeKg: "2,100 – 5,000", frame: "Ladder", drivetrain: "F4", notes: "Hydroformed Steel Ladder Frame" }
+  },
+  "2000s": {
+    Micro: { avgChassisKg: 215, chassisRangeKg: "160 – 270", curbRangeKg: "750 – 1,000", frame: "Unibody", drivetrain: "FF", notes: "Reinforced Safety Cell / Unibody" },
+    Sport: { avgChassisKg: 325, chassisRangeKg: "250 – 400", curbRangeKg: "1,200 – 1,650", frame: "Unibody", drivetrain: "RMR", notes: "High-Torsion Unibody / Carbon" },
+    General: { avgChassisKg: 380, chassisRangeKg: "300 – 460", curbRangeKg: "1,250 – 1,550", frame: "Unibody", drivetrain: "FF", notes: "High-Strength Steel Unibody" },
+    Luxury: { avgChassisKg: 640, chassisRangeKg: "480 – 800", curbRangeKg: "1,650 – 2,250", frame: "Unibody", drivetrain: "FR", notes: "Steel/Aluminum Hybrid Unibody" },
+    Truck: { avgChassisKg: 1125, chassisRangeKg: "750 – 1,500", curbRangeKg: "2,300 – 5,500", frame: "Ladder", drivetrain: "F4", notes: "Fully Boxed Hydroformed Frame" }
+  },
+  "2010s": {
+    Micro: { avgChassisKg: 235, chassisRangeKg: "180 – 290", curbRangeKg: "800 – 1,050", frame: "Unibody", drivetrain: "FF", notes: "Modular Small-Car Platform" },
+    Sport: { avgChassisKg: 345, chassisRangeKg: "270 – 420", curbRangeKg: "1,250 – 1,700", frame: "Unibody", drivetrain: "RMR", notes: "Aluminum / Carbon Monocoque" },
+    General: { avgChassisKg: 400, chassisRangeKg: "320 – 480", curbRangeKg: "1,350 – 1,650", frame: "Unibody", drivetrain: "FF", notes: "Modular Global Unibody" },
+    Luxury: { avgChassisKg: 685, chassisRangeKg: "520 – 850", curbRangeKg: "1,750 – 2,350", frame: "Unibody", drivetrain: "FR", notes: "Multi-Material Unibody" },
+    Truck: { avgChassisKg: 1225, chassisRangeKg: "800 – 1,650", curbRangeKg: "2,400 – 6,000", frame: "Ladder", drivetrain: "F4", notes: "High-Strength Steel/Aluminum Frame" }
+  },
+  "2020s": {
+    Micro: { avgChassisKg: 260, chassisRangeKg: "200 – 320", curbRangeKg: "850 – 1,150", frame: "Unibody", drivetrain: "FF", notes: "EV Skateboard / Modular Unibody" },
+    Sport: { avgChassisKg: 370, chassisRangeKg: "290 – 450", curbRangeKg: "1,300 – 1,750", frame: "Unibody", drivetrain: "RMR", notes: "Composite Monocoque / EV Platform" },
+    General: { avgChassisKg: 435, chassisRangeKg: "350 – 520", curbRangeKg: "1,450 – 1,750", frame: "Unibody", drivetrain: "FF", notes: "Multi-Material Skateboard Unibody" },
+    Luxury: { avgChassisKg: 765, chassisRangeKg: "580 – 950", curbRangeKg: "1,900 – 2,600", frame: "Unibody", drivetrain: "FR", notes: "Cast Aluminum / EV Floor Unibody" },
+    Truck: { avgChassisKg: 1350, chassisRangeKg: "900 – 1,800", curbRangeKg: "2,500 – 6,500", frame: "Ladder", drivetrain: "F4", notes: "Reinforced EV / Steel Ladder Frame" }
+  }
+},
+
+// Subcomponent Multipliers
+chassisSubcomponentMultipliers: {
+  frames: {
+    "Carriage": { weightMult: 0.30, strength: 0.50, safety: 0.60, perf: 0.30 },
+    "Superleggera": { weightMult: 0.40, strength: 0.65, safety: 0.60, perf: 1.80 },
+    "Unibody": { weightMult: 0.50, strength: 1.35, safety: 1.85, perf: 1.50 },
+    "Perimeter": { weightMult: 0.70, strength: 1.85, safety: 1.15, perf: 1.20 },
+    "Ladder": { weightMult: 0.70, strength: 1.25, safety: 1.00, perf: 0.70 },
+    "Backbone": { weightMult: 0.75, strength: 1.20, safety: 0.60, perf: 1.00 }
+  },
+  drivetrains: {
+    "FF": { weightMult: 0.50, perf: 0.50 },
+    "RR": { weightMult: 0.60, perf: 0.80 },
+    "RMR": { weightMult: 0.70, perf: 1.30 },
+    "FMR": { weightMult: 0.85, perf: 1.10 },
+    "FR": { weightMult: 1.00, perf: 1.00 },
+    "F4": { weightMult: 1.30, perf: 1.40 },
+    "M4": { weightMult: 1.30, perf: 1.90 }
+  },
+  suspensions: {
+    "Leaf Spring": { weightMult: 0.20, perf: 0.40 },
+    "Swing Axle": { weightMult: 0.30, perf: 0.60 },
+    "Torsion Beam": { weightMult: 0.50, perf: 0.35 },
+    "MacPherson": { weightMult: 0.60, perf: 0.90 },
+    "Wishbone": { weightMult: 0.70, perf: 1.30 },
+    "MultiLink": { weightMult: 1.50, perf: 1.80 },
+    "Air": { weightMult: 1.50, perf: 0.70 },
+    "Magnetorheological": { weightMult: 2.00, perf: 1.40 }
   }
 },
 

@@ -939,10 +939,22 @@ document.addEventListener('DOMContentLoaded', () => {
               <div style="font-weight: 800; font-size: 15px; color: var(--gc-text-gold);">🏗️ Chassis: ${ch.name}</div>
               ${advice.chassisDetails.length > 1 ? `<span class="filter-year-tag" style="font-size: 10px;">Option ${idx+1}</span>` : ''}
             </div>
-            <div style="background: rgba(255,183,77,0.1); border: 1px solid rgba(255,183,77,0.25); border-radius: 4px; padding: 6px 10px; margin-bottom: 10px; font-size: 12px;">
+            <div style="background: rgba(255,183,77,0.1); border: 1px solid rgba(255,183,77,0.25); border-radius: 4px; padding: 6px 10px; margin-bottom: 8px; font-size: 12px;">
               <span style="color: var(--gc-text-amber); font-weight: 700;">🎯 Engine Compatibility:</span>
               <span style="color: var(--gc-text-gold); font-weight: 800;"> Designed for "${ch.maxEngine}" Engine</span>
             </div>
+            ${ch.eraBenchmark ? `
+            <div style="background: rgba(76,175,80,0.12); border: 1px solid rgba(76,175,80,0.3); border-radius: 4px; padding: 6px 10px; margin-bottom: 10px; font-size: 11px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                <span style="color: #81c784; font-weight: 700;">⚖️ ${ch.eraBenchmark.decade} Era Target Chassis Mass:</span>
+                <span style="color: #81c784; font-weight: 800; font-size: 13px;">${ch.eraBenchmark.avgChassisKg} kg</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; color: var(--gc-text-muted); font-size: 10px;">
+                <span>Bare Range: <strong style="color: var(--gc-text-ivory);">${ch.eraBenchmark.chassisRangeKg} kg</strong></span>
+                <span>Total Curb: <strong style="color: var(--gc-text-gold);">${ch.eraBenchmark.curbRangeKg} kg</strong></span>
+              </div>
+            </div>
+            ` : ''}
             ${ch.note ? `<div style="font-size: 11px; color: var(--gc-text-amber); margin-bottom: 8px;">📝 <strong>Note:</strong> ${ch.note}</div>` : ''}
             <div style="font-weight: 700; font-size: 11px; color: var(--gc-text-gold); margin-bottom: 6px;">📊 In-Game Design Ratings</div>
             <div style="margin-bottom: 12px;">
@@ -1416,19 +1428,109 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         });
       }
+
+      // 4. Decade Weight Benchmarks Table
+      const tbBenchmarks = document.getElementById('table-ref-benchmarks-body');
+      if (tbBenchmarks && GEARCITY_DATA.decadeChassisBenchmarks) {
+        tbBenchmarks.innerHTML = '';
+        const catMap = {
+          Micro: { name: 'Minicar / Micro', chassis: 'Tiny' },
+          Sport: { name: 'Sport', chassis: 'Sport, Race, Drive' },
+          General: { name: 'General (Sedan/Hatch)', chassis: 'Balance' },
+          Luxury: { name: 'Luxury', chassis: 'CLux, Lux, SafLux' },
+          Truck: { name: 'Truck / Utility', chassis: 'Truck' }
+        };
+
+        for (const [decade, cats] of Object.entries(GEARCITY_DATA.decadeChassisBenchmarks)) {
+          for (const [catKey, b] of Object.entries(cats)) {
+            const tr = document.createElement('tr');
+            const catInfo = catMap[catKey] || { name: catKey, chassis: catKey };
+            const primaryChassis = catInfo.chassis.split(',')[0].trim();
+            const startYear = parseInt(decade) || 1960;
+
+            tr.innerHTML = `
+              <td><strong style="color: var(--gc-text-gold); font-family: var(--font-game-mono);">${decade}</strong></td>
+              <td style="font-weight: 600; color: var(--gc-text-ivory);">${catInfo.name}</td>
+              <td><span class="tag-badge tag-focus">${catInfo.chassis}</span></td>
+              <td><strong style="color: #81c784; font-size: 13px;">${b.avgChassisKg} kg</strong></td>
+              <td style="color: var(--gc-text-muted);">${b.chassisRangeKg} kg</td>
+              <td><strong style="color: var(--gc-text-gold);">${b.curbRangeKg} kg</strong></td>
+              <td><span class="tag-badge" style="background: rgba(255,183,77,0.15); color: var(--gc-text-amber);">${b.frame}</span></td>
+              <td><span class="tag-badge" style="background: rgba(100,181,246,0.15); color: #64b5f6;">${b.drivetrain}</span></td>
+              <td style="font-size: 11px; color: var(--gc-text-muted); max-width: 220px;">${b.notes}</td>
+              <td>
+                <button class="btn btn-secondary btn-ref-dl-benchmark" data-chassis-name="${primaryChassis}" data-year="${startYear}" data-decade="${decade}" data-category="${catKey}" style="padding: 3px 8px; font-size: 11px; white-space: nowrap; border: 1px solid #81c784; background: rgba(76,175,80,0.15); color: #81c784; cursor: pointer; border-radius: 3px; font-weight: 700;">
+                  📥 .xml
+                </button>
+              </td>
+            `;
+            tbBenchmarks.appendChild(tr);
+          }
+        }
+
+        tbBenchmarks.querySelectorAll('.btn-ref-dl-benchmark').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const cName = e.currentTarget.getAttribute('data-chassis-name');
+            const dYear = parseInt(e.currentTarget.getAttribute('data-year')) || 1960;
+            const decade = e.currentTarget.getAttribute('data-decade');
+            const catKey = e.currentTarget.getAttribute('data-category');
+            const chData = GEARCITY_DATA.chassisDesigns[cName] || GEARCITY_DATA.chassisDesigns['Balance'];
+
+            const getBestAvail = (text) => {
+              if (!text) return 'Standard';
+              const lines = text.split('\n');
+              let best = lines[0].replace(/^\d{4}\s+/, '').replace(/\?$/, '').trim();
+              for (const l of lines) {
+                const m = l.match(/^(\d{4})\s+(.+)$/);
+                if (m && parseInt(m[1]) <= dYear) {
+                  best = m[2].replace(/\?$/, '').trim();
+                }
+              }
+              return best;
+            };
+
+            const frameType = getBestAvail(chData.frame);
+            const drivetrain = getBestAvail(chData.drivetrain);
+            const frSusp = getBestAvail(chData.suspension);
+            const rrSusp = frSusp;
+
+            const xmlContent = GearCityEngine.generateChassisXml({
+              ...chData,
+              year: dYear,
+              frameType,
+              drivetrain,
+              frSuspension: frSusp,
+              rrSuspension: rrSusp,
+            });
+
+            trackUsageEvent('download_xml_benchmark_chassis', `Download Benchmark Chassis XML: ${decade}_${catKey}_${cName}`);
+            const blob = new Blob([xmlContent], { type: 'application/xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Chassis_Benchmark_${decade}_${catKey}_${cName}.xml`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          });
+        });
+      }
     }
 
     // Tab switching for Reference Directory
     const btnRefGearbox = document.getElementById('btn-ref-tab-gearbox');
     const btnRefChassis = document.getElementById('btn-ref-tab-chassis');
     const btnRefEngine = document.getElementById('btn-ref-tab-engine');
+    const btnRefBenchmarks = document.getElementById('btn-ref-tab-benchmarks');
     const panelRefGearbox = document.getElementById('ref-panel-gearbox');
     const panelRefChassis = document.getElementById('ref-panel-chassis');
     const panelRefEngine = document.getElementById('ref-panel-engine');
+    const panelRefBenchmarks = document.getElementById('ref-panel-benchmarks');
 
     function switchRefTab(activeBtn, activePanel, type) {
-      [btnRefGearbox, btnRefChassis, btnRefEngine].forEach(b => b?.classList.remove('active'));
-      [panelRefGearbox, panelRefChassis, panelRefEngine].forEach(p => { if (p) p.style.display = 'none'; });
+      [btnRefGearbox, btnRefChassis, btnRefEngine, btnRefBenchmarks].forEach(b => b?.classList.remove('active'));
+      [panelRefGearbox, panelRefChassis, panelRefEngine, panelRefBenchmarks].forEach(p => { if (p) p.style.display = 'none'; });
       activeBtn?.classList.add('active');
       if (activePanel) activePanel.style.display = 'block';
       saveCachedState({ refSubTab: type });
@@ -1438,6 +1540,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnRefGearbox) btnRefGearbox.addEventListener('click', () => switchRefTab(btnRefGearbox, panelRefGearbox, 'gearbox'));
     if (btnRefChassis) btnRefChassis.addEventListener('click', () => switchRefTab(btnRefChassis, panelRefChassis, 'chassis'));
     if (btnRefEngine) btnRefEngine.addEventListener('click', () => switchRefTab(btnRefEngine, panelRefEngine, 'engine'));
+    if (btnRefBenchmarks) btnRefBenchmarks.addEventListener('click', () => switchRefTab(btnRefBenchmarks, panelRefBenchmarks, 'benchmarks'));
 
     function setAdvisorYear(val) {
       const clamped = Math.max(1900, Math.min(2020, Number(val) || 1900));
@@ -1481,6 +1584,8 @@ document.addEventListener('DOMContentLoaded', () => {
       switchRefTab(btnRefChassis, panelRefChassis, 'chassis');
     } else if (cachedAdv.refSubTab === 'engine' && btnRefEngine) {
       switchRefTab(btnRefEngine, panelRefEngine, 'engine');
+    } else if (cachedAdv.refSubTab === 'benchmarks' && btnRefBenchmarks) {
+      switchRefTab(btnRefBenchmarks, panelRefBenchmarks, 'benchmarks');
     } else if (btnRefGearbox) {
       switchRefTab(btnRefGearbox, panelRefGearbox, 'gearbox');
     }

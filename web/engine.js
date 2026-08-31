@@ -647,8 +647,30 @@ const GearCityEngine = (() => {
 </Engine>`;
   }
 
+  function getChassisEraBenchmark(chassisName, year) {
+    const cd = GEARCITY_DATA.chassisDesigns[chassisName];
+    const category = cd ? (cd.category || 'General') : 'General';
+    const yr = Math.max(1900, Math.min(2020, Number(year) || 1960));
+
+    const decadeNum = Math.floor(yr / 10) * 10;
+    const decadeKey = `${decadeNum}s`;
+    const decadeData = GEARCITY_DATA.decadeChassisBenchmarks[decadeKey] || GEARCITY_DATA.decadeChassisBenchmarks['1960s'];
+    const benchmark = decadeData[category] || decadeData['General'];
+
+    return {
+      decade: decadeKey,
+      category,
+      avgChassisKg: benchmark.avgChassisKg,
+      chassisRangeKg: benchmark.chassisRangeKg,
+      curbRangeKg: benchmark.curbRangeKg,
+      recommendedFrame: benchmark.frame,
+      recommendedDrivetrain: benchmark.drivetrain,
+      notes: benchmark.notes,
+    };
+  }
+
   function generateChassisXml(config) {
-    const dim = config.dimensions || { length: 50.0, width: 50.0, height: 50.0, weight: 50.0, engWidth: 50.0, engLength: 50.0 };
+    let dim = config.dimensions ? { ...config.dimensions } : { length: 50.0, width: 50.0, height: 50.0, weight: 50.0, engWidth: 50.0, engLength: 50.0 };
     const sus = config.suspensionTuning || { stability: 50.0, comfort: 50.0, performance: 50.0, braking: 50.0, durability: 50.0 };
     const de = config.designFocus || { performance: 50.0, control: 50.0, strength: 50.0, dependability: 50.0 };
     const tech = config.techSliders || { materials: 30.0, components: 30.0, techniques: 30.0, technology: 30.0 };
@@ -811,6 +833,7 @@ const GearCityEngine = (() => {
         drivetrainAvailable: filterByYear(drivetrainOptions),
         suspensionAll: suspensionOptions,
         suspensionAvailable: filterByYear(suspensionOptions),
+        eraBenchmark: getChassisEraBenchmark(c, year),
       };
     });
 
@@ -866,15 +889,15 @@ const GearCityEngine = (() => {
     const ed = GEARCITY_DATA.engineDesigns[conceptName];
     if (!ed) return null;
 
-    let costTarget = null;
+    let targetCost = null;
     const eras = Object.keys(ed.costTargets).map(Number).sort((a, b) => a - b);
     for (const era of eras) {
-      if (year >= era) costTarget = ed.costTargets[String(era)];
+      if (year >= era) targetCost = ed.costTargets[String(era)];
     }
 
     return {
+      maxCost: targetCost,
       maxWeight: ed.maxWeight,
-      maxCost: costTarget,
       maxHpTorqueRatio: ed.maxHpTorqueRatio,
       focus: ed.optimizeFocus === 'HP' ? 'HP' : 'Torque',
       designDependability: ed.designDependability,
@@ -899,6 +922,7 @@ const GearCityEngine = (() => {
     evaluateDemographics,
     getVehicleDesignAdvice,
     getEngineDesignConstraints,
+    getChassisEraBenchmark,
     getChassisGearboxRecommendations: getVehicleDesignAdvice,
   };
 })();

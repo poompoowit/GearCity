@@ -6,7 +6,7 @@
   <title>GearCity Calculation & Engine Optimization Suite</title>
   <meta name="description" content="Free open-source engine designer, optimizer, XML blueprint generator, and demographic calculator for GearCity.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="web/style.css?v=3.7">
+  <link rel="stylesheet" href="web/style.css?v=3.8">
   <style>
     .modal-overlay { display: none !important; }
   </style>
@@ -458,9 +458,10 @@
 
         <!-- Directory Tab Switcher -->
         <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
-          <button type="button" class="btn-secondary active" id="btn-ref-tab-gearbox" style="flex: 1; min-width: 160px; height: 38px; font-size: 13px;">⚙️ Gearbox Concepts</button>
-          <button type="button" class="btn-secondary" id="btn-ref-tab-chassis" style="flex: 1; min-width: 160px; height: 38px; font-size: 13px;">🏗️ Chassis Concepts</button>
-          <button type="button" class="btn-secondary" id="btn-ref-tab-engine" style="flex: 1; min-width: 160px; height: 38px; font-size: 13px;">🔥 Engine Concepts</button>
+          <button type="button" class="btn-secondary active" id="btn-ref-tab-gearbox" style="flex: 1; min-width: 150px; height: 38px; font-size: 13px;">⚙️ Gearbox Concepts</button>
+          <button type="button" class="btn-secondary" id="btn-ref-tab-chassis" style="flex: 1; min-width: 150px; height: 38px; font-size: 13px;">🏗️ Chassis Concepts</button>
+          <button type="button" class="btn-secondary" id="btn-ref-tab-engine" style="flex: 1; min-width: 150px; height: 38px; font-size: 13px;">🔥 Engine Concepts</button>
+          <button type="button" class="btn-secondary" id="btn-ref-tab-benchmarks" style="flex: 1; min-width: 150px; height: 38px; font-size: 13px;">⚖️ Decade Weight Targets</button>
         </div>
 
         <!-- Gearbox Reference Table -->
@@ -527,6 +528,27 @@
               </tr>
             </thead>
             <tbody id="table-ref-engine-body"></tbody>
+          </table>
+        </div>
+
+        <!-- Decade Weight Benchmarks Reference Table -->
+        <div id="ref-panel-benchmarks" class="table-container" style="display: none; max-height: 480px; overflow-y: auto;">
+          <table class="data-table">
+            <thead style="position: sticky; top: 0; z-index: 2;">
+              <tr>
+                <th>Decade</th>
+                <th>Classification</th>
+                <th style="color: var(--gc-text-amber);">Mapped Chassis Concept</th>
+                <th style="color: #81c784;">Avg Chassis Mass</th>
+                <th>Chassis Range</th>
+                <th style="color: var(--gc-text-gold);">Total Curb Weight</th>
+                <th>Frame Type</th>
+                <th>Drivetrain</th>
+                <th>Historical Benchmark Notes</th>
+                <th>Download</th>
+              </tr>
+            </thead>
+            <tbody id="table-ref-benchmarks-body"></tbody>
           </table>
         </div>
       </div>
@@ -791,8 +813,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="web/data.js?v=3.7"></script>
-  <script src="web/engine.js?v=3.7"></script>
-  <script src="web/app.js?v=3.7"></script>
+  <script src="web/data.js?v=3.8"></script>
+  <script src="web/engine.js?v=3.8"></script>
+  <script src="web/app.js?v=3.8"></script>
 </body>
 </html>

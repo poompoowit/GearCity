@@ -100,6 +100,23 @@ class TestXMLExporter(unittest.TestCase):
         self.assertEqual(root.find("MaxTorqueInput").text, "240.0")
         self.assertEqual(root.find("Overdrive").text, "1")
 
+    def test_chassis_decade_benchmarks(self):
+        benchmark_config = {
+            "dimensions": {"length": 35.0, "width": 40.0, "height": 40.0, "weight": 80.0, "engWidth": 40.0, "engLength": 40.0},
+            "suspensionTuning": {"stability": 60.0, "comfort": 25.0, "performance": 60.0, "braking": 65.0, "durability": 70.0},
+            "designFocus": {"performance": 65.0, "control": 70.0, "strength": 55.0, "dependability": 80.0},
+            "techSliders": {"materials": 15.0, "components": 20.0, "techniques": 0.0, "technology": 0.0},
+            "frameType": "Carriage",
+            "drivetrain": "RR",
+            "frSuspension": "Swing Axle",
+            "rrSuspension": "Swing Axle",
+        }
+        xml_str = self.exporter.generate_chassis_xml_string(benchmark_config)
+        root = ET.fromstring(xml_str)
+        self.assertEqual(root.find("Frame_Type").text, "Carriage")
+        self.assertEqual(root.find("Drivetrain").text, "RR")
+        self.assertEqual(root.find("FD_Weight").text, "80.0")
+
 
 if __name__ == "__main__":
     unittest.main()
