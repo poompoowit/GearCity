@@ -159,7 +159,7 @@
           </div>
 
           <!-- Discrete Component Selectors -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: clamp(6px, 1vw, 10px); margin-bottom: clamp(10px, 1.5vh, 16px);">
             <div class="form-group" style="margin-bottom: 0;">
               <label class="form-label">Layout</label>
               <select id="select-layout" class="select-dropdown"></select>
@@ -797,14 +797,14 @@
   </div>
 
   <!-- Footer with Wiki Citation -->
-  <footer style="max-width: 1400px; margin: 40px auto 0; padding: 20px 24px; text-align: center; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 13px;">
+  <footer style="max-width: min(97vw, 1720px); margin: clamp(20px, 3vh, 40px) auto 0; padding: 16px clamp(12px, 1.5vw, 24px); text-align: center; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 12px;">
     <div>All calculations and design equations are estimated based on logic provided on the official <a href="https://wiki.gearcity.info/" target="_blank" rel="noopener noreferrer" style="color: var(--accent-cyan); text-decoration: none; font-weight: 600;">GearCity Wiki</a>.</div>
-    <div style="margin-top: 6px; font-size: 12px;">GearCity is developed by <a href="https://store.steampowered.com/app/285110/GearCity/" target="_blank" rel="noopener noreferrer" style="color: var(--text-secondary); text-decoration: none;">Visual Entertainment Services / Eric B</a>.</div>
+    <div style="margin-top: 6px; font-size: 11px;">GearCity is developed by <a href="https://store.steampowered.com/app/285110/GearCity/" target="_blank" rel="noopener noreferrer" style="color: var(--text-secondary); text-decoration: none;">Visual Entertainment Services / Eric B</a>.</div>
   </footer>
 
   <!-- Scripts -->
-  <script src="data.js?v=4.0"></script>
-  <script src="engine.js?v=4.0"></script>
-  <script src="app.js?v=4.0"></script>
+  <script src="data.js?v=4.1"></script>
+  <script src="engine.js?v=4.1"></script>
+  <script src="app.js?v=4.1"></script>
 </body>
 </html>
