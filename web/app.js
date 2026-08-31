@@ -1169,6 +1169,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Concept Reference Tables Rendering
     function renderRefTables() {
+      // Helper to find best available component line for a given year
+      const getBestAvailForYear = (text, yr) => {
+        if (!text) return 'Standard';
+        const lines = text.split('\n');
+        let best = lines[0].replace(/^\d{4}\s+/, '').replace(/\?$/, '').trim();
+        for (const l of lines) {
+          const m = l.match(/^(\d{4})\s+(.+)$/);
+          if (m && parseInt(m[1]) <= yr) {
+            best = m[2].replace(/\?$/, '').trim();
+          }
+        }
+        return best;
+      };
+
       // 1. Gearbox Concepts Reference Table
       const tbGearbox = document.getElementById('table-ref-gearbox-body');
       if (tbGearbox) {
@@ -1189,8 +1203,39 @@ document.addEventListener('DOMContentLoaded', () => {
             <td style="font-size: 11px; color: var(--gc-text-muted);">${techStr}</td>
             <td style="font-size: 11px; white-space: pre-line;">${g.gearboxes}</td>
             <td style="font-size: 11px; color: var(--gc-text-muted);">${g.cost || '$200 - $300'}${g.note ? `<div style="color: var(--gc-text-amber); margin-top: 4px;">${g.note}</div>` : ''}</td>
+            <td>
+              <button class="btn btn-secondary btn-ref-dl-gearbox" data-gearbox-name="${g.name}" style="padding: 3px 8px; font-size: 11px; white-space: nowrap; border: 1px solid #64b5f6; background: rgba(100,181,246,0.15); color: #64b5f6; cursor: pointer; border-radius: 3px; font-weight: 700;">
+                📥 .xml
+              </button>
+            </td>
           `;
           tbGearbox.appendChild(tr);
+        });
+
+        tbGearbox.querySelectorAll('.btn-ref-dl-gearbox').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const gName = e.currentTarget.getAttribute('data-gearbox-name');
+            const gdData = GEARCITY_DATA.gearboxDesigns[gName];
+            if (!gdData) return;
+            const currentYear = parseInt(inputYear?.value) || 1960;
+            const gbType = getBestAvailForYear(gdData.gearboxes, currentYear);
+
+            const xmlContent = GearCityEngine.generateGearboxXml({
+              ...gdData,
+              gearboxType: gbType,
+            });
+
+            trackUsageEvent('download_xml_ref_gearbox', `Download Ref Gearbox XML: ${gName}_${currentYear}`);
+            const blob = new Blob([xmlContent], { type: 'application/xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Gearbox_Preset_${gName}_${currentYear}.xml`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          });
         });
       }
 
@@ -1215,8 +1260,46 @@ document.addEventListener('DOMContentLoaded', () => {
             <td style="font-size: 11px; white-space: pre-line;">${c.drivetrain}</td>
             <td style="font-size: 11px; white-space: pre-line;">${c.suspension}</td>
             <td style="font-size: 11px; color: var(--gc-text-amber);">${c.note || '—'}</td>
+            <td>
+              <button class="btn btn-secondary btn-ref-dl-chassis" data-chassis-name="${c.name}" style="padding: 3px 8px; font-size: 11px; white-space: nowrap; border: 1px solid var(--gc-border-gold); background: rgba(255,183,77,0.15); color: var(--gc-text-gold); cursor: pointer; border-radius: 3px; font-weight: 700;">
+                📥 .xml
+              </button>
+            </td>
           `;
           tbChassis.appendChild(tr);
+        });
+
+        tbChassis.querySelectorAll('.btn-ref-dl-chassis').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const cName = e.currentTarget.getAttribute('data-chassis-name');
+            const chData = GEARCITY_DATA.chassisDesigns[cName];
+            if (!chData) return;
+            const currentYear = parseInt(inputYear?.value) || 1960;
+
+            const frameType = getBestAvailForYear(chData.frame, currentYear);
+            const drivetrain = getBestAvailForYear(chData.drivetrain, currentYear);
+            const frSusp = getBestAvailForYear(chData.suspension, currentYear);
+            const rrSusp = frSusp;
+
+            const xmlContent = GearCityEngine.generateChassisXml({
+              ...chData,
+              frameType,
+              drivetrain,
+              frSuspension: frSusp,
+              rrSuspension: rrSusp,
+            });
+
+            trackUsageEvent('download_xml_ref_chassis', `Download Ref Chassis XML: ${cName}_${currentYear}`);
+            const blob = new Blob([xmlContent], { type: 'application/xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Chassis_Preset_${cName}_${currentYear}.xml`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          });
         });
       }
 
@@ -1237,8 +1320,38 @@ document.addEventListener('DOMContentLoaded', () => {
             <td>${e.ratingNeed ? `<strong style="color: var(--gc-text-amber);">${e.ratingNeed}</strong>` : '—'}</td>
             <td style="font-size: 11px; color: var(--gc-text-muted);">${sliderStr}</td>
             <td style="font-size: 11px; font-weight: 700; color: var(--gc-text-ivory);">${costStr}</td>
+            <td>
+              <button class="btn btn-secondary btn-ref-dl-engine" data-engine-name="${e.name}" style="padding: 3px 8px; font-size: 11px; white-space: nowrap; border: 1px solid var(--gc-text-green); background: rgba(129,199,132,0.15); color: var(--gc-text-green); cursor: pointer; border-radius: 3px; font-weight: 700;">
+                ⚡ Optimize & XML
+              </button>
+            </td>
           `;
           tbEngine.appendChild(tr);
+        });
+
+        tbEngine.querySelectorAll('.btn-ref-dl-engine').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const eName = e.currentTarget.getAttribute('data-engine-name');
+            const currentYear = parseInt(inputYear?.value) || 1960;
+            const constraints = GearCityEngine.getEngineDesignConstraints(eName, currentYear);
+            if (!constraints) return;
+
+            const optResult = GearCityEngine.optimizeEngine(currentYear, constraints);
+            if (!optResult || !optResult.bestCandidate) return;
+
+            const xmlContent = GearCityEngine.generateEngineXml(optResult.bestCandidate);
+
+            trackUsageEvent('download_xml_ref_engine', `Download Ref Engine XML: ${eName}_${currentYear}`);
+            const blob = new Blob([xmlContent], { type: 'application/xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Engine_Preset_${eName}_${currentYear}.xml`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          });
         });
       }
     }
