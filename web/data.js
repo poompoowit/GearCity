@@ -4626,15 +4626,87 @@ vehicleClasses: [
 ],
 
 chassisDesigns: {
-  "Sport": { name: "Sport", maxEngine: "Sport/Power", note: "*Wishbone could replace with MacPherson 1939 for cheaper cost", ratings: { performance: "High", strength: "Mid", comfort: "Low", durability: "Mid +" }, frame: "1902 Ladder\n1930 Unibody", drivetrain: "F4\n1940 RMR?", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink" },
-  "Race": { name: "Race", maxEngine: "Race", note: "", ratings: { performance: "Highest", strength: "Low", comfort: "Minimum", durability: "Low" }, frame: "1902 Ladder\n1924 Superleggera", drivetrain: "F4\n1945 M4?", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink" },
-  "Drive": { name: "Drive", maxEngine: "Power/Truck", note: "", ratings: { performance: "Very High", strength: "Mid", comfort: "Low Mid", durability: "Mid +" }, frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR\n1940 RMR?", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink" },
-  "CLux": { name: "CLux", maxEngine: "Power/LuxTruck", note: "", ratings: { performance: "Very low", strength: "Very High", comfort: "Very High", durability: "Mid +" }, frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR", suspension: "1901 Swing Axle\n1924 Wishbone\n1990 Magnetorheological" },
-  "Lux": { name: "Lux", maxEngine: "Sport", note: "", ratings: { performance: "Highest", strength: "Highest", comfort: "Highest", durability: "Highest" }, frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR", suspension: "1901 Swing Axle\n1915 Air\n1944 Hydropneumatic\n1990 Magnetorheological" },
-  "Truck": { name: "Truck", maxEngine: "Truck", note: "", ratings: { performance: "Low", strength: "High", comfort: "Low", durability: "Very High" }, frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR", suspension: "Leaf Spring" },
-  "Balance": { name: "Balance", maxEngine: "Truck", note: "", ratings: { performance: "Mid", strength: "Very High", comfort: "Mid", durability: "Very High" }, frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink" },
-  "Tiny": { name: "Tiny", maxEngine: "Balance", note: "Low Weight", ratings: { performance: "High", strength: "Mid +", comfort: "Very low", durability: "Very High" }, frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR\n1940 RMR", suspension: "1901 Swing Axle\n1924 Wishbone\n1939 MacPherson?" },
-  "SafLux": { name: "SafLux", maxEngine: "Power/Truck/LuxTruck", note: "Large Safe", ratings: { performance: "Low", strength: "Highest", comfort: "High", durability: "Mid +" }, frame: "1902 Ladder\n1930 Unibody", drivetrain: "1902 FF", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink" }
+  "Sport": {
+    name: "Sport",
+    maxEngine: "Sport/Power",
+    note: "*Wishbone could replace with MacPherson 1939 for cheaper cost",
+    ratings: { performance: "High", strength: "Mid", comfort: "Low", durability: "Mid +" },
+    sliderValues: { performance: 65, strength: 45, comfort: 25, durability: 55 },
+    techSliders: { materials: 30, components: 20, technology: 20, techniques: 20 },
+    frame: "1902 Ladder\n1930 Unibody", drivetrain: "F4\n1940 RMR?", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink"
+  },
+  "Race": {
+    name: "Race",
+    maxEngine: "Race",
+    note: "",
+    ratings: { performance: "Highest", strength: "Low", comfort: "Minimum", durability: "Low" },
+    sliderValues: { performance: 95, strength: 25, comfort: 5, durability: 25 },
+    techSliders: { materials: 90, components: 90, technology: 90, techniques: 90 },
+    frame: "1902 Ladder\n1924 Superleggera", drivetrain: "F4\n1945 M4?", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink"
+  },
+  "Drive": {
+    name: "Drive",
+    maxEngine: "Power/Truck",
+    note: "",
+    ratings: { performance: "Very High", strength: "Mid", comfort: "Low Mid", durability: "Mid +" },
+    sliderValues: { performance: 80, strength: 45, comfort: 35, durability: 55 },
+    techSliders: { materials: 30, components: 20, technology: 20, techniques: 20 },
+    frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR\n1940 RMR?", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink"
+  },
+  "CLux": {
+    name: "CLux",
+    maxEngine: "Power/LuxTruck",
+    note: "",
+    ratings: { performance: "Very low", strength: "Very High", comfort: "Very High", durability: "Mid +" },
+    sliderValues: { performance: 15, strength: 80, comfort: 80, durability: 55 },
+    techSliders: { materials: 70, components: 60, technology: 60, techniques: 60 },
+    frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR", suspension: "1901 Swing Axle\n1924 Wishbone\n1990 Magnetorheological"
+  },
+  "Lux": {
+    name: "Lux",
+    maxEngine: "Sport",
+    note: "",
+    ratings: { performance: "Highest", strength: "Highest", comfort: "Highest", durability: "Highest" },
+    sliderValues: { performance: 95, strength: 95, comfort: 95, durability: 95 },
+    techSliders: { materials: 100, components: 100, technology: 100, techniques: 100 },
+    frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR", suspension: "1901 Swing Axle\n1915 Air\n1944 Hydropneumatic\n1990 Magnetorheological"
+  },
+  "Truck": {
+    name: "Truck",
+    maxEngine: "Truck",
+    note: "",
+    ratings: { performance: "Low", strength: "High", comfort: "Low", durability: "Very High" },
+    sliderValues: { performance: 25, strength: 65, comfort: 25, durability: 80 },
+    techSliders: { materials: 20, components: 30, technology: 0, techniques: 0 },
+    frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR", suspension: "Leaf Spring"
+  },
+  "Balance": {
+    name: "Balance",
+    maxEngine: "Truck",
+    note: "",
+    ratings: { performance: "Mid", strength: "Very High", comfort: "Mid", durability: "Very High" },
+    sliderValues: { performance: 45, strength: 80, comfort: 45, durability: 80 },
+    techSliders: { materials: 30, components: 30, technology: 30, techniques: 30 },
+    frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink"
+  },
+  "Tiny": {
+    name: "Tiny",
+    maxEngine: "Balance",
+    note: "Low Weight",
+    ratings: { performance: "High", strength: "Mid +", comfort: "Very low", durability: "Very High" },
+    sliderValues: { performance: 65, strength: 55, comfort: 15, durability: 80 },
+    techSliders: { materials: 15, components: 20, technology: 0, techniques: 0 },
+    frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR\n1940 RMR", suspension: "1901 Swing Axle\n1924 Wishbone\n1939 MacPherson?"
+  },
+  "SafLux": {
+    name: "SafLux",
+    maxEngine: "Power/Truck/LuxTruck",
+    note: "Large Safe",
+    ratings: { performance: "Low", strength: "Highest", comfort: "High", durability: "Mid +" },
+    sliderValues: { performance: 25, strength: 95, comfort: 65, durability: 55 },
+    techSliders: { materials: 80, components: 70, technology: 70, techniques: 70 },
+    frame: "1902 Ladder\n1930 Unibody", drivetrain: "1902 FF", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink"
+  }
 },
 
 engineDesigns: {
@@ -4648,14 +4720,94 @@ engineDesigns: {
 },
 
 gearboxDesigns: {
-  "Race": { name: "Race", concept: "Max", maxEngineType: "Race", cost: "$200 - $300", note: "", ratings: { comfort: "Minimum", performance: "Highest", reliability: "Low", power: "Highest" }, gearboxes: "1912 Manual\n1950 DCT" },
-  "Sport": { name: "Sport", concept: "High HP", maxEngineType: "Sport", cost: "$200 - $300", note: "", ratings: { comfort: "Very low", performance: "Very High", reliability: "Low", power: "Mid +" }, gearboxes: "1912 Manual\n1950 DCT" },
-  "Drive": { name: "Drive", concept: "High Driveability", maxEngineType: "Power", cost: "$200 - $300", note: "", ratings: { comfort: "Very low", performance: "Highest", reliability: "Mid", power: "Mid" }, gearboxes: "1912 Manual\n1950 DCT" },
-  "SportLux": { name: "SportLux", concept: "High Luxury - Low Drive", maxEngineType: "Sport", cost: "$200 - $300", note: "", ratings: { comfort: "Highest", performance: "Highest", reliability: "Very High", power: "Highest" }, gearboxes: "1912 Manual\n1925 Automatic\n1950 DCT" },
-  "Lux": { name: "Lux", concept: "High Luxury - Low Drive", maxEngineType: "Power", cost: "$200 - $300", note: "Change to use Race for Premium Luxury Sedan. Consider Semi-Automatic after 1935.", ratings: { comfort: "Highest", performance: "Very low", reliability: "Mid +", power: "Mid" }, gearboxes: "1912 Manual\n1925 Automatic" },
-  "Truck": { name: "Truck", concept: "High torque - Low speed", maxEngineType: "Truck", cost: "$200 - $300", note: "", ratings: { comfort: "Very low", performance: "Mid", reliability: "Very High", power: "Highest" }, gearboxes: "1912 Manual" },
-  "Balance": { name: "Balance", concept: "Balance - Medium Lux", maxEngineType: "Power", cost: "$200 - $300", note: "Consider Semi-Automatic after 1935.", ratings: { comfort: "Low", performance: "High", reliability: "High", power: "Mid +" }, gearboxes: "1912 Manual\n1925 Automatic?\n1950 DCT" },
-  "Fuel": { name: "Fuel", concept: "Aim for Fuel Saving VSmall", maxEngineType: "Balance", cost: "$200 - $300", note: "Consider Semi-Automatic after 1935.", ratings: { comfort: "Very low", performance: "Very low", reliability: "Very High", power: "Very low" }, gearboxes: "1912 Manual\n1950 DCT" }
+  "Race": {
+    name: "Race",
+    concept: "Max",
+    maxEngineType: "Race",
+    cost: "$200 - $300",
+    note: "",
+    ratings: { comfort: "Minimum", performance: "Highest", reliability: "Low", power: "Highest" },
+    sliderValues: { comfort: 5, performance: 95, reliability: 25, power: 95 },
+    techSliders: { materials: 90, components: 90, technology: 90, techniques: 90 },
+    gearboxes: "1912 Manual\n1950 DCT"
+  },
+  "Sport": {
+    name: "Sport",
+    concept: "High HP",
+    maxEngineType: "Sport",
+    cost: "$200 - $300",
+    note: "",
+    ratings: { comfort: "Very low", performance: "Very High", reliability: "Low", power: "Mid +" },
+    sliderValues: { comfort: 15, performance: 80, reliability: 25, power: 55 },
+    techSliders: { materials: 40, components: 30, technology: 20, techniques: 20 },
+    gearboxes: "1912 Manual\n1950 DCT"
+  },
+  "Drive": {
+    name: "Drive",
+    concept: "High Driveability",
+    maxEngineType: "Power",
+    cost: "$200 - $300",
+    note: "",
+    ratings: { comfort: "Very low", performance: "Highest", reliability: "Mid", power: "Mid" },
+    sliderValues: { comfort: 15, performance: 95, reliability: 45, power: 45 },
+    techSliders: { materials: 30, components: 20, technology: 20, techniques: 20 },
+    gearboxes: "1912 Manual\n1950 DCT"
+  },
+  "SportLux": {
+    name: "SportLux",
+    concept: "High Luxury - Low Drive",
+    maxEngineType: "Sport",
+    cost: "$200 - $300",
+    note: "",
+    ratings: { comfort: "Highest", performance: "Highest", reliability: "Very High", power: "Highest" },
+    sliderValues: { comfort: 95, performance: 95, reliability: 80, power: 95 },
+    techSliders: { materials: 85, components: 85, technology: 80, techniques: 80 },
+    gearboxes: "1912 Manual\n1925 Automatic\n1950 DCT"
+  },
+  "Lux": {
+    name: "Lux",
+    concept: "High Luxury - Low Drive",
+    maxEngineType: "Power",
+    cost: "$200 - $300",
+    note: "Change to use Race for Premium Luxury Sedan. Consider Semi-Automatic after 1935.",
+    ratings: { comfort: "Highest", performance: "Very low", reliability: "Mid +", power: "Mid" },
+    sliderValues: { comfort: 95, performance: 15, reliability: 55, power: 45 },
+    techSliders: { materials: 80, components: 70, technology: 70, techniques: 70 },
+    gearboxes: "1912 Manual\n1925 Automatic"
+  },
+  "Truck": {
+    name: "Truck",
+    concept: "High torque - Low speed",
+    maxEngineType: "Truck",
+    cost: "$200 - $300",
+    note: "",
+    ratings: { comfort: "Very low", performance: "Mid", reliability: "Very High", power: "Highest" },
+    sliderValues: { comfort: 15, performance: 45, reliability: 80, power: 95 },
+    techSliders: { materials: 20, components: 30, technology: 10, techniques: 10 },
+    gearboxes: "1912 Manual"
+  },
+  "Balance": {
+    name: "Balance",
+    concept: "Balance - Medium Lux",
+    maxEngineType: "Power",
+    cost: "$200 - $300",
+    note: "Consider Semi-Automatic after 1935.",
+    ratings: { comfort: "Low", performance: "High", reliability: "High", power: "Mid +" },
+    sliderValues: { comfort: 25, performance: 65, reliability: 65, power: 55 },
+    techSliders: { materials: 30, components: 30, technology: 30, techniques: 30 },
+    gearboxes: "1912 Manual\n1925 Automatic?\n1950 DCT"
+  },
+  "Fuel": {
+    name: "Fuel",
+    concept: "Aim for Fuel Saving VSmall",
+    maxEngineType: "Balance",
+    cost: "$200 - $300",
+    note: "Consider Semi-Automatic after 1935.",
+    ratings: { comfort: "Very low", performance: "Very low", reliability: "Very High", power: "Very low" },
+    sliderValues: { comfort: 15, performance: 15, reliability: 80, power: 15 },
+    techSliders: { materials: 20, components: 20, technology: 20, techniques: 10 },
+    gearboxes: "1912 Manual\n1950 DCT"
+  }
 }
 
 };

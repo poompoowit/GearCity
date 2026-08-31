@@ -728,6 +728,8 @@ const GearCityEngine = (() => {
         maxEngine: cd.maxEngine,
         note: cd.note,
         ratings: cd.ratings,
+        sliderValues: cd.sliderValues,
+        techSliders: cd.techSliders,
         frameAll: frameOptions,
         frameAvailable: filterByYear(frameOptions),
         drivetrainAll: drivetrainOptions,

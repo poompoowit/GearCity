@@ -897,6 +897,28 @@ document.addEventListener('DOMContentLoaded', () => {
               ${yearTag(ch.suspensionAvailable)}
               ${unavailableTag(unavailSusp)}
             </div>
+            ${ch.sliderValues || ch.techSliders ? `
+            <div style="border-top: 1px solid #3d2314; padding-top: 8px; margin-top: 8px; font-size: 11px; color: var(--gc-text-muted);">
+              <div style="font-weight: 700; color: var(--gc-text-gold); margin-bottom: 6px;">🎛️ Design & Tech Sliders (Advanced Designer)</div>
+              ${ch.sliderValues ? `
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 6px;">
+                <div>Perf Slider: <strong style="color: #ef5350;">${ch.sliderValues.performance}%</strong></div>
+                <div>Strength: <strong style="color: #81c784;">${ch.sliderValues.strength}%</strong></div>
+                <div>Comfort: <strong style="color: #ce93d8;">${ch.sliderValues.comfort}%</strong></div>
+                <div>Durability: <strong style="color: #ffb74d;">${ch.sliderValues.durability}%</strong></div>
+              </div>
+              ` : ''}
+              ${ch.techSliders ? `
+              <div style="background: rgba(0,0,0,0.25); padding: 5px 8px; border-radius: 3px; font-size: 10px;">
+                <span style="color: var(--gc-text-amber); font-weight: 700;">Tech Sliders: </span>
+                <span>Mat: <strong style="color: var(--gc-text-ivory);">${ch.techSliders.materials}</strong>, </span>
+                <span>Comp: <strong style="color: var(--gc-text-ivory);">${ch.techSliders.components}</strong>, </span>
+                <span>Tech: <strong style="color: var(--gc-text-ivory);">${ch.techSliders.technology}</strong>, </span>
+                <span>Techq: <strong style="color: var(--gc-text-ivory);">${ch.techSliders.techniques}</strong></span>
+              </div>
+              ` : ''}
+            </div>
+            ` : ''}
           </div>
         `;
       });
@@ -971,6 +993,28 @@ document.addEventListener('DOMContentLoaded', () => {
               ${yearTag(gd.gearboxAvailable)}
               ${unavailableTag(unavailGears)}
             </div>
+            ${gd.sliderValues || gd.techSliders ? `
+            <div style="border-top: 1px solid #3d2314; padding-top: 8px; margin-top: 8px; font-size: 11px; color: var(--gc-text-muted);">
+              <div style="font-weight: 700; color: #64b5f6; margin-bottom: 6px;">🎛️ Design & Tech Sliders (Advanced Designer)</div>
+              ${gd.sliderValues ? `
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 6px;">
+                <div>Comfort: <strong style="color: #ce93d8;">${gd.sliderValues.comfort}%</strong></div>
+                <div>Perf Slider: <strong style="color: #ef5350;">${gd.sliderValues.performance}%</strong></div>
+                <div>Reliability: <strong style="color: #ffb74d;">${gd.sliderValues.reliability}%</strong></div>
+                <div>Power Slider: <strong style="color: #ff7043;">${gd.sliderValues.power}%</strong></div>
+              </div>
+              ` : ''}
+              ${gd.techSliders ? `
+              <div style="background: rgba(0,0,0,0.25); padding: 5px 8px; border-radius: 3px; font-size: 10px;">
+                <span style="color: #64b5f6; font-weight: 700;">Tech Sliders: </span>
+                <span>Mat: <strong style="color: var(--gc-text-ivory);">${gd.techSliders.materials}</strong>, </span>
+                <span>Comp: <strong style="color: var(--gc-text-ivory);">${gd.techSliders.components}</strong>, </span>
+                <span>Tech: <strong style="color: var(--gc-text-ivory);">${gd.techSliders.technology}</strong>, </span>
+                <span>Techq: <strong style="color: var(--gc-text-ivory);">${gd.techSliders.techniques}</strong></span>
+              </div>
+              ` : ''}
+            </div>
+            ` : ''}
           </div>
         `;
       });
@@ -986,6 +1030,8 @@ document.addEventListener('DOMContentLoaded', () => {
         tbGearbox.innerHTML = '';
         Object.values(GEARCITY_DATA.gearboxDesigns).forEach(g => {
           const tr = document.createElement('tr');
+          const sliderStr = g.sliderValues ? `Comf: ${g.sliderValues.comfort}%, Perf: ${g.sliderValues.performance}%, Rel: ${g.sliderValues.reliability}%, Pow: ${g.sliderValues.power}%` : '—';
+          const techStr = g.techSliders ? `Mat: ${g.techSliders.materials}, Comp: ${g.techSliders.components}, Tech: ${g.techSliders.technology}, Techq: ${g.techSliders.techniques}` : '—';
           tr.innerHTML = `
             <td style="font-weight: 800; color: #64b5f6;">${g.name}</td>
             <td style="font-size: 12px;">${g.concept}</td>
@@ -994,6 +1040,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <td>${g.ratings.performance}</td>
             <td>${g.ratings.reliability}</td>
             <td>${g.ratings.power}</td>
+            <td style="font-size: 11px; color: var(--gc-text-muted);">${sliderStr}</td>
+            <td style="font-size: 11px; color: var(--gc-text-muted);">${techStr}</td>
             <td style="font-size: 11px; white-space: pre-line;">${g.gearboxes}</td>
             <td style="font-size: 11px; color: var(--gc-text-muted);">${g.cost || '$200 - $300'}${g.note ? `<div style="color: var(--gc-text-amber); margin-top: 4px;">${g.note}</div>` : ''}</td>
           `;
@@ -1007,6 +1055,8 @@ document.addEventListener('DOMContentLoaded', () => {
         tbChassis.innerHTML = '';
         Object.values(GEARCITY_DATA.chassisDesigns).forEach(c => {
           const tr = document.createElement('tr');
+          const sliderStr = c.sliderValues ? `Perf: ${c.sliderValues.performance}%, Str: ${c.sliderValues.strength}%, Comf: ${c.sliderValues.comfort}%, Dur: ${c.sliderValues.durability}%` : '—';
+          const techStr = c.techSliders ? `Mat: ${c.techSliders.materials}, Comp: ${c.techSliders.components}, Tech: ${c.techSliders.technology}, Techq: ${c.techSliders.techniques}` : '—';
           tr.innerHTML = `
             <td style="font-weight: 800; color: var(--gc-text-gold);">${c.name}</td>
             <td><strong style="color: var(--gc-text-amber); background: rgba(255,183,77,0.1); padding: 2px 6px; border-radius: 3px; border: 1px solid rgba(255,183,77,0.2);">${c.maxEngine}</strong></td>
@@ -1014,6 +1064,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <td>${c.ratings.strength}</td>
             <td>${c.ratings.comfort}</td>
             <td>${c.ratings.durability}</td>
+            <td style="font-size: 11px; color: var(--gc-text-muted);">${sliderStr}</td>
+            <td style="font-size: 11px; color: var(--gc-text-muted);">${techStr}</td>
             <td style="font-size: 11px; white-space: pre-line;">${c.frame}</td>
             <td style="font-size: 11px; white-space: pre-line;">${c.drivetrain}</td>
             <td style="font-size: 11px; white-space: pre-line;">${c.suspension}</td>
