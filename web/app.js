@@ -18,6 +18,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /* ==========================================================================
+     Session & Preset State Persistence (localStorage)
+     ========================================================================== */
+  const CACHE_KEY = 'gearcity_app_state_v1';
+
+  function getCachedState() {
+    try {
+      const raw = localStorage.getItem(CACHE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveCachedState(partial) {
+    try {
+      const current = getCachedState();
+      const updated = { ...current, ...partial };
+      localStorage.setItem(CACHE_KEY, JSON.stringify(updated));
+    } catch (e) {
+      // Ignore quota/private browsing issues
+    }
+  }
+
   // DOM Elements - Tabs
   const navTabs = document.querySelectorAll('.nav-tab');
   const tabContents = document.querySelectorAll('.tab-content');
@@ -108,8 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const demoHighlightBox = document.getElementById('demo-highlight-box');
   const tableDemographicsBody = document.getElementById('table-demographics-body');
 
-
-
   let currentFocus = 'HP';
 
   // User Filter State (Allowed components)
@@ -132,6 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
       tab.classList.add('active');
       const target = document.getElementById(tab.dataset.tab);
       if (target) target.classList.add('active');
+      saveCachedState({ activeTab: tab.dataset.tab });
       trackUsageEvent('tab_' + tab.dataset.tab, 'Tab: ' + (tab.innerText.trim() || tab.dataset.tab));
     });
   });
@@ -144,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
       goalOptions.forEach((o) => o.classList.remove('active'));
       option.classList.add('active');
       currentFocus = option.dataset.focus;
+      saveCachedState({ optGoal: currentFocus });
     });
   });
 
@@ -466,6 +490,19 @@ document.addEventListener('DOMContentLoaded', () => {
     inputYear.value = clamped;
     if (inputYearNum) inputYearNum.value = clamped;
 
+    saveCachedState({ year: clamped });
+
+    // Synchronize year inputs in other tabs if present
+    const elAdvYear = document.getElementById('input-advisor-year');
+    const elAdvYearNum = document.getElementById('input-advisor-year-num');
+    if (elAdvYear && elAdvYear.value != clamped) elAdvYear.value = clamped;
+    if (elAdvYearNum && elAdvYearNum.value != clamped) elAdvYearNum.value = clamped;
+
+    const elVoptYear = document.getElementById('input-vopt-year');
+    const elVoptYearNum = document.getElementById('input-vopt-year-num');
+    if (elVoptYear && elVoptYear.value != clamped) elVoptYear.value = clamped;
+    if (elVoptYearNum && elVoptYearNum.value != clamped) elVoptYearNum.value = clamped;
+
     if (forceFilterReset) {
       initFiltersForYear(clamped, true);
     }
@@ -478,6 +515,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const clamped = Math.max(0, Math.min(100, Number(val) || 70));
     if (sliderDesignSkill) sliderDesignSkill.value = clamped;
     if (inputDesignSkillNum) inputDesignSkillNum.value = clamped;
+    saveCachedState({ designSkill: clamped });
     updateCalculations();
   }
 
@@ -539,11 +577,27 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   [selectCylinders, selectInduction, selectValvetrain, selectOptFuel].forEach((el) => {
-    el.addEventListener('change', updateCalculations);
+    el.addEventListener('change', () => {
+      updateCalculations();
+    });
   });
 
   [sliderBore, sliderStroke, sliderRpm, sliderTorq, sliderPerfFocus, sliderEcoFocus, sliderMaterials, sliderWeight].forEach((el) => {
-    el.addEventListener('input', updateCalculations);
+    el.addEventListener('input', () => {
+      updateCalculations();
+      saveCachedState({
+        engineSliders: {
+          bore: sliderBore?.value,
+          stroke: sliderStroke?.value,
+          rpm: sliderRpm?.value,
+          torque: sliderTorq?.value,
+          perfFocus: sliderPerfFocus?.value,
+          ecoFocus: sliderEcoFocus?.value,
+          materials: sliderMaterials?.value,
+          weight: sliderWeight?.value,
+        }
+      });
+    });
   });
 
   /* ==========================================================================
@@ -683,10 +737,18 @@ document.addEventListener('DOMContentLoaded', () => {
       tableDemographicsBody.appendChild(tr);
     });
 
-    selectDemoVehicle.value = 'Luxury Sedan';
+    const cached = getCachedState();
+    if (cached.demoVehicle && vehicles.includes(cached.demoVehicle)) {
+      selectDemoVehicle.value = cached.demoVehicle;
+    } else {
+      selectDemoVehicle.value = 'Luxury Sedan';
+    }
     updateDemographicHighlight();
 
-    selectDemoVehicle.addEventListener('change', updateDemographicHighlight);
+    selectDemoVehicle.addEventListener('change', () => {
+      saveCachedState({ demoVehicle: selectDemoVehicle.value });
+      updateDemographicHighlight();
+    });
   }
 
   function updateDemographicHighlight() {
@@ -1369,6 +1431,7 @@ document.addEventListener('DOMContentLoaded', () => {
       [panelRefGearbox, panelRefChassis, panelRefEngine].forEach(p => { if (p) p.style.display = 'none'; });
       activeBtn?.classList.add('active');
       if (activePanel) activePanel.style.display = 'block';
+      saveCachedState({ refSubTab: type });
       if (type) trackUsageEvent('ref_directory_' + type, 'Reference Directory: ' + type);
     }
 
@@ -1380,10 +1443,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const clamped = Math.max(1900, Math.min(2020, Number(val) || 1900));
       inputYear.value = clamped;
       if (inputYearNum) inputYearNum.value = clamped;
+      saveCachedState({ year: clamped });
       updateDetail();
     }
 
     selectVehicle.addEventListener('change', () => {
+      saveCachedState({ advisorVehicle: selectVehicle.value });
       trackUsageEvent('advisor_select_' + selectVehicle.value, 'Advisor Model: ' + selectVehicle.value);
       updateDetail();
     });
@@ -1397,9 +1462,28 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnPrev) btnPrev.addEventListener('click', () => setAdvisorYear(Number(inputYear.value) - 1));
     if (btnNext) btnNext.addEventListener('click', () => setAdvisorYear(Number(inputYear.value) + 1));
 
+    // Restore cached selection if available
+    const cachedAdv = getCachedState();
+    if (cachedAdv.advisorVehicle && Array.from(selectVehicle.options).some(o => o.value === cachedAdv.advisorVehicle)) {
+      selectVehicle.value = cachedAdv.advisorVehicle;
+    }
+    if (cachedAdv.year) {
+      inputYear.value = cachedAdv.year;
+      if (inputYearNum) inputYearNum.value = cachedAdv.year;
+    }
+
     renderTable();
     updateDetail();
     renderRefTables();
+
+    // Restore cached reference sub-tab
+    if (cachedAdv.refSubTab === 'chassis' && btnRefChassis) {
+      switchRefTab(btnRefChassis, panelRefChassis, 'chassis');
+    } else if (cachedAdv.refSubTab === 'engine' && btnRefEngine) {
+      switchRefTab(btnRefEngine, panelRefEngine, 'engine');
+    } else if (btnRefGearbox) {
+      switchRefTab(btnRefGearbox, panelRefGearbox, 'gearbox');
+    }
   }
 
   // ============================================================
@@ -1446,7 +1530,23 @@ document.addEventListener('DOMContentLoaded', () => {
       opt.textContent = v.carType;
       selectVehicle.appendChild(opt);
     });
-    selectVehicle.value = 'Sedan';
+
+    const cachedVopt = getCachedState();
+    if (cachedVopt.voptVehicle && Array.from(selectVehicle.options).some(o => o.value === cachedVopt.voptVehicle)) {
+      selectVehicle.value = cachedVopt.voptVehicle;
+    } else {
+      selectVehicle.value = 'Sedan';
+    }
+
+    selectVehicle.addEventListener('change', () => {
+      saveCachedState({ voptVehicle: selectVehicle.value });
+      updateConceptDropdown();
+    });
+
+    selectConcept.addEventListener('change', () => {
+      saveCachedState({ voptConcept: selectConcept.value });
+      populateConceptDefaults();
+    });
 
     function syncSliders() {
       if (valDepend && sliderDepend) valDepend.textContent = sliderDepend.value;
@@ -1462,10 +1562,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Skill slider sync
     if (sliderSkill && inputSkillNum) {
-      sliderSkill.addEventListener('input', () => { inputSkillNum.value = sliderSkill.value; });
+      if (cachedVopt.voptSkill != null) {
+        sliderSkill.value = cachedVopt.voptSkill;
+        inputSkillNum.value = cachedVopt.voptSkill;
+      }
+      sliderSkill.addEventListener('input', () => {
+        inputSkillNum.value = sliderSkill.value;
+        saveCachedState({ voptSkill: Number(sliderSkill.value) });
+      });
       inputSkillNum.addEventListener('input', () => {
         const val = Math.max(0, Math.min(100, Number(inputSkillNum.value) || 0));
         sliderSkill.value = val;
+        saveCachedState({ voptSkill: val });
       });
     }
 
@@ -1474,10 +1582,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const clamped = Math.max(1900, Math.min(2020, Number(val) || 1900));
       if (inputYear) inputYear.value = clamped;
       if (inputYearNum) inputYearNum.value = clamped;
+      saveCachedState({ year: clamped });
       populateConceptDefaults();
     }
 
-    if (inputYear) inputYear.addEventListener('input', () => setVoptYear(inputYear.value));
+    if (inputYear) {
+      if (cachedVopt.year) {
+        inputYear.value = cachedVopt.year;
+        if (inputYearNum) inputYearNum.value = cachedVopt.year;
+      }
+      inputYear.addEventListener('input', () => setVoptYear(inputYear.value));
+    }
     if (inputYearNum) {
       inputYearNum.addEventListener('input', () => {
         if (inputYearNum.value.length >= 4) setVoptYear(inputYearNum.value);
@@ -1520,81 +1635,76 @@ document.addEventListener('DOMContentLoaded', () => {
       if (sliderTechComp) sliderTechComp.value = constraints.techComponent != null ? constraints.techComponent : 0;
       if (sliderTechTech) sliderTechTech.value = constraints.techTechnology != null ? constraints.techTechnology : 0;
       if (sliderTechTechq) sliderTechTechq.value = constraints.techTechnique != null ? constraints.techTechnique : 0;
-
       syncSliders();
     }
 
-    selectVehicle.addEventListener('change', updateConceptDropdown);
-    selectConcept.addEventListener('change', populateConceptDefaults);
-    if (btnResetDefaults) btnResetDefaults.addEventListener('click', populateConceptDefaults);
+    if (btnResetDefaults) {
+      btnResetDefaults.addEventListener('click', populateConceptDefaults);
+    }
 
-    btnOptimize.addEventListener('click', async () => {
+    if (selectVehicle) {
+      selectVehicle.addEventListener('change', updateConceptDropdown);
+    }
+    if (selectConcept) {
+      selectConcept.addEventListener('change', populateConceptDefaults);
+    }
+
+    // Run Optimization Handler
+    btnOptimize.addEventListener('click', () => {
+      btnOptimize.disabled = true;
+      statusEl.textContent = '⚙️ Optimizing vehicle engine candidate...';
+      resultsBox.innerHTML = '';
+
+      const carType = selectVehicle.value;
       const concept = selectConcept.value;
       const year = Number(inputYear.value) || 1960;
-      const skill = Number(sliderSkill?.value || inputSkillNum?.value || 70);
-
-      trackUsageEvent('optimize_engine_vehicle', `Vehicle Optimizer: ${selectVehicle.value} - ${concept} (${year})`);
-
-      statusEl.textContent = '⏳ Optimizing...';
-      btnOptimize.disabled = true;
-      resultsBox.style.display = 'none';
+      trackUsageEvent('optimize_vehicle_engine', `Optimize Vehicle Engine: ${carType}_${concept}_${year}`);
 
       try {
-        const allowedFuelsList = selectFuel && selectFuel.value !== 'Any'
-          ? [selectFuel.value]
-          : (userAllowed.fuels.size > 0 ? Array.from(userAllowed.fuels) : null);
+        const customConstraints = {
+          maxCost: inputMaxCost.value !== '' ? Number(inputMaxCost.value) : null,
+          maxWeight: inputMaxWeight.value !== '' ? Number(inputMaxWeight.value) : null,
+          maxHpTorqueRatio: inputMaxRatio.value !== '' ? Number(inputMaxRatio.value) : null,
+          focus: selectFocus.value,
+          preferredFuel: selectFuel.value,
+          engineBayWidth: inputMaxWid.value !== '' ? Number(inputMaxWid.value) : null,
+          engineBayLength: inputMaxLen.value !== '' ? Number(inputMaxLen.value) : null,
+          designDependability: Number(sliderDepend.value),
+          performanceFuel: Number(sliderFuel.value),
+          techComponent: Number(sliderTechComp.value),
+          techTechnology: Number(sliderTechTech.value),
+          techTechnique: Number(sliderTechTechq.value),
+          designSkill: Number(inputSkillNum.value) || 70,
+        };
 
-        const result = GearCityEngine.optimizeEngine({
-          year,
-          focus: selectFocus ? selectFocus.value : 'Torque',
-          maxWeight: inputMaxWeight && inputMaxWeight.value ? Number(inputMaxWeight.value) : null,
-          maxCost: inputMaxCost && inputMaxCost.value ? Number(inputMaxCost.value) : null,
-          maxHpTorqueRatio: inputMaxRatio && inputMaxRatio.value ? Number(inputMaxRatio.value) : null,
-          maxLength: inputMaxLen && inputMaxLen.value ? Number(inputMaxLen.value) / 10.0 : null,
-          maxWidth: inputMaxWid && inputMaxWid.value ? Number(inputMaxWid.value) / 10.0 : null,
-          allowedLayouts: userAllowed.layouts.size > 0 ? Array.from(userAllowed.layouts) : null,
-          allowedCylinders: userAllowed.cylinders.size > 0 ? Array.from(userAllowed.cylinders) : null,
-          allowedFuels: allowedFuelsList,
-          allowedInductions: userAllowed.inductions.size > 0 ? Array.from(userAllowed.inductions) : null,
-          allowedValves: userAllowed.valves.size > 0 ? Array.from(userAllowed.valves) : null,
-          designDependability: sliderDepend ? Number(sliderDepend.value) : 50,
-          performanceFuel: sliderFuel ? Number(sliderFuel.value) : 0,
-          techComponent: sliderTechComp ? Number(sliderTechComp.value) : 0,
-          techTechnology: sliderTechTech ? Number(sliderTechTech.value) : 0,
-          techTechnique: sliderTechTechq ? Number(sliderTechTechq.value) : 0,
-          designSkill: skill,
-          modelName: `${selectVehicle.value}_${concept}_${year}`,
-        });
-
-        if (!result || !result.best) {
-          statusEl.textContent = '❌ No valid engine found within constraints. Try relaxing cost/weight limits.';
+        const result = GearCityEngine.optimizeEngineForVehicle(carType, concept, year, customConstraints);
+        if (!result.success) {
+          statusEl.textContent = '⚠️ ' + result.message;
           btnOptimize.disabled = false;
           return;
         }
 
-        const b = result.best;
-        const perf = b.performance;
+        const b = result.bestCandidate;
+        const perf = result.performance;
 
-        resultsBox.style.display = 'block';
         resultsBox.innerHTML = `
-          <div class="metric-item" style="padding: 16px; text-align: left;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-              <div style="font-weight: 800; font-size: 16px; color: var(--gc-text-gold);">🏆 Optimal Engine for ${selectVehicle.value} (${concept})</div>
-              <button id="btn-vopt-download-xml" class="btn-secondary" style="margin-top: 0; padding: 4px 12px; font-size: 12px; height: 30px;">
-                📥 Download Blueprint (.xml)
+          <div class="result-card" style="background: rgba(0,0,0,0.3); border: 1px solid var(--gc-border-gold); border-radius: 6px; padding: 20px; margin-top: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <div>
+                <span class="badge" style="background: rgba(76,175,80,0.2); color: #81c784; border: 1px solid rgba(76,175,80,0.4); padding: 3px 8px; border-radius: 3px; font-weight: 700; font-size: 11px;">OPTIMAL CANDIDATE</span>
+                <span style="color: var(--gc-text-gold); font-weight: 800; font-size: 16px; margin-left: 8px;">${result.config.name}</span>
+              </div>
+              <button id="btn-vopt-download-xml" class="btn btn-secondary" style="font-size: 12px; padding: 6px 12px; border-color: var(--gc-border-gold); color: var(--gc-text-gold);">
+                📥 Download XML Blueprint
               </button>
             </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; font-size: 13px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; font-size: 12px; margin-top: 10px;">
               <div>
-                <div style="color: var(--gc-text-muted); font-size: 11px;">Layout</div>
-                <div style="color: var(--gc-text-ivory); font-weight: 700;">${b.layout}</div>
+                <div style="color: var(--gc-text-muted); font-size: 11px;">Architecture</div>
+                <div style="color: var(--gc-text-ivory); font-weight: 700;">${b.layout} ${b.cylinders} Cyl</div>
               </div>
               <div>
-                <div style="color: var(--gc-text-muted); font-size: 11px;">Cylinders</div>
-                <div style="color: var(--gc-text-ivory); font-weight: 700;">${b.cylinders}</div>
-              </div>
-              <div>
-                <div style="color: var(--gc-text-muted); font-size: 11px;">Fuel</div>
+                <div style="color: var(--gc-text-muted); font-size: 11px;">Fuel Type</div>
                 <div style="color: var(--gc-text-ivory); font-weight: 700;">${b.fuel}</div>
               </div>
               <div>
@@ -1676,15 +1786,58 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     updateConceptDropdown();
+    if (cachedVopt.voptConcept && Array.from(selectConcept.options).some(o => o.value === cachedVopt.voptConcept)) {
+      selectConcept.value = cachedVopt.voptConcept;
+      populateConceptDefaults();
+    }
   }
 
-  // Initialize filters, dropdowns & calculations on load
-  const initialYear = Number(inputYear.value) || 1957;
+  // Initialize filters, dropdowns & calculations on load with cached state
+  const cached = getCachedState();
+  const initialYear = Number(cached.year) || Number(inputYear.value) || 1957;
+
+  if (cached.year) {
+    inputYear.value = cached.year;
+    if (inputYearNum) inputYearNum.value = cached.year;
+  }
+
+  if (cached.designSkill != null) {
+    setDesignSkill(cached.designSkill);
+  }
+
+  if (cached.optGoal) {
+    const goalOption = Array.from(goalOptions).find(o => o.dataset.focus === cached.optGoal);
+    if (goalOption) {
+      goalOptions.forEach((o) => o.classList.remove('active'));
+      goalOption.classList.add('active');
+      currentFocus = cached.optGoal;
+    }
+  }
+
+  if (cached.engineSliders) {
+    if (cached.engineSliders.bore && sliderBore) sliderBore.value = cached.engineSliders.bore;
+    if (cached.engineSliders.stroke && sliderStroke) sliderStroke.value = cached.engineSliders.stroke;
+    if (cached.engineSliders.rpm && sliderRpm) sliderRpm.value = cached.engineSliders.rpm;
+    if (cached.engineSliders.torque && sliderTorq) sliderTorq.value = cached.engineSliders.torque;
+    if (cached.engineSliders.perfFocus && sliderPerfFocus) sliderPerfFocus.value = cached.engineSliders.perfFocus;
+    if (cached.engineSliders.ecoFocus && sliderEcoFocus) sliderEcoFocus.value = cached.engineSliders.ecoFocus;
+    if (cached.engineSliders.materials && sliderMaterials) sliderMaterials.value = cached.engineSliders.materials;
+    if (cached.engineSliders.weight && sliderWeight) sliderWeight.value = cached.engineSliders.weight;
+  }
+
   initFiltersForYear(initialYear, true);
   populateComponentDropdowns();
   updateCalculations();
   initDemographics();
   initVehicleAdvisor();
   initVehicleEngineOptimizer();
+
+  // Restore Active Tab
+  if (cached.activeTab) {
+    const savedTab = Array.from(navTabs).find(t => t.dataset.tab === cached.activeTab);
+    if (savedTab) {
+      savedTab.click();
+    }
+  }
 });
 
