@@ -1317,13 +1317,62 @@ document.addEventListener('DOMContentLoaded', () => {
       const tbChassis = document.getElementById('table-ref-chassis-body');
       if (tbChassis) {
         tbChassis.innerHTML = '';
+        const catMap = {
+          Micro: 'Minicar / Micro',
+          Sport: 'Sport',
+          General: 'General (Sedan/Hatch)',
+          Luxury: 'Luxury',
+          Truck: 'Truck / Utility'
+        };
+
         Object.values(GEARCITY_DATA.chassisDesigns).forEach(c => {
           const tr = document.createElement('tr');
+          const catKey = c.category || 'General';
+          const catName = catMap[catKey] || catKey;
+
+          // Build decade targets progression
+          const decs = GEARCITY_DATA.decadeChassisBenchmarks;
+          const b00 = decs['1900s'][catKey];
+          const b30 = decs['1930s'][catKey];
+          const b60 = decs['1960s'][catKey];
+          const b90 = decs['1990s'][catKey];
+          const b20 = decs['2020s'][catKey];
+
+          let allDecadesHtml = '';
+          for (const [dKey, dCats] of Object.entries(decs)) {
+            const db = dCats[catKey];
+            allDecadesHtml += `<div style="display: flex; justify-content: space-between; gap: 6px; padding: 1px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <span style="color: var(--gc-text-gold); font-weight: 700;">${dKey}:</span>
+              <span style="color: #81c784;">${db.avgChassisKg}kg</span>
+              <span style="color: var(--gc-text-muted);">(${db.curbRangeKg})</span>
+            </div>`;
+          }
+
+          const decadeTargetHtml = `
+            <div style="font-size: 11px; line-height: 1.4; min-width: 170px;">
+              <div style="margin-bottom: 4px;"><span class="tag-badge tag-focus" style="font-size: 10px;">${catName}</span></div>
+              <div style="color: var(--gc-text-ivory); font-size: 10px; line-height: 1.5;">
+                <div>1900s: <strong style="color: #81c784;">${b00.avgChassisKg} kg</strong> <span style="color: var(--gc-text-muted); font-size: 9px;">(Curb: ${b00.curbRangeKg})</span></div>
+                <div>1930s: <strong style="color: #81c784;">${b30.avgChassisKg} kg</strong> <span style="color: var(--gc-text-muted); font-size: 9px;">(Curb: ${b30.curbRangeKg})</span></div>
+                <div>1960s: <strong style="color: #81c784;">${b60.avgChassisKg} kg</strong> <span style="color: var(--gc-text-muted); font-size: 9px;">(Curb: ${b60.curbRangeKg})</span></div>
+                <div>1990s: <strong style="color: #81c784;">${b90.avgChassisKg} kg</strong> <span style="color: var(--gc-text-muted); font-size: 9px;">(Curb: ${b90.curbRangeKg})</span></div>
+                <div>2020s: <strong style="color: #81c784;">${b20.avgChassisKg} kg</strong> <span style="color: var(--gc-text-muted); font-size: 9px;">(Curb: ${b20.curbRangeKg})</span></div>
+              </div>
+              <details style="cursor: pointer; margin-top: 4px;">
+                <summary style="color: var(--gc-text-gold); font-weight: 700; font-size: 10px;">All 13 Decades ▾</summary>
+                <div style="max-height: 110px; overflow-y: auto; font-size: 9px; margin-top: 3px; padding: 4px 6px; background: rgba(0,0,0,0.4); border-radius: 3px;">
+                  ${allDecadesHtml}
+                </div>
+              </details>
+            </div>
+          `;
+
           const sliderStr = c.suspensionTuning ? `Sus: Stab ${c.suspensionTuning.stability}%, Comf ${c.suspensionTuning.comfort}%, Perf ${c.suspensionTuning.performance}%, Brk ${c.suspensionTuning.braking}%, Dur ${c.suspensionTuning.durability}%<br><span style="color: var(--gc-text-gold);">Focus:</span> Perf ${c.designFocus.performance}%, Str ${c.designFocus.strength}%, Dep ${c.designFocus.dependability}%` : (c.sliderValues ? `Perf: ${c.sliderValues.performance}%, Str: ${c.sliderValues.strength}%, Comf: ${c.sliderValues.comfort}%, Dur: ${c.sliderValues.durability}%` : '—');
           const techStr = c.techSliders ? `Mat: ${c.techSliders.materials}, Comp: ${c.techSliders.components}, Tech: ${c.techSliders.technology}, Techq: ${c.techSliders.techniques}` : '—';
           tr.innerHTML = `
             <td style="font-weight: 800; color: var(--gc-text-gold);">${c.name}</td>
             <td><strong style="color: var(--gc-text-amber); background: rgba(255,183,77,0.1); padding: 2px 6px; border-radius: 3px; border: 1px solid rgba(255,183,77,0.2);">${c.maxEngine}</strong></td>
+            <td>${decadeTargetHtml}</td>
             <td>${c.ratings.performance}</td>
             <td>${c.ratings.strength}</td>
             <td>${c.ratings.comfort}</td>
@@ -1357,6 +1406,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const xmlContent = GearCityEngine.generateChassisXml({
               ...chData,
+              year: currentYear,
               frameType,
               drivetrain,
               frSuspension: frSusp,
@@ -1428,109 +1478,19 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         });
       }
-
-      // 4. Decade Weight Benchmarks Table
-      const tbBenchmarks = document.getElementById('table-ref-benchmarks-body');
-      if (tbBenchmarks && GEARCITY_DATA.decadeChassisBenchmarks) {
-        tbBenchmarks.innerHTML = '';
-        const catMap = {
-          Micro: { name: 'Minicar / Micro', chassis: 'Tiny' },
-          Sport: { name: 'Sport', chassis: 'Sport, Race, Drive' },
-          General: { name: 'General (Sedan/Hatch)', chassis: 'Balance' },
-          Luxury: { name: 'Luxury', chassis: 'CLux, Lux, SafLux' },
-          Truck: { name: 'Truck / Utility', chassis: 'Truck' }
-        };
-
-        for (const [decade, cats] of Object.entries(GEARCITY_DATA.decadeChassisBenchmarks)) {
-          for (const [catKey, b] of Object.entries(cats)) {
-            const tr = document.createElement('tr');
-            const catInfo = catMap[catKey] || { name: catKey, chassis: catKey };
-            const primaryChassis = catInfo.chassis.split(',')[0].trim();
-            const startYear = parseInt(decade) || 1960;
-
-            tr.innerHTML = `
-              <td><strong style="color: var(--gc-text-gold); font-family: var(--font-game-mono);">${decade}</strong></td>
-              <td style="font-weight: 600; color: var(--gc-text-ivory);">${catInfo.name}</td>
-              <td><span class="tag-badge tag-focus">${catInfo.chassis}</span></td>
-              <td><strong style="color: #81c784; font-size: 13px;">${b.avgChassisKg} kg</strong></td>
-              <td style="color: var(--gc-text-muted);">${b.chassisRangeKg} kg</td>
-              <td><strong style="color: var(--gc-text-gold);">${b.curbRangeKg} kg</strong></td>
-              <td><span class="tag-badge" style="background: rgba(255,183,77,0.15); color: var(--gc-text-amber);">${b.frame}</span></td>
-              <td><span class="tag-badge" style="background: rgba(100,181,246,0.15); color: #64b5f6;">${b.drivetrain}</span></td>
-              <td style="font-size: 11px; color: var(--gc-text-muted); max-width: 220px;">${b.notes}</td>
-              <td>
-                <button class="btn btn-secondary btn-ref-dl-benchmark" data-chassis-name="${primaryChassis}" data-year="${startYear}" data-decade="${decade}" data-category="${catKey}" style="padding: 3px 8px; font-size: 11px; white-space: nowrap; border: 1px solid #81c784; background: rgba(76,175,80,0.15); color: #81c784; cursor: pointer; border-radius: 3px; font-weight: 700;">
-                  📥 .xml
-                </button>
-              </td>
-            `;
-            tbBenchmarks.appendChild(tr);
-          }
-        }
-
-        tbBenchmarks.querySelectorAll('.btn-ref-dl-benchmark').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const cName = e.currentTarget.getAttribute('data-chassis-name');
-            const dYear = parseInt(e.currentTarget.getAttribute('data-year')) || 1960;
-            const decade = e.currentTarget.getAttribute('data-decade');
-            const catKey = e.currentTarget.getAttribute('data-category');
-            const chData = GEARCITY_DATA.chassisDesigns[cName] || GEARCITY_DATA.chassisDesigns['Balance'];
-
-            const getBestAvail = (text) => {
-              if (!text) return 'Standard';
-              const lines = text.split('\n');
-              let best = lines[0].replace(/^\d{4}\s+/, '').replace(/\?$/, '').trim();
-              for (const l of lines) {
-                const m = l.match(/^(\d{4})\s+(.+)$/);
-                if (m && parseInt(m[1]) <= dYear) {
-                  best = m[2].replace(/\?$/, '').trim();
-                }
-              }
-              return best;
-            };
-
-            const frameType = getBestAvail(chData.frame);
-            const drivetrain = getBestAvail(chData.drivetrain);
-            const frSusp = getBestAvail(chData.suspension);
-            const rrSusp = frSusp;
-
-            const xmlContent = GearCityEngine.generateChassisXml({
-              ...chData,
-              year: dYear,
-              frameType,
-              drivetrain,
-              frSuspension: frSusp,
-              rrSuspension: rrSusp,
-            });
-
-            trackUsageEvent('download_xml_benchmark_chassis', `Download Benchmark Chassis XML: ${decade}_${catKey}_${cName}`);
-            const blob = new Blob([xmlContent], { type: 'application/xml;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Chassis_Benchmark_${decade}_${catKey}_${cName}.xml`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-          });
-        });
-      }
     }
 
     // Tab switching for Reference Directory
     const btnRefGearbox = document.getElementById('btn-ref-tab-gearbox');
     const btnRefChassis = document.getElementById('btn-ref-tab-chassis');
     const btnRefEngine = document.getElementById('btn-ref-tab-engine');
-    const btnRefBenchmarks = document.getElementById('btn-ref-tab-benchmarks');
     const panelRefGearbox = document.getElementById('ref-panel-gearbox');
     const panelRefChassis = document.getElementById('ref-panel-chassis');
     const panelRefEngine = document.getElementById('ref-panel-engine');
-    const panelRefBenchmarks = document.getElementById('ref-panel-benchmarks');
 
     function switchRefTab(activeBtn, activePanel, type) {
-      [btnRefGearbox, btnRefChassis, btnRefEngine, btnRefBenchmarks].forEach(b => b?.classList.remove('active'));
-      [panelRefGearbox, panelRefChassis, panelRefEngine, panelRefBenchmarks].forEach(p => { if (p) p.style.display = 'none'; });
+      [btnRefGearbox, btnRefChassis, btnRefEngine].forEach(b => b?.classList.remove('active'));
+      [panelRefGearbox, panelRefChassis, panelRefEngine].forEach(p => { if (p) p.style.display = 'none'; });
       activeBtn?.classList.add('active');
       if (activePanel) activePanel.style.display = 'block';
       saveCachedState({ refSubTab: type });
@@ -1540,7 +1500,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnRefGearbox) btnRefGearbox.addEventListener('click', () => switchRefTab(btnRefGearbox, panelRefGearbox, 'gearbox'));
     if (btnRefChassis) btnRefChassis.addEventListener('click', () => switchRefTab(btnRefChassis, panelRefChassis, 'chassis'));
     if (btnRefEngine) btnRefEngine.addEventListener('click', () => switchRefTab(btnRefEngine, panelRefEngine, 'engine'));
-    if (btnRefBenchmarks) btnRefBenchmarks.addEventListener('click', () => switchRefTab(btnRefBenchmarks, panelRefBenchmarks, 'benchmarks'));
 
     function setAdvisorYear(val) {
       const clamped = Math.max(1900, Math.min(2020, Number(val) || 1900));
@@ -1584,8 +1543,6 @@ document.addEventListener('DOMContentLoaded', () => {
       switchRefTab(btnRefChassis, panelRefChassis, 'chassis');
     } else if (cachedAdv.refSubTab === 'engine' && btnRefEngine) {
       switchRefTab(btnRefEngine, panelRefEngine, 'engine');
-    } else if (cachedAdv.refSubTab === 'benchmarks' && btnRefBenchmarks) {
-      switchRefTab(btnRefBenchmarks, panelRefBenchmarks, 'benchmarks');
     } else if (btnRefGearbox) {
       switchRefTab(btnRefGearbox, panelRefGearbox, 'gearbox');
     }
