@@ -233,7 +233,8 @@ class EngineOptimizer:
             if constraints.max_width_cm is not None and res.width_cm > constraints.max_width_cm:
                 penalty += (res.width_cm - constraints.max_width_cm) ** 2
             if (
-                constraints.max_hp_torque_ratio is not None
+                constraints.design_focus == "Torque"
+                and constraints.max_hp_torque_ratio is not None
                 and res.horsepower > 0
                 and (res.torque_nm / res.horsepower) > constraints.max_hp_torque_ratio
             ):

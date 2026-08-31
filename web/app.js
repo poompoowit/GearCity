@@ -55,6 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const goalOptions = document.querySelectorAll('.goal-option');
   const inputMaxCost = document.getElementById('input-max-cost');
   const inputMaxWeight = document.getElementById('input-max-weight');
+  const inputOptMaxRatio = document.getElementById('input-opt-max-ratio');
+  const hintOptMaxRatio = document.getElementById('hint-opt-max-ratio');
   const inputMaxLen = document.getElementById('input-max-len');
   const inputMaxWid = document.getElementById('input-max-wid');
   const selectOptFuel = document.getElementById('select-opt-fuel');
@@ -162,11 +164,27 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ==========================================================================
      Goal Focus Toggle
      ========================================================================== */
+  function updateOptRatioInputState() {
+    if (!inputOptMaxRatio) return;
+    if (currentFocus === 'HP') {
+      inputOptMaxRatio.disabled = true;
+      inputOptMaxRatio.style.opacity = '0.5';
+      inputOptMaxRatio.placeholder = 'Disabled for Max HP';
+      if (hintOptMaxRatio) hintOptMaxRatio.textContent = '(Disabled for Max HP)';
+    } else {
+      inputOptMaxRatio.disabled = false;
+      inputOptMaxRatio.style.opacity = '1';
+      inputOptMaxRatio.placeholder = 'e.g. 1.6 (blank = no limit)';
+      if (hintOptMaxRatio) hintOptMaxRatio.textContent = '(Torque mode only)';
+    }
+  }
+
   goalOptions.forEach((option) => {
     option.addEventListener('click', () => {
       goalOptions.forEach((o) => o.classList.remove('active'));
       option.classList.add('active');
       currentFocus = option.dataset.focus;
+      updateOptRatioInputState();
       saveCachedState({ optGoal: currentFocus });
     });
   });
@@ -607,6 +625,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const year = Number(inputYear.value);
     const maxCost = inputMaxCost.value ? Number(inputMaxCost.value) : null;
     const maxWeight = inputMaxWeight.value ? Number(inputMaxWeight.value) : null;
+    const maxHpTorqueRatio = currentFocus === 'Torque' && inputOptMaxRatio && inputOptMaxRatio.value !== '' ? Number(inputOptMaxRatio.value) : null;
     const maxLength = inputMaxLen.value ? Number(inputMaxLen.value) / 10.0 : null; // mm to cm
     const maxWidth = inputMaxWid.value ? Number(inputMaxWid.value) / 10.0 : null;   // mm to cm
 
@@ -620,6 +639,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const optRes = GearCityEngine.optimizeEngine(year, {
           maxCost,
           maxWeight,
+          maxHpTorqueRatio,
           maxLength,
           maxWidth,
           focus: currentFocus,
@@ -1678,6 +1698,27 @@ document.addEventListener('DOMContentLoaded', () => {
       populateConceptDefaults();
     }
 
+    const hintVoptMaxRatio = document.getElementById('hint-vopt-max-ratio');
+
+    function updateVoptRatioInputState() {
+      if (!inputMaxRatio) return;
+      if (selectFocus && selectFocus.value === 'HP') {
+        inputMaxRatio.disabled = true;
+        inputMaxRatio.style.opacity = '0.5';
+        inputMaxRatio.placeholder = 'Disabled for Max HP';
+        if (hintVoptMaxRatio) hintVoptMaxRatio.textContent = '(Disabled for Max HP)';
+      } else {
+        inputMaxRatio.disabled = false;
+        inputMaxRatio.style.opacity = '1';
+        inputMaxRatio.placeholder = 'e.g. 1.6 (blank = no limit)';
+        if (hintVoptMaxRatio) hintVoptMaxRatio.textContent = '(Torque mode only)';
+      }
+    }
+
+    if (selectFocus) {
+      selectFocus.addEventListener('change', updateVoptRatioInputState);
+    }
+
     function populateConceptDefaults() {
       const concept = selectConcept.value;
       const year = Number(inputYear.value) || 1960;
@@ -1698,6 +1739,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (sliderTechTech) sliderTechTech.value = constraints.techTechnology != null ? constraints.techTechnology : 0;
       if (sliderTechTechq) sliderTechTechq.value = constraints.techTechnique != null ? constraints.techTechnique : 0;
       syncSliders();
+      updateVoptRatioInputState();
     }
 
     if (btnResetDefaults) {
@@ -1723,10 +1765,11 @@ document.addEventListener('DOMContentLoaded', () => {
       trackUsageEvent('optimize_vehicle_engine', `Optimize Vehicle Engine: ${carType}_${concept}_${year}`);
 
       try {
+        const isTorqueFocus = selectFocus.value === 'Torque';
         const customConstraints = {
           maxCost: inputMaxCost.value !== '' ? Number(inputMaxCost.value) : null,
           maxWeight: inputMaxWeight.value !== '' ? Number(inputMaxWeight.value) : null,
-          maxHpTorqueRatio: inputMaxRatio.value !== '' ? Number(inputMaxRatio.value) : null,
+          maxHpTorqueRatio: isTorqueFocus && inputMaxRatio.value !== '' ? Number(inputMaxRatio.value) : null,
           focus: selectFocus.value,
           preferredFuel: selectFuel.value,
           engineBayWidth: inputMaxWid.value !== '' ? Number(inputMaxWid.value) : null,
@@ -1786,25 +1829,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="color: var(--gc-text-ivory); font-weight: 700;">${perf.boreMm?.toFixed(1) || '—'} × ${perf.strokeMm?.toFixed(1) || '—'} mm</div>
               </div>
             </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid #3d2314;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid #3d2314;">
               <div style="text-align: center;">
                 <div style="color: var(--gc-text-muted); font-size: 10px;">TORQUE</div>
-                <div style="color: var(--gc-text-gold); font-size: 20px; font-weight: 800;">${perf.torqueNm?.toFixed(1) || '—'}</div>
+                <div style="color: var(--gc-text-gold); font-size: 18px; font-weight: 800;">${perf.torqueNm?.toFixed(1) || '—'}</div>
                 <div style="color: var(--gc-text-muted); font-size: 10px;">Nm</div>
               </div>
               <div style="text-align: center;">
                 <div style="color: var(--gc-text-muted); font-size: 10px;">POWER</div>
-                <div style="color: var(--gc-text-amber); font-size: 20px; font-weight: 800;">${perf.horsepower?.toFixed(1) || '—'}</div>
+                <div style="color: var(--gc-text-amber); font-size: 18px; font-weight: 800;">${perf.horsepower?.toFixed(1) || '—'}</div>
                 <div style="color: var(--gc-text-muted); font-size: 10px;">HP</div>
               </div>
               <div style="text-align: center;">
+                <div style="color: var(--gc-text-muted); font-size: 10px;">T:HP RATIO</div>
+                <div style="color: #64b5f6; font-size: 18px; font-weight: 800;">${perf.horsepower > 0 ? (perf.torqueNm / perf.horsepower).toFixed(2) : '—'}</div>
+                <div style="color: var(--gc-text-muted); font-size: 10px;">Torque / HP</div>
+              </div>
+              <div style="text-align: center;">
                 <div style="color: var(--gc-text-muted); font-size: 10px;">WEIGHT</div>
-                <div style="color: var(--gc-text-green); font-size: 20px; font-weight: 800;">${perf.weightKg?.toFixed(1) || '—'}</div>
+                <div style="color: var(--gc-text-green); font-size: 18px; font-weight: 800;">${perf.weightKg?.toFixed(1) || '—'}</div>
                 <div style="color: var(--gc-text-muted); font-size: 10px;">kg</div>
               </div>
               <div style="text-align: center;">
                 <div style="color: var(--gc-text-muted); font-size: 10px;">EST. COST</div>
-                <div style="color: #ef5350; font-size: 20px; font-weight: 800;">$${perf.unitCost?.toFixed(0) || '—'}</div>
+                <div style="color: #ef5350; font-size: 18px; font-weight: 800;">$${perf.unitCost?.toFixed(0) || '—'}</div>
                 <div style="color: var(--gc-text-muted); font-size: 10px;">per unit</div>
               </div>
             </div>
@@ -1874,6 +1922,14 @@ document.addEventListener('DOMContentLoaded', () => {
       goalOption.classList.add('active');
       currentFocus = cached.optGoal;
     }
+  }
+  updateOptRatioInputState();
+
+  if (cached.optMaxRatio && inputOptMaxRatio) {
+    inputOptMaxRatio.value = cached.optMaxRatio;
+  }
+  if (inputOptMaxRatio) {
+    inputOptMaxRatio.addEventListener('input', () => saveCachedState({ optMaxRatio: inputOptMaxRatio.value }));
   }
 
   if (cached.engineSliders) {

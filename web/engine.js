@@ -431,8 +431,8 @@ const GearCityEngine = (() => {
     const maxWeight = constraints.maxWeight != null && !isNaN(constraints.maxWeight) ? Number(constraints.maxWeight) : null;
     const maxLength = constraints.maxLength != null && !isNaN(constraints.maxLength) ? Number(constraints.maxLength) : null;
     const maxWidth = constraints.maxWidth != null && !isNaN(constraints.maxWidth) ? Number(constraints.maxWidth) : null;
-    const maxHpTorqueRatio = constraints.maxHpTorqueRatio != null && !isNaN(constraints.maxHpTorqueRatio) ? Number(constraints.maxHpTorqueRatio) : null;
     const focus = constraints.focus || 'HP';
+    const effectiveMaxRatio = (focus === 'Torque' && constraints.maxHpTorqueRatio != null && !isNaN(constraints.maxHpTorqueRatio)) ? Number(constraints.maxHpTorqueRatio) : null;
     const allowedLayouts = constraints.allowedLayouts && constraints.allowedLayouts.length > 0 ? constraints.allowedLayouts : null;
     const allowedCylinders = constraints.allowedCylinders && constraints.allowedCylinders.length > 0 ? constraints.allowedCylinders : null;
     const allowedFuels = constraints.allowedFuels && constraints.allowedFuels.length > 0 ? constraints.allowedFuels : null;
@@ -493,8 +493,8 @@ const GearCityEngine = (() => {
       if (maxWidth != null && res.widthCm > maxWidth) {
         penalty += Math.pow(res.widthCm - maxWidth, 2) * 15;
       }
-      if (maxHpTorqueRatio != null && (res.horsepower / (res.torqueNm || 1)) > maxHpTorqueRatio) {
-        penalty += Math.pow((res.horsepower / (res.torqueNm || 1)) - maxHpTorqueRatio, 2) * 50;
+      if (effectiveMaxRatio != null && res.horsepower > 0 && (res.torqueNm / res.horsepower) > effectiveMaxRatio) {
+        penalty += Math.pow((res.torqueNm / res.horsepower) - effectiveMaxRatio, 2) * 50;
       }
       return penalty;
     }
@@ -898,7 +898,7 @@ const GearCityEngine = (() => {
     return {
       maxCost: targetCost,
       maxWeight: ed.maxWeight,
-      maxHpTorqueRatio: ed.maxHpTorqueRatio,
+      maxHpTorqueRatio: ed.optimizeFocus === 'HP' ? null : ed.maxHpTorqueRatio,
       focus: ed.optimizeFocus === 'HP' ? 'HP' : 'Torque',
       designDependability: ed.designDependability,
       performanceFuel: ed.performanceFuel,
