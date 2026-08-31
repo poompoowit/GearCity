@@ -735,8 +735,30 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const RATING_COLORS = {
-      driveability: '#64b5f6', safety: '#81c784', luxury: '#ce93d8',
-      dependability: '#ffb74d', performance: '#ef5350', power: '#ff7043'
+      performance: '#ef5350',
+      strength: '#81c784',
+      comfort: '#ce93d8',
+      durability: '#ffb74d',
+      reliability: '#ffb74d',
+      power: '#ff7043',
+      driveability: '#64b5f6',
+      safety: '#81c784',
+      luxury: '#ce93d8',
+      dependability: '#ffb74d'
+    };
+
+    const CHASSIS_RATING_NAMES = {
+      performance: 'Performance Rating',
+      strength: 'Strength Rating',
+      comfort: 'Comfort Rating',
+      durability: 'Durability Rating',
+    };
+
+    const GEARBOX_RATING_NAMES = {
+      comfort: 'Comfort Rating',
+      performance: 'Performance Rating',
+      reliability: 'Reliability Rating',
+      power: 'Power Rating',
     };
 
     function ratingBar(label, value, colorKey) {
@@ -860,8 +882,9 @@ document.addEventListener('DOMContentLoaded', () => {
               <span style="color: var(--gc-text-gold); font-weight: 800;"> Designed for "${ch.maxEngine}" Engine</span>
             </div>
             ${ch.note ? `<div style="font-size: 11px; color: var(--gc-text-amber); margin-bottom: 8px;">📝 <strong>Note:</strong> ${ch.note}</div>` : ''}
+            <div style="font-weight: 700; font-size: 11px; color: var(--gc-text-gold); margin-bottom: 6px;">📊 In-Game Design Ratings</div>
             <div style="margin-bottom: 12px;">
-              ${Object.entries(ch.ratings).map(([k,v]) => ratingBar(k.charAt(0).toUpperCase() + k.slice(1), v, k)).join('')}
+              ${Object.entries(ch.ratings).map(([k,v]) => ratingBar(CHASSIS_RATING_NAMES[k] || (k.charAt(0).toUpperCase() + k.slice(1) + ' Rating'), v, k)).join('')}
             </div>
             <div style="border-top: 1px solid #3d2314; padding-top: 8px;">
               <div style="font-weight: 700; font-size: 11px; color: var(--gc-text-amber); margin-bottom: 4px;">🏗️ Frame</div>
@@ -939,8 +962,9 @@ document.addEventListener('DOMContentLoaded', () => {
               <span>Est. Cost: <strong style="color: var(--gc-text-ivory);">${gd.cost || '$200 - $300'}</strong></span>
             </div>
             ${gd.note ? `<div style="font-size: 11px; color: var(--gc-text-amber); margin-bottom: 8px;">📝 <strong>Note:</strong> ${gd.note}</div>` : ''}
+            <div style="font-weight: 700; font-size: 11px; color: #64b5f6; margin-bottom: 6px;">📊 In-Game Design Ratings</div>
             <div style="margin-bottom: 10px;">
-              ${Object.entries(gd.ratings).map(([k,v]) => ratingBar(k.charAt(0).toUpperCase() + k.slice(1), v, k)).join('')}
+              ${Object.entries(gd.ratings).map(([k,v]) => ratingBar(GEARBOX_RATING_NAMES[k] || (k.charAt(0).toUpperCase() + k.slice(1) + ' Rating'), v, k)).join('')}
             </div>
             <div style="border-top: 1px solid #3d2314; padding-top: 8px;">
               <div style="font-weight: 700; font-size: 11px; color: #64b5f6; margin-bottom: 4px;">🔧 Gearbox Types (Year Unlocks)</div>
@@ -966,9 +990,9 @@ document.addEventListener('DOMContentLoaded', () => {
             <td style="font-weight: 800; color: #64b5f6;">${g.name}</td>
             <td style="font-size: 12px;">${g.concept}</td>
             <td><strong style="color: var(--gc-text-gold); background: rgba(100,181,246,0.1); padding: 2px 6px; border-radius: 3px; border: 1px solid rgba(100,181,246,0.2);">${g.maxEngineType}</strong></td>
-            <td>${g.ratings.luxury}</td>
+            <td>${g.ratings.comfort}</td>
             <td>${g.ratings.performance}</td>
-            <td>${g.ratings.dependability}</td>
+            <td>${g.ratings.reliability}</td>
             <td>${g.ratings.power}</td>
             <td style="font-size: 11px; white-space: pre-line;">${g.gearboxes}</td>
             <td style="font-size: 11px; color: var(--gc-text-muted);">${g.cost || '$200 - $300'}${g.note ? `<div style="color: var(--gc-text-amber); margin-top: 4px;">${g.note}</div>` : ''}</td>
@@ -986,10 +1010,10 @@ document.addEventListener('DOMContentLoaded', () => {
           tr.innerHTML = `
             <td style="font-weight: 800; color: var(--gc-text-gold);">${c.name}</td>
             <td><strong style="color: var(--gc-text-amber); background: rgba(255,183,77,0.1); padding: 2px 6px; border-radius: 3px; border: 1px solid rgba(255,183,77,0.2);">${c.maxEngine}</strong></td>
-            <td>${c.ratings.driveability}</td>
-            <td>${c.ratings.safety}</td>
-            <td>${c.ratings.luxury}</td>
-            <td>${c.ratings.dependability}</td>
+            <td>${c.ratings.performance}</td>
+            <td>${c.ratings.strength}</td>
+            <td>${c.ratings.comfort}</td>
+            <td>${c.ratings.durability}</td>
             <td style="font-size: 11px; white-space: pre-line;">${c.frame}</td>
             <td style="font-size: 11px; white-space: pre-line;">${c.drivetrain}</td>
             <td style="font-size: 11px; white-space: pre-line;">${c.suspension}</td>
