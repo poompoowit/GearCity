@@ -908,6 +908,67 @@ const GearCityEngine = (() => {
     };
   }
 
+  /**
+   * Optimize engine based on vehicle class and design concept requirements
+   */
+  function optimizeEngineForVehicle(carType, concept, year, customConstraints = {}) {
+    const defaultConstraints = getEngineDesignConstraints(concept, year) || {};
+
+    const constraints = {
+      ...defaultConstraints,
+      ...customConstraints,
+      year: year,
+      modelName: `${carType}_${concept ? concept.split(' ')[0] : 'Engine'}_${year}`,
+    };
+
+    if (customConstraints.engineBayLength != null && !isNaN(customConstraints.engineBayLength)) {
+      constraints.maxLength = Number(customConstraints.engineBayLength) / 10.0;
+    }
+    if (customConstraints.engineBayWidth != null && !isNaN(customConstraints.engineBayWidth)) {
+      constraints.maxWidth = Number(customConstraints.engineBayWidth) / 10.0;
+    }
+    if (customConstraints.preferredFuel && customConstraints.preferredFuel !== 'Any' && customConstraints.preferredFuel !== 'Any Available Fuel') {
+      constraints.allowedFuels = [customConstraints.preferredFuel];
+    }
+    if (customConstraints.allowedLayouts && customConstraints.allowedLayouts.length > 0) {
+      constraints.allowedLayouts = customConstraints.allowedLayouts;
+    }
+    if (customConstraints.allowedCylinders && customConstraints.allowedCylinders.length > 0) {
+      constraints.allowedCylinders = customConstraints.allowedCylinders;
+    }
+    if (customConstraints.allowedInductions && customConstraints.allowedInductions.length > 0) {
+      constraints.allowedInductions = customConstraints.allowedInductions;
+    }
+    if (customConstraints.allowedValves && customConstraints.allowedValves.length > 0) {
+      constraints.allowedValves = customConstraints.allowedValves;
+    }
+
+    const optResult = optimizeEngine(year, constraints);
+
+    if (!optResult || !optResult.config || !optResult.performance) {
+      return {
+        success: false,
+        message: 'No optimal engine found matching the selected vehicle constraints.',
+      };
+    }
+
+    return {
+      success: true,
+      config: optResult.config,
+      performance: optResult.performance,
+      score: optResult.score,
+      elapsedMs: optResult.elapsedMs,
+      bestCandidate: {
+        layout: optResult.config.components.layout,
+        cylinders: optResult.config.components.cylinders,
+        fuel: optResult.config.components.fuel,
+        induction: optResult.config.components.induction,
+        valvetrain: optResult.config.components.valve,
+        performance: optResult.performance,
+      },
+    };
+  }
+
   return {
     calculateYearFactors,
     getBoreStrokeLimits,
@@ -916,6 +977,7 @@ const GearCityEngine = (() => {
     calculatePerformance,
     calculateComponentRatings,
     optimizeEngine,
+    optimizeEngineForVehicle,
     generateEngineXml,
     generateChassisXml,
     generateGearboxXml,

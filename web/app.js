@@ -1481,9 +1481,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!constraints) return;
 
             const optResult = GearCityEngine.optimizeEngine(currentYear, constraints);
-            if (!optResult || !optResult.bestCandidate) return;
+            if (!optResult || !optResult.config) return;
 
-            const xmlContent = GearCityEngine.generateEngineXml(optResult.bestCandidate);
+            const xmlContent = GearCityEngine.generateEngineXml(optResult.config);
 
             trackUsageEvent('download_xml_ref_engine', `Download Ref Engine XML: ${eName}_${currentYear}`);
             const blob = new Blob([xmlContent], { type: 'application/xml;charset=utf-8' });
@@ -1780,6 +1780,11 @@ document.addEventListener('DOMContentLoaded', () => {
           techTechnology: Number(sliderTechTech.value),
           techTechnique: Number(sliderTechTechq.value),
           designSkill: Number(inputSkillNum.value) || 70,
+          allowedLayouts: Array.from(userAllowed.layouts),
+          allowedCylinders: Array.from(userAllowed.cylinders),
+          allowedFuels: Array.from(userAllowed.fuels),
+          allowedInductions: Array.from(userAllowed.inductions),
+          allowedValves: Array.from(userAllowed.valves),
         };
 
         const result = GearCityEngine.optimizeEngineForVehicle(carType, concept, year, customConstraints);
@@ -1792,6 +1797,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const b = result.bestCandidate;
         const perf = result.performance;
 
+        resultsBox.style.display = 'block';
         resultsBox.innerHTML = `
           <div class="result-card" style="background: rgba(0,0,0,0.3); border: 1px solid var(--gc-border-gold); border-radius: 6px; padding: 20px; margin-top: 15px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
