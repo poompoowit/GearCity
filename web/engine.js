@@ -452,7 +452,7 @@ const GearCityEngine = (() => {
       const allowedCylNames = typeof l.Cylinders === 'string' ? JSON.parse(l.Cylinders) : l.Cylinders;
       const allowedFuelNames = typeof l['Fuel Types'] === 'string' ? JSON.parse(l['Fuel Types']) : l['Fuel Types'];
       const allowedIndNames = typeof l.Inductions === 'string' ? JSON.parse(l.Inductions) : l.Inductions;
-      const validValveNames = getValidValvetrains(l.Name, year);
+      const validValveNames = getValidValvetrains(l, year);
 
       const lCyls = validCylinders.filter((c) => allowedCylNames.includes(c.Name));
       const lFuels = validFuels.filter((f) => allowedFuelNames.includes(f.Name));
