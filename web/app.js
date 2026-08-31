@@ -1259,7 +1259,143 @@ document.addEventListener('DOMContentLoaded', () => {
           URL.revokeObjectURL(url);
         });
       });
+
+      renderAssemblyEvaluation(true);
     }
+
+    // Vehicle Assembly & Synergy Evaluation Logic
+    const selectAssemblyChassis = document.getElementById('select-assembly-chassis');
+    const selectAssemblyEngine = document.getElementById('select-assembly-engine');
+    const selectAssemblyGearbox = document.getElementById('select-assembly-gearbox');
+    const assemblyDashboard = document.getElementById('assembly-ratings-dashboard');
+    const assemblyFitBadge = document.getElementById('assembly-fit-badge');
+
+    // Populate assembly dropdown options once
+    if (selectAssemblyChassis && selectAssemblyChassis.options.length === 0) {
+      Object.keys(GEARCITY_DATA.chassisDesigns).forEach(k => {
+        const opt = document.createElement('option');
+        opt.value = k;
+        opt.textContent = `${k} (${GEARCITY_DATA.chassisDesigns[k].category || 'Chassis'})`;
+        selectAssemblyChassis.appendChild(opt);
+      });
+    }
+    if (selectAssemblyEngine && selectAssemblyEngine.options.length === 0) {
+      Object.keys(GEARCITY_DATA.engineDesigns).forEach(k => {
+        const opt = document.createElement('option');
+        opt.value = k;
+        opt.textContent = `${k} (${GEARCITY_DATA.engineDesigns[k].concept || 'Engine'})`;
+        selectAssemblyEngine.appendChild(opt);
+      });
+    }
+    if (selectAssemblyGearbox && selectAssemblyGearbox.options.length === 0) {
+      Object.keys(GEARCITY_DATA.gearboxDesigns).forEach(k => {
+        const opt = document.createElement('option');
+        opt.value = k;
+        opt.textContent = `${k} (${GEARCITY_DATA.gearboxDesigns[k].concept || 'Gearbox'})`;
+        selectAssemblyGearbox.appendChild(opt);
+      });
+    }
+
+    function renderAssemblyEvaluation(resetDefaults = false) {
+      if (!assemblyDashboard || !assemblyFitBadge) return;
+      const carType = selectVehicle.value;
+      const currentYear = parseInt(inputYear.value) || 1960;
+      const vc = GEARCITY_DATA.vehicleClasses.find(v => v.carType === carType) || GEARCITY_DATA.vehicleClasses[0];
+
+      const defChassis = vc.chassis.split(/[>,/]/)[0].trim();
+      const defEngine = vc.engineType.split(/[>/]/)[0].trim();
+      const defGear = vc.gear.split(/[>/]/)[0].trim();
+
+      if (resetDefaults) {
+        if (selectAssemblyChassis) selectAssemblyChassis.value = defChassis;
+        if (selectAssemblyEngine) selectAssemblyEngine.value = defEngine;
+        if (selectAssemblyGearbox) selectAssemblyGearbox.value = defGear;
+      }
+
+      const chassisConcept = selectAssemblyChassis?.value || defChassis;
+      const engineConcept = selectAssemblyEngine?.value || defEngine;
+      const gearboxConcept = selectAssemblyGearbox?.value || defGear;
+
+      const evalRes = GearCityEngine.evaluateCompleteVehicle(carType, currentYear, {
+        chassisConcept,
+        engineConcept,
+        gearboxConcept,
+      });
+
+      if (!evalRes || !evalRes.ratings || !evalRes.fit) return;
+
+      const fit = evalRes.fit;
+      const r = evalRes.ratings;
+      const w = fit.weights || {};
+
+      // Fit Badge styling
+      let fitColor = '#81c784';
+      let fitBg = 'rgba(76,175,80,0.2)';
+      let fitBorder = 'rgba(76,175,80,0.4)';
+      let fitLabel = 'Optimal Fit';
+
+      if (fit.fitPercent < 55) {
+        fitColor = '#ef5350';
+        fitBg = 'rgba(239,83,80,0.2)';
+        fitBorder = 'rgba(239,83,80,0.4)';
+        fitLabel = 'Poor Fit';
+      } else if (fit.fitPercent < 65) {
+        fitColor = '#ffb74d';
+        fitBg = 'rgba(255,183,77,0.2)';
+        fitBorder = 'rgba(255,183,77,0.4)';
+        fitLabel = 'Moderate Fit';
+      } else if (fit.fitPercent >= 75) {
+        fitLabel = 'Perfect Fit';
+      }
+
+      assemblyFitBadge.style.color = fitColor;
+      assemblyFitBadge.style.background = fitBg;
+      assemblyFitBadge.style.borderColor = fitBorder;
+      assemblyFitBadge.innerHTML = `🎯 Target Buyer Fit: <strong style="font-size: 14px; margin-left: 4px;">${fit.fitPercent}%</strong> <span style="font-size: 11px; opacity: 0.85; margin-left: 4px;">(${fitLabel})</span>`;
+
+      // Stat definition cards with weights, colors, and key drivers
+      const statConfigs = [
+        { key: 'performance', label: 'Performance', weight: w.Performance, color: '#ef5350', grad: 'linear-gradient(90deg, #b71c1c, #ef5350)', hint: '35% Eng HP + 30% Chassis + 20% Torque + 15% Gearbox' },
+        { key: 'drivability', label: 'Drivability', weight: w.Driveability, color: '#ce93d8', grad: 'linear-gradient(90deg, #7b1fa2, #ce93d8)', hint: '35% Chassis Comfort + 35% Smoothness + 30% Gearbox' },
+        { key: 'luxury', label: 'Luxury & Comfort', weight: w.Luxury, color: '#ffd54f', grad: 'linear-gradient(90deg, #f57f17, #ffd54f)', hint: '50% Smoothness + 30% Chassis Comfort + 20% Gearbox' },
+        { key: 'safety', label: 'Safety Rating', weight: w.Safety, color: '#64b5f6', grad: 'linear-gradient(90deg, #1565c0, #64b5f6)', hint: '70% Chassis Strength + 30% Chassis Durability' },
+        { key: 'fuel', label: 'Fuel Economy', weight: w.Fuel, color: '#81c784', grad: 'linear-gradient(90deg, #2e7d32, #81c784)', hint: '45% Eng Fuel + 45% Gearbox Fuel + 10% Weight' },
+        { key: 'power', label: 'Power & Torque', weight: w.Power, color: '#ff8a65', grad: 'linear-gradient(90deg, #d84315, #ff8a65)', hint: '40% Torque + 35% HP + 25% Gearbox Torque' },
+        { key: 'cargo', label: 'Cargo Utility', weight: w.Cargo, color: '#bcaaa4', grad: 'linear-gradient(90deg, #5d4037, #bcaaa4)', hint: '55% Chassis Strength + 45% Chassis Durability' },
+        { key: 'dependability', label: 'Dependability', weight: w.Dependability, color: '#4db6ac', grad: 'linear-gradient(90deg, #00695c, #4db6ac)', hint: '35% Eng Rel + 35% Gearbox Rel + 30% Chassis Dur' },
+        { key: 'quality', label: 'Overall Quality', weight: null, color: '#ffca28', grad: 'linear-gradient(90deg, #ff8f00, #ffca28)', hint: 'Composite average of Chassis, Engine, and Gearbox overalls' },
+      ];
+
+      assemblyDashboard.innerHTML = statConfigs.map(s => {
+        const val = r[s.key] != null ? r[s.key] : 50;
+        const weightBadge = s.weight != null
+          ? `<span style="font-size: 10px; color: var(--gc-text-gold); background: rgba(0,0,0,0.35); padding: 1px 6px; border-radius: 3px; border: 1px solid rgba(255,204,0,0.2);">Imp: ${(s.weight * 100).toFixed(0)}%</span>`
+          : '<span style="font-size: 10px; color: #81c784; background: rgba(76,175,80,0.15); padding: 1px 6px; border-radius: 3px;">Composite</span>';
+
+        return `
+          <div style="background: linear-gradient(180deg, #1c1f24 0%, #121417 100%); border: 1px solid #472b1a; border-radius: 4px; padding: 10px 12px; box-shadow: var(--shadow-bevel-inner);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <span style="font-size: 12px; font-weight: 700; color: var(--gc-text-ivory);">${s.label}</span>
+              ${weightBadge}
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+              <span style="font-size: 18px; font-weight: 800; color: ${s.color}; font-family: var(--font-game-mono);">${val}</span>
+              <span style="font-size: 10px; color: var(--gc-text-muted);">/ 100</span>
+            </div>
+            <div style="width: 100%; height: 6px; background: rgba(0,0,0,0.5); border-radius: 3px; overflow: hidden; margin-bottom: 6px; border: 1px solid rgba(255,255,255,0.05);">
+              <div style="width: ${Math.min(100, Math.max(0, val))}%; height: 100%; background: ${s.grad}; border-radius: 3px; transition: width 0.3s ease;"></div>
+            </div>
+            <div style="font-size: 9.5px; color: var(--gc-text-muted); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${s.hint}">
+              ${s.hint}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    if (selectAssemblyChassis) selectAssemblyChassis.addEventListener('change', () => renderAssemblyEvaluation(false));
+    if (selectAssemblyEngine) selectAssemblyEngine.addEventListener('change', () => renderAssemblyEvaluation(false));
+    if (selectAssemblyGearbox) selectAssemblyGearbox.addEventListener('change', () => renderAssemblyEvaluation(false));
 
     // Concept Reference Tables Rendering
     function renderRefTables() {

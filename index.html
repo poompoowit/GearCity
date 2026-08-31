@@ -46,7 +46,7 @@
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="web/style.css?v=4.2">
+  <link rel="stylesheet" href="web/style.css?v=4.3">
   <style>
     .modal-overlay { display: none !important; }
   </style>
@@ -495,6 +495,63 @@
         </div>
       </div>
 
+      <!-- Vehicle Assembly & Synergy Evaluation Panel -->
+      <div class="card" id="vehicle-assembly-card" style="margin-top: 24px;">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <h2 class="card-title" style="margin-bottom: 0;">🏎️ Complete Vehicle Assembly & Synergy Evaluation</h2>
+          <span id="assembly-fit-badge" class="badge" style="background: rgba(76,175,80,0.2); color: #81c784; border: 1px solid rgba(76,175,80,0.4); padding: 4px 10px; border-radius: 4px; font-weight: 800; font-size: 13px;">
+            Target Buyer Fit: --%
+          </span>
+        </div>
+        <p style="font-size: 13px; color: var(--gc-text-muted); margin-bottom: 16px; line-height: 1.5;">
+          Live synthesis of combined Chassis, Engine, and Gearbox ratings into finished vehicle performance and % alignment with market buyer demand.
+        </p>
+
+        <!-- Component Architecture Selectors -->
+        <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--gc-border-brown); border-radius: 4px; padding: 12px 16px; margin-bottom: 18px;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--gc-text-gold); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">
+            📦 Assembled Component Architecture (Concept Overrides)
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label" style="font-size: 11px;">🏗️ Chassis Concept</label>
+              <select id="select-assembly-chassis" class="select-dropdown" style="padding: 6px 10px; font-size: 12px;"></select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label" style="font-size: 11px;">🔥 Engine Concept</label>
+              <select id="select-assembly-engine" class="select-dropdown" style="padding: 6px 10px; font-size: 12px;"></select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label" style="font-size: 11px;">⚙️ Gearbox Concept</label>
+              <select id="select-assembly-gearbox" class="select-dropdown" style="padding: 6px 10px; font-size: 12px;"></select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 9 Finished Vehicle Rating Bars Dashboard -->
+        <div id="assembly-ratings-dashboard" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-bottom: 18px;">
+          <!-- Injected via JS: 9 rating cards with progress bars and synergy hints -->
+        </div>
+
+        <!-- Synergy Breakdown Details Toggle -->
+        <details style="background: rgba(0,0,0,0.2); border: 1px dashed var(--gc-border-brown); border-radius: 4px; padding: 10px 14px; font-size: 12px;">
+          <summary style="font-weight: 700; color: var(--gc-text-amber); cursor: pointer; user-select: none;">
+            ℹ️ View Component Influence & Synergy Calculation Weights
+          </summary>
+          <div style="margin-top: 10px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; color: var(--gc-text-muted); font-size: 11px; line-height: 1.6;">
+            <div><strong style="color: var(--gc-text-ivory);">Safety:</strong> 70% Chassis Strength + 30% Chassis Durability</div>
+            <div><strong style="color: var(--gc-text-ivory);">Drivability:</strong> 35% Chassis Comfort + 35% Engine Smoothness + 30% Gearbox Comfort</div>
+            <div><strong style="color: var(--gc-text-ivory);">Luxury:</strong> 30% Chassis Comfort + 50% Engine Smoothness + 20% Gearbox Comfort</div>
+            <div><strong style="color: var(--gc-text-ivory);">Performance:</strong> 30% Chassis Perf + 35% Engine HP + 20% Engine Torque + 15% Gearbox Perf</div>
+            <div><strong style="color: var(--gc-text-ivory);">Power:</strong> 40% Engine Torque + 35% Engine HP + 25% Gearbox Power</div>
+            <div><strong style="color: var(--gc-text-ivory);">Fuel Economy:</strong> 45% Engine Fuel + 45% Gearbox Fuel + 10% Weight Factor</div>
+            <div><strong style="color: var(--gc-text-ivory);">Cargo Space:</strong> 55% Chassis Strength + 45% Chassis Durability</div>
+            <div><strong style="color: var(--gc-text-ivory);">Dependability:</strong> 30% Chassis Durability + 35% Engine Dependability + 35% Gearbox Reliability</div>
+            <div><strong style="color: var(--gc-text-ivory);">Overall Quality:</strong> Equal composite average of Chassis, Engine, and Gearbox overalls</div>
+          </div>
+        </details>
+      </div>
+
       <!-- Design Concepts Reference Tables (Chassis, Engine, Gearbox) -->
       <div class="card" style="margin-top: 24px;">
         <div class="card-header">
@@ -843,8 +900,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="web/data.js?v=4.2"></script>
-  <script src="web/engine.js?v=4.2"></script>
-  <script src="web/app.js?v=4.2"></script>
+  <script src="web/data.js?v=4.3"></script>
+  <script src="web/engine.js?v=4.3"></script>
+  <script src="web/app.js?v=4.3"></script>
 </body>
 </html>

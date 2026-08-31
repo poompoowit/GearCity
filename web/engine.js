@@ -969,6 +969,240 @@ const GearCityEngine = (() => {
     };
   }
 
+  /**
+   * Approximate finished-vehicle ratings from Chassis, Engine, and Gearbox stats
+   */
+  function assembleVehicleRatings(components) {
+    const clamp = (val, min = 0.0, max = 100.0) => Math.max(min, Math.min(max, val));
+
+    const c = components.chassis || {};
+    const e = components.engine || {};
+    const g = components.gearbox || {};
+
+    const cPerf = c.performance != null ? Number(c.performance) : (c.sliderValues?.performance ?? 50.0);
+    const cComfort = c.comfort != null ? Number(c.comfort) : (c.sliderValues?.comfort ?? 50.0);
+    const cStrength = c.strength != null ? Number(c.strength) : (c.sliderValues?.strength ?? 50.0);
+    const cDurability = c.durability != null ? Number(c.durability) : (c.sliderValues?.durability ?? 50.0);
+    const cWeight = c.weightKg != null ? Number(c.weightKg) : 250.0;
+    const cOverall = c.overall != null ? Number(c.overall) : ((cPerf + cComfort + cStrength + cDurability) / 4.0);
+
+    const ePowerRating = e.powerRating != null ? Number(e.powerRating) : (e.ratings?.power ?? (e.horsepower ? clamp(e.horsepower / 0.8) : 50.0));
+    const eTorqueRating = e.torqueRating != null ? Number(e.torqueRating) : (e.torqueNm ? clamp((e.torqueNm / 1.3558) / 1.2) : (e.ratings?.power ?? 50.0));
+    const eSmoothness = e.smoothness != null ? Number(e.smoothness) : (e.ratings?.smoothness ?? 50.0);
+    const eFuelEco = e.fuelEconomy != null ? Number(e.fuelEconomy) : (e.ratings?.fuelEconomy ?? 50.0);
+    const eDependability = e.dependability != null ? Number(e.dependability) : (e.ratings?.dependability ?? 50.0);
+    const eOverall = e.overall != null ? Number(e.overall) : (e.ratings?.overall ?? 50.0);
+
+    const gPerf = g.performance != null ? Number(g.performance) : (g.sliderValues?.performance ?? 50.0);
+    const gComfort = g.comfort != null ? Number(g.comfort) : (g.sliderValues?.comfort ?? 50.0);
+    const gReliability = g.reliability != null ? Number(g.reliability) : (g.sliderValues?.reliability ?? 50.0);
+    const gPower = g.power != null ? Number(g.power) : (g.sliderValues?.power ?? 50.0);
+    const gFuelEco = g.fuelEconomy != null ? Number(g.fuelEconomy) : (g.designFocus?.fuel ?? 50.0);
+    const gOverall = g.overall != null ? Number(g.overall) : ((gPerf + gComfort + gReliability + gPower) / 4.0);
+
+    const performance = clamp(
+      0.30 * cPerf
+      + 0.35 * ePowerRating
+      + 0.20 * eTorqueRating
+      + 0.15 * gPerf
+    );
+
+    const drivability = clamp(
+      0.35 * cComfort
+      + 0.35 * eSmoothness
+      + 0.30 * gComfort
+    );
+
+    const luxury = clamp(
+      0.30 * cComfort
+      + 0.50 * eSmoothness
+      + 0.20 * gComfort
+    );
+
+    const safety = clamp(
+      0.70 * cStrength
+      + 0.30 * cDurability
+    );
+
+    const fuel = clamp(
+      0.45 * eFuelEco
+      + 0.45 * gFuelEco
+      + 0.10 * clamp(100.0 - (cWeight / 6.0))
+    );
+
+    const power = clamp(
+      0.40 * eTorqueRating
+      + 0.35 * ePowerRating
+      + 0.25 * gPower
+    );
+
+    const cargo = clamp(
+      0.55 * cStrength
+      + 0.45 * cDurability
+    );
+
+    const dependability = clamp(
+      0.30 * cDurability
+      + 0.35 * eDependability
+      + 0.35 * gReliability
+    );
+
+    const quality = clamp((cOverall + eOverall + gOverall) / 3.0);
+
+    const overall = clamp(
+      0.35 * cOverall
+      + 0.40 * eOverall
+      + 0.25 * gOverall
+    );
+
+    return {
+      performance: Math.round(performance * 10) / 10,
+      drivability: Math.round(drivability * 10) / 10,
+      luxury: Math.round(luxury * 10) / 10,
+      safety: Math.round(safety * 10) / 10,
+      fuel: Math.round(fuel * 10) / 10,
+      power: Math.round(power * 10) / 10,
+      cargo: Math.round(cargo * 10) / 10,
+      dependability: Math.round(dependability * 10) / 10,
+      quality: Math.round(quality * 10) / 10,
+      overall: Math.round(overall * 10) / 10,
+    };
+  }
+
+  /**
+   * Calculate overall Buyer Fit % (0-100%) against target vehicle demand weights
+   */
+  function calculateVehicleTypeFit(ratings, vehicleTypeName) {
+    const demoData = GEARCITY_DATA.demographics?.vehicle_types || {};
+    const weights = demoData[vehicleTypeName] || demoData['Sedan'] || {
+      Performance: 0.4,
+      Driveability: 0.4,
+      Luxury: 0.45,
+      Safety: 0.65,
+      Fuel: 0.65,
+      Power: 0.45,
+      Cargo: 0.5,
+      Dependability: 0.45,
+    };
+
+    const rawScore = (
+      (ratings.performance * (weights.Performance || 0))
+      + (ratings.drivability * (weights.Driveability || 0))
+      + (ratings.luxury * (weights.Luxury || 0))
+      + (ratings.safety * (weights.Safety || 0))
+      + (ratings.fuel * (weights.Fuel || 0))
+      + (ratings.power * (weights.Power || 0))
+      + (ratings.cargo * (weights.Cargo || 0))
+      + (ratings.dependability * (weights.Dependability || 0))
+    );
+
+    const totalWeight = (
+      (weights.Performance || 0)
+      + (weights.Driveability || 0)
+      + (weights.Luxury || 0)
+      + (weights.Safety || 0)
+      + (weights.Fuel || 0)
+      + (weights.Power || 0)
+      + (weights.Cargo || 0)
+      + (weights.Dependability || 0)
+    );
+
+    const maxScore = totalWeight * 100.0;
+    const fitPercent = maxScore > 0 ? (rawScore / maxScore) * 100.0 : 0.0;
+
+    return {
+      fitPercent: Math.round(fitPercent * 10) / 10,
+      weights,
+      rawScore: Math.round(rawScore * 10) / 10,
+      maxScore: Math.round(maxScore * 10) / 10,
+    };
+  }
+
+  /**
+   * Complete vehicle evaluation combining Chassis, Engine, and Gearbox concepts
+   */
+  function evaluateCompleteVehicle(vehicleTypeName, year = 1960, overrides = {}) {
+    const vc = GEARCITY_DATA.vehicleClasses.find((v) => v.carType === vehicleTypeName) || GEARCITY_DATA.vehicleClasses[0];
+
+    const rawChassis = vc.chassis.split(/[>,/]/)[0].trim();
+    const rawEngine = vc.engineType.split(/[>/]/)[0].trim();
+    const rawGear = vc.gear.split(/[>/]/)[0].trim();
+
+    const chassisKey = overrides.chassisConcept || rawChassis;
+    const engineKey = overrides.engineConcept || rawEngine;
+    const gearKey = overrides.gearboxConcept || rawGear;
+
+    const chassisData = GEARCITY_DATA.chassisDesigns[chassisKey] || GEARCITY_DATA.chassisDesigns['Balance'] || {};
+    const gearboxData = GEARCITY_DATA.gearboxDesigns[gearKey] || GEARCITY_DATA.gearboxDesigns['Balance'] || {};
+
+    let decadeKey = '1960s';
+    if (year < 1910) decadeKey = '1900s';
+    else if (year < 1920) decadeKey = '1910s';
+    else if (year < 1930) decadeKey = '1920s';
+    else if (year < 1940) decadeKey = '1930s';
+    else if (year < 1950) decadeKey = '1940s';
+    else if (year < 1960) decadeKey = '1950s';
+    else if (year < 1970) decadeKey = '1960s';
+    else if (year < 1980) decadeKey = '1970s';
+    else if (year < 1990) decadeKey = '1980s';
+    else if (year < 2000) decadeKey = '1990s';
+    else if (year < 2010) decadeKey = '2000s';
+    else decadeKey = '2010s';
+
+    const decadeBench = GEARCITY_DATA.chassisTargetWeights?.[decadeKey] || {};
+    const cat = chassisData.category || 'General';
+    const eraTargetKg = decadeBench[cat]?.avgChassisKg || 250;
+
+    let enginePerf = overrides.enginePerformance;
+    let engineConfig = overrides.engineConfig;
+
+    if (!enginePerf) {
+      const constraints = getEngineDesignConstraints(engineKey, year) || {};
+      const optResult = optimizeEngine(year, constraints);
+      if (optResult && optResult.config && optResult.performance) {
+        enginePerf = optResult.performance;
+        engineConfig = optResult.config;
+      }
+    }
+
+    const chassisInput = {
+      name: chassisData.name || chassisKey,
+      sliderValues: chassisData.sliderValues || { performance: 50, strength: 50, comfort: 50, durability: 50 },
+      weightKg: eraTargetKg,
+    };
+
+    const gearboxInput = {
+      name: gearboxData.name || gearKey,
+      sliderValues: gearboxData.sliderValues || { performance: 50, comfort: 50, reliability: 50, power: 50 },
+      designFocus: gearboxData.designFocus || { fuel: 50 },
+    };
+
+    const assembledRatings = assembleVehicleRatings({
+      chassis: chassisInput,
+      engine: enginePerf || {},
+      gearbox: gearboxInput,
+    });
+
+    const fitResult = calculateVehicleTypeFit(assembledRatings, vehicleTypeName);
+
+    return {
+      vehicleTypeName,
+      year,
+      vehicleClass: vc,
+      chassisConcept: chassisKey,
+      engineConcept: engineKey,
+      gearboxConcept: gearKey,
+      chassis: chassisInput,
+      gearbox: gearboxInput,
+      engine: {
+        config: engineConfig,
+        performance: enginePerf,
+      },
+      ratings: assembledRatings,
+      fit: fitResult,
+    };
+  }
+
   return {
     calculateYearFactors,
     getBoreStrokeLimits,
@@ -978,6 +1212,9 @@ const GearCityEngine = (() => {
     calculateComponentRatings,
     optimizeEngine,
     optimizeEngineForVehicle,
+    assembleVehicleRatings,
+    calculateVehicleTypeFit,
+    evaluateCompleteVehicle,
     generateEngineXml,
     generateChassisXml,
     generateGearboxXml,
