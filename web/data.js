@@ -4632,7 +4632,10 @@ chassisDesigns: {
     note: "*Wishbone could replace with MacPherson 1939 for cheaper cost",
     ratings: { performance: "High", strength: "Mid", comfort: "Low", durability: "Mid +" },
     sliderValues: { performance: 65, strength: 45, comfort: 25, durability: 55 },
-    techSliders: { materials: 30, components: 20, technology: 20, techniques: 20 },
+    dimensions: { length: 45.0, width: 50.0, height: 40.0, weight: 70.0, engWidth: 50.0, engLength: 50.0 },
+    suspensionTuning: { stability: 70.0, comfort: 30.0, performance: 75.0, braking: 70.0, durability: 55.0 },
+    designFocus: { performance: 65.0, control: 70.0, strength: 45.0, dependability: 55.0 },
+    techSliders: { materials: 30.0, components: 20.0, techniques: 20.0, technology: 20.0 },
     frame: "1902 Ladder\n1930 Unibody", drivetrain: "F4\n1940 RMR?", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink"
   },
   "Race": {
@@ -4641,7 +4644,10 @@ chassisDesigns: {
     note: "",
     ratings: { performance: "Highest", strength: "Low", comfort: "Minimum", durability: "Low" },
     sliderValues: { performance: 95, strength: 25, comfort: 5, durability: 25 },
-    techSliders: { materials: 90, components: 90, technology: 90, techniques: 90 },
+    dimensions: { length: 40.0, width: 55.0, height: 30.0, weight: 95.0, engWidth: 60.0, engLength: 60.0 },
+    suspensionTuning: { stability: 85.0, comfort: 10.0, performance: 95.0, braking: 90.0, durability: 30.0 },
+    designFocus: { performance: 95.0, control: 95.0, strength: 25.0, dependability: 25.0 },
+    techSliders: { materials: 90.0, components: 90.0, techniques: 90.0, technology: 90.0 },
     frame: "1902 Ladder\n1924 Superleggera", drivetrain: "F4\n1945 M4?", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink"
   },
   "Drive": {
@@ -4650,7 +4656,10 @@ chassisDesigns: {
     note: "",
     ratings: { performance: "Very High", strength: "Mid", comfort: "Low Mid", durability: "Mid +" },
     sliderValues: { performance: 80, strength: 45, comfort: 35, durability: 55 },
-    techSliders: { materials: 30, components: 20, technology: 20, techniques: 20 },
+    dimensions: { length: 50.0, width: 50.0, height: 45.0, weight: 60.0, engWidth: 55.0, engLength: 55.0 },
+    suspensionTuning: { stability: 80.0, comfort: 45.0, performance: 80.0, braking: 75.0, durability: 55.0 },
+    designFocus: { performance: 80.0, control: 85.0, strength: 45.0, dependability: 55.0 },
+    techSliders: { materials: 30.0, components: 20.0, techniques: 20.0, technology: 20.0 },
     frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR\n1940 RMR?", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink"
   },
   "CLux": {
@@ -4659,7 +4668,10 @@ chassisDesigns: {
     note: "",
     ratings: { performance: "Very low", strength: "Very High", comfort: "Very High", durability: "Mid +" },
     sliderValues: { performance: 15, strength: 80, comfort: 80, durability: 55 },
-    techSliders: { materials: 70, components: 60, technology: 60, techniques: 60 },
+    dimensions: { length: 45.0, width: 50.0, height: 50.0, weight: 40.0, engWidth: 50.0, engLength: 50.0 },
+    suspensionTuning: { stability: 65.0, comfort: 85.0, performance: 30.0, braking: 65.0, durability: 60.0 },
+    designFocus: { performance: 15.0, control: 50.0, strength: 80.0, dependability: 55.0 },
+    techSliders: { materials: 70.0, components: 60.0, techniques: 60.0, technology: 60.0 },
     frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR", suspension: "1901 Swing Axle\n1924 Wishbone\n1990 Magnetorheological"
   },
   "Lux": {
@@ -4668,7 +4680,10 @@ chassisDesigns: {
     note: "",
     ratings: { performance: "Highest", strength: "Highest", comfort: "Highest", durability: "Highest" },
     sliderValues: { performance: 95, strength: 95, comfort: 95, durability: 95 },
-    techSliders: { materials: 100, components: 100, technology: 100, techniques: 100 },
+    dimensions: { length: 60.0, width: 55.0, height: 50.0, weight: 30.0, engWidth: 60.0, engLength: 60.0 },
+    suspensionTuning: { stability: 80.0, comfort: 95.0, performance: 70.0, braking: 85.0, durability: 90.0 },
+    designFocus: { performance: 95.0, control: 85.0, strength: 95.0, dependability: 95.0 },
+    techSliders: { materials: 100.0, components: 100.0, techniques: 100.0, technology: 100.0 },
     frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR", suspension: "1901 Swing Axle\n1915 Air\n1944 Hydropneumatic\n1990 Magnetorheological"
   },
   "Truck": {
@@ -4677,7 +4692,10 @@ chassisDesigns: {
     note: "",
     ratings: { performance: "Low", strength: "High", comfort: "Low", durability: "Very High" },
     sliderValues: { performance: 25, strength: 65, comfort: 25, durability: 80 },
-    techSliders: { materials: 20, components: 30, technology: 0, techniques: 0 },
+    dimensions: { length: 65.0, width: 60.0, height: 65.0, weight: 20.0, engWidth: 65.0, engLength: 65.0 },
+    suspensionTuning: { stability: 60.0, comfort: 20.0, performance: 25.0, braking: 60.0, durability: 90.0 },
+    designFocus: { performance: 25.0, control: 40.0, strength: 65.0, dependability: 80.0 },
+    techSliders: { materials: 20.0, components: 30.0, techniques: 0.0, technology: 0.0 },
     frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR", suspension: "Leaf Spring"
   },
   "Balance": {
@@ -4686,7 +4704,10 @@ chassisDesigns: {
     note: "",
     ratings: { performance: "Mid", strength: "Very High", comfort: "Mid", durability: "Very High" },
     sliderValues: { performance: 45, strength: 80, comfort: 45, durability: 80 },
-    techSliders: { materials: 30, components: 30, technology: 30, techniques: 30 },
+    dimensions: { length: 50.0, width: 50.0, height: 50.0, weight: 50.0, engWidth: 50.0, engLength: 50.0 },
+    suspensionTuning: { stability: 65.0, comfort: 55.0, performance: 50.0, braking: 60.0, durability: 75.0 },
+    designFocus: { performance: 45.0, control: 55.0, strength: 80.0, dependability: 80.0 },
+    techSliders: { materials: 30.0, components: 30.0, techniques: 30.0, technology: 30.0 },
     frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink"
   },
   "Tiny": {
@@ -4695,7 +4716,10 @@ chassisDesigns: {
     note: "Low Weight",
     ratings: { performance: "High", strength: "Mid +", comfort: "Very low", durability: "Very High" },
     sliderValues: { performance: 65, strength: 55, comfort: 15, durability: 80 },
-    techSliders: { materials: 15, components: 20, technology: 0, techniques: 0 },
+    dimensions: { length: 35.0, width: 40.0, height: 40.0, weight: 80.0, engWidth: 40.0, engLength: 40.0 },
+    suspensionTuning: { stability: 60.0, comfort: 25.0, performance: 60.0, braking: 65.0, durability: 70.0 },
+    designFocus: { performance: 65.0, control: 70.0, strength: 55.0, dependability: 80.0 },
+    techSliders: { materials: 15.0, components: 20.0, techniques: 0.0, technology: 0.0 },
     frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR\n1940 RMR", suspension: "1901 Swing Axle\n1924 Wishbone\n1939 MacPherson?"
   },
   "SafLux": {
@@ -4704,7 +4728,10 @@ chassisDesigns: {
     note: "Large Safe",
     ratings: { performance: "Low", strength: "Highest", comfort: "High", durability: "Mid +" },
     sliderValues: { performance: 25, strength: 95, comfort: 65, durability: 55 },
-    techSliders: { materials: 80, components: 70, technology: 70, techniques: 70 },
+    dimensions: { length: 60.0, width: 60.0, height: 60.0, weight: 30.0, engWidth: 60.0, engLength: 60.0 },
+    suspensionTuning: { stability: 75.0, comfort: 75.0, performance: 30.0, braking: 80.0, durability: 75.0 },
+    designFocus: { performance: 25.0, control: 60.0, strength: 95.0, dependability: 55.0 },
+    techSliders: { materials: 80.0, components: 70.0, techniques: 70.0, technology: 70.0 },
     frame: "1902 Ladder\n1930 Unibody", drivetrain: "1902 FF", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink"
   }
 },
@@ -4728,7 +4755,10 @@ gearboxDesigns: {
     note: "",
     ratings: { comfort: "Minimum", performance: "Highest", reliability: "Low", power: "Highest" },
     sliderValues: { comfort: 5, performance: 95, reliability: 25, power: 95 },
-    techSliders: { materials: 90, components: 90, technology: 90, techniques: 90 },
+    gearing: { loRatio: 75.0, hiRatio: 85.0, torqueInputRatio: 90.0, maxTorqueInput: 450.0 },
+    features: { gears: 5, reverse: 1, overdrive: 1, limited: 1, transaxle: 1 },
+    designFocus: { performance: 95.0, fuel: 20.0, dependability: 25.0, comfort: 5.0 },
+    techSliders: { materials: 90.0, components: 90.0, techniques: 90.0, technology: 90.0 },
     gearboxes: "1912 Manual\n1950 DCT"
   },
   "Sport": {
@@ -4739,7 +4769,10 @@ gearboxDesigns: {
     note: "",
     ratings: { comfort: "Very low", performance: "Very High", reliability: "Low", power: "Mid +" },
     sliderValues: { comfort: 15, performance: 80, reliability: 25, power: 55 },
-    techSliders: { materials: 40, components: 30, technology: 20, techniques: 20 },
+    gearing: { loRatio: 70.0, hiRatio: 70.0, torqueInputRatio: 65.0, maxTorqueInput: 300.0 },
+    features: { gears: 5, reverse: 1, overdrive: 1, limited: 1, transaxle: 0 },
+    designFocus: { performance: 80.0, fuel: 40.0, dependability: 25.0, comfort: 15.0 },
+    techSliders: { materials: 40.0, components: 30.0, techniques: 20.0, technology: 20.0 },
     gearboxes: "1912 Manual\n1950 DCT"
   },
   "Drive": {
@@ -4750,7 +4783,10 @@ gearboxDesigns: {
     note: "",
     ratings: { comfort: "Very low", performance: "Highest", reliability: "Mid", power: "Mid" },
     sliderValues: { comfort: 15, performance: 95, reliability: 45, power: 45 },
-    techSliders: { materials: 30, components: 20, technology: 20, techniques: 20 },
+    gearing: { loRatio: 60.0, hiRatio: 65.0, torqueInputRatio: 60.0, maxTorqueInput: 260.0 },
+    features: { gears: 4, reverse: 1, overdrive: 1, limited: 0, transaxle: 0 },
+    designFocus: { performance: 95.0, fuel: 50.0, dependability: 45.0, comfort: 15.0 },
+    techSliders: { materials: 30.0, components: 20.0, techniques: 20.0, technology: 20.0 },
     gearboxes: "1912 Manual\n1950 DCT"
   },
   "SportLux": {
@@ -4761,7 +4797,10 @@ gearboxDesigns: {
     note: "",
     ratings: { comfort: "Highest", performance: "Highest", reliability: "Very High", power: "Highest" },
     sliderValues: { comfort: 95, performance: 95, reliability: 80, power: 95 },
-    techSliders: { materials: 85, components: 85, technology: 80, techniques: 80 },
+    gearing: { loRatio: 70.0, hiRatio: 75.0, torqueInputRatio: 70.0, maxTorqueInput: 320.0 },
+    features: { gears: 5, reverse: 1, overdrive: 1, limited: 1, transaxle: 0 },
+    designFocus: { performance: 95.0, fuel: 40.0, dependability: 80.0, comfort: 95.0 },
+    techSliders: { materials: 85.0, components: 85.0, techniques: 80.0, technology: 80.0 },
     gearboxes: "1912 Manual\n1925 Automatic\n1950 DCT"
   },
   "Lux": {
@@ -4772,7 +4811,10 @@ gearboxDesigns: {
     note: "Change to use Race for Premium Luxury Sedan. Consider Semi-Automatic after 1935.",
     ratings: { comfort: "Highest", performance: "Very low", reliability: "Mid +", power: "Mid" },
     sliderValues: { comfort: 95, performance: 15, reliability: 55, power: 45 },
-    techSliders: { materials: 80, components: 70, technology: 70, techniques: 70 },
+    gearing: { loRatio: 45.0, hiRatio: 65.0, torqueInputRatio: 65.0, maxTorqueInput: 280.0 },
+    features: { gears: 4, reverse: 1, overdrive: 1, limited: 0, transaxle: 0 },
+    designFocus: { performance: 15.0, fuel: 40.0, dependability: 55.0, comfort: 95.0 },
+    techSliders: { materials: 80.0, components: 70.0, techniques: 70.0, technology: 70.0 },
     gearboxes: "1912 Manual\n1925 Automatic"
   },
   "Truck": {
@@ -4783,7 +4825,10 @@ gearboxDesigns: {
     note: "",
     ratings: { comfort: "Very low", performance: "Mid", reliability: "Very High", power: "Highest" },
     sliderValues: { comfort: 15, performance: 45, reliability: 80, power: 95 },
-    techSliders: { materials: 20, components: 30, technology: 10, techniques: 10 },
+    gearing: { loRatio: 85.0, hiRatio: 30.0, torqueInputRatio: 95.0, maxTorqueInput: 500.0 },
+    features: { gears: 4, reverse: 1, overdrive: 0, limited: 1, transaxle: 0 },
+    designFocus: { performance: 45.0, fuel: 20.0, dependability: 80.0, comfort: 15.0 },
+    techSliders: { materials: 20.0, components: 30.0, techniques: 10.0, technology: 10.0 },
     gearboxes: "1912 Manual"
   },
   "Balance": {
@@ -4794,7 +4839,10 @@ gearboxDesigns: {
     note: "Consider Semi-Automatic after 1935.",
     ratings: { comfort: "Low", performance: "High", reliability: "High", power: "Mid +" },
     sliderValues: { comfort: 25, performance: 65, reliability: 65, power: 55 },
-    techSliders: { materials: 30, components: 30, technology: 30, techniques: 30 },
+    gearing: { loRatio: 50.0, hiRatio: 55.0, torqueInputRatio: 55.0, maxTorqueInput: 240.0 },
+    features: { gears: 4, reverse: 1, overdrive: 1, limited: 0, transaxle: 0 },
+    designFocus: { performance: 65.0, fuel: 65.0, dependability: 65.0, comfort: 25.0 },
+    techSliders: { materials: 30.0, components: 30.0, techniques: 30.0, technology: 30.0 },
     gearboxes: "1912 Manual\n1925 Automatic?\n1950 DCT"
   },
   "Fuel": {
@@ -4805,7 +4853,10 @@ gearboxDesigns: {
     note: "Consider Semi-Automatic after 1935.",
     ratings: { comfort: "Very low", performance: "Very low", reliability: "Very High", power: "Very low" },
     sliderValues: { comfort: 15, performance: 15, reliability: 80, power: 15 },
-    techSliders: { materials: 20, components: 20, technology: 20, techniques: 10 },
+    gearing: { loRatio: 35.0, hiRatio: 80.0, torqueInputRatio: 35.0, maxTorqueInput: 150.0 },
+    features: { gears: 4, reverse: 1, overdrive: 1, limited: 0, transaxle: 0 },
+    designFocus: { performance: 15.0, fuel: 95.0, dependability: 80.0, comfort: 15.0 },
+    techSliders: { materials: 20.0, components: 20.0, techniques: 10.0, technology: 20.0 },
     gearboxes: "1912 Manual\n1950 DCT"
   }
 }

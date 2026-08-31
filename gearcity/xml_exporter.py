@@ -68,11 +68,96 @@ class XMLExporter:
             return reparsed.toprettyxml(indent="  ")
         return raw_xml.decode("utf-8")
 
-    def export_to_file(self, config: EngineConfiguration, output_path: Union[str, Path]) -> Path:
-        """Write the EngineConfiguration blueprint XML to a file."""
+    def generate_chassis_xml_string(self, config: dict, pretty: bool = True) -> str:
+        """Convert Chassis configuration dictionary to a GearCity XML blueprint string."""
+        root = ET.Element("Chassis")
+        dim = config.get("dimensions", {})
+        sus = config.get("suspensionTuning", {})
+        de = config.get("designFocus", {})
+        tech = config.get("techSliders", {})
+
+        ET.SubElement(root, "FD_Length").text = str(round(dim.get("length", 50.0), 1))
+        ET.SubElement(root, "FD_Width").text = str(round(dim.get("width", 50.0), 1))
+        ET.SubElement(root, "FD_Height").text = str(round(dim.get("height", 50.0), 1))
+        ET.SubElement(root, "FD_Weight").text = str(round(dim.get("weight", 50.0), 1))
+        ET.SubElement(root, "FD_ENG_Width").text = str(round(dim.get("engWidth", 50.0), 1))
+        ET.SubElement(root, "FD_ENG_Length").text = str(round(dim.get("engLength", 50.0), 1))
+
+        ET.SubElement(root, "SUS_Stability").text = str(round(sus.get("stability", 50.0), 1))
+        ET.SubElement(root, "SUS_Comfort").text = str(round(sus.get("comfort", 50.0), 1))
+        ET.SubElement(root, "SUS_Performance").text = str(round(sus.get("performance", 50.0), 1))
+        ET.SubElement(root, "SUS_Braking").text = str(round(sus.get("braking", 50.0), 1))
+        ET.SubElement(root, "SUS_Durability").text = str(round(sus.get("durability", 50.0), 1))
+
+        ET.SubElement(root, "DE_Performance").text = str(round(de.get("performance", 50.0), 1))
+        ET.SubElement(root, "DE_Control").text = str(round(de.get("control", 50.0), 1))
+        ET.SubElement(root, "DE_Str").text = str(round(de.get("strength", 50.0), 1))
+        ET.SubElement(root, "DE_Depend").text = str(round(de.get("dependability", 50.0), 1))
+
+        ET.SubElement(root, "TECH_Materials").text = str(round(tech.get("materials", 30.0), 1))
+        ET.SubElement(root, "TECH_Compoenents").text = str(round(tech.get("components", 30.0), 1))
+        ET.SubElement(root, "TECH_Techniques").text = str(round(tech.get("techniques", 30.0), 1))
+        ET.SubElement(root, "TECH_Tech").text = str(round(tech.get("technology", 30.0), 1))
+
+        ET.SubElement(root, "DesignPace").text = str(round(config.get("designPace", 50.0), 1))
+        ET.SubElement(root, "Frame_Type").text = str(config.get("frameType", "Ladder Frame"))
+        ET.SubElement(root, "Drivetrain").text = str(config.get("drivetrain", "FR"))
+        ET.SubElement(root, "Fr_Suspension").text = str(config.get("frSuspension", "Leaf Spring"))
+        ET.SubElement(root, "Rr_Suspension").text = str(config.get("rrSuspension", config.get("frSuspension", "Leaf Spring")))
+
+        raw_xml = ET.tostring(root, encoding="utf-8")
+        if pretty:
+            reparsed = minidom.parseString(raw_xml)
+            return reparsed.toprettyxml(indent="  ")
+        return raw_xml.decode("utf-8")
+
+    def generate_gearbox_xml_string(self, config: dict, pretty: bool = True) -> str:
+        """Convert Gearbox configuration dictionary to a GearCity XML blueprint string."""
+        root = ET.Element("Gearbox")
+        gr = config.get("gearing", {})
+        de = config.get("designFocus", {})
+        tech = config.get("techSliders", {})
+        feat = config.get("features", {})
+
+        ET.SubElement(root, "LoRatio").text = str(round(gr.get("loRatio", 50.0), 1))
+        ET.SubElement(root, "HiRatio").text = str(round(gr.get("hiRatio", 50.0), 1))
+        ET.SubElement(root, "TorqueInputRatio").text = str(round(gr.get("torqueInputRatio", 50.0), 1))
+        ET.SubElement(root, "MaxTorqueInput").text = str(round(gr.get("maxTorqueInput", 200.0), 1))
+
+        ET.SubElement(root, "Tech_Material").text = str(round(tech.get("materials", 30.0), 1))
+        ET.SubElement(root, "Tech_Parts").text = str(round(tech.get("components", 30.0), 1))
+        ET.SubElement(root, "Tech_Techniques").text = str(round(tech.get("techniques", 30.0), 1))
+        ET.SubElement(root, "Tech_Tech").text = str(round(tech.get("technology", 30.0), 1))
+
+        ET.SubElement(root, "de_performance").text = str(round(de.get("performance", 50.0), 1))
+        ET.SubElement(root, "de_fuel").text = str(round(de.get("fuel", 50.0), 1))
+        ET.SubElement(root, "de_depend").text = str(round(de.get("dependability", 50.0), 1))
+        ET.SubElement(root, "de_comfort").text = str(round(de.get("comfort", 50.0), 1))
+
+        ET.SubElement(root, "DesignPace").text = str(round(config.get("designPace", 50.0), 1))
+        ET.SubElement(root, "Gears").text = str(feat.get("gears", 4))
+        ET.SubElement(root, "GearboxType").text = str(config.get("gearboxType", "Manual"))
+        ET.SubElement(root, "Reverse").text = str(feat.get("reverse", 1))
+        ET.SubElement(root, "Overdrive").text = "1" if feat.get("overdrive") else "0"
+        ET.SubElement(root, "Limited").text = "1" if feat.get("limited") else "0"
+        ET.SubElement(root, "Transaxle").text = "1" if feat.get("transaxle") else "0"
+
+        raw_xml = ET.tostring(root, encoding="utf-8")
+        if pretty:
+            reparsed = minidom.parseString(raw_xml)
+            return reparsed.toprettyxml(indent="  ")
+        return raw_xml.decode("utf-8")
+
+    def export_to_file(self, config: Union[EngineConfiguration, dict], output_path: Union[str, Path], comp_type: str = "engine") -> Path:
+        """Write blueprint XML to a file."""
         target_path = Path(output_path)
         target_path.parent.mkdir(parents=True, exist_ok=True)
-        xml_content = self.generate_xml_string(config)
+        if comp_type == "chassis":
+            xml_content = self.generate_chassis_xml_string(config)
+        elif comp_type == "gearbox":
+            xml_content = self.generate_gearbox_xml_string(config)
+        else:
+            xml_content = self.generate_xml_string(config)
         with open(target_path, "w", encoding="utf-8") as f:
             f.write(xml_content)
         return target_path

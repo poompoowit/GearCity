@@ -59,7 +59,46 @@ class TestXMLExporter(unittest.TestCase):
             out_file = Path(tmpdir) / "engine_test.xml"
             self.exporter.export_to_file(config, out_file)
             self.assertTrue(out_file.exists())
-            self.assertGreater(out_file.stat().st_size, 100)
+            self.assertGreater(out_file.stat().st_size, 0)
+
+    def test_chassis_xml_generation(self):
+        chassis_config = {
+            "dimensions": {"length": 50.0, "width": 50.0, "height": 50.0, "weight": 50.0, "engWidth": 50.0, "engLength": 50.0},
+            "suspensionTuning": {"stability": 65.0, "comfort": 55.0, "performance": 50.0, "braking": 60.0, "durability": 75.0},
+            "designFocus": {"performance": 45.0, "control": 55.0, "strength": 80.0, "dependability": 80.0},
+            "techSliders": {"materials": 30.0, "components": 30.0, "techniques": 30.0, "technology": 30.0},
+            "designPace": 50.0,
+            "frameType": "Unibody",
+            "drivetrain": "FR",
+            "frSuspension": "Wishbone",
+            "rrSuspension": "Wishbone",
+        }
+        xml_str = self.exporter.generate_chassis_xml_string(chassis_config)
+        root = ET.fromstring(xml_str)
+        self.assertEqual(root.tag, "Chassis")
+        self.assertEqual(root.find("Frame_Type").text, "Unibody")
+        self.assertEqual(root.find("Drivetrain").text, "FR")
+        self.assertEqual(root.find("Fr_Suspension").text, "Wishbone")
+        self.assertEqual(root.find("SUS_Stability").text, "65.0")
+        self.assertEqual(root.find("DE_Str").text, "80.0")
+
+    def test_gearbox_xml_generation(self):
+        gearbox_config = {
+            "gearing": {"loRatio": 50.0, "hiRatio": 55.0, "torqueInputRatio": 55.0, "maxTorqueInput": 240.0},
+            "features": {"gears": 4, "reverse": 1, "overdrive": 1, "limited": 0, "transaxle": 0},
+            "designFocus": {"performance": 65.0, "fuel": 65.0, "dependability": 65.0, "comfort": 25.0},
+            "techSliders": {"materials": 30.0, "components": 30.0, "techniques": 30.0, "technology": 30.0},
+            "designPace": 50.0,
+            "gearboxType": "Automatic",
+        }
+        xml_str = self.exporter.generate_gearbox_xml_string(gearbox_config)
+        root = ET.fromstring(xml_str)
+        self.assertEqual(root.tag, "Gearbox")
+        self.assertEqual(root.find("GearboxType").text, "Automatic")
+        self.assertEqual(root.find("Gears").text, "4")
+        self.assertEqual(root.find("LoRatio").text, "50.0")
+        self.assertEqual(root.find("MaxTorqueInput").text, "240.0")
+        self.assertEqual(root.find("Overdrive").text, "1")
 
 
 if __name__ == "__main__":

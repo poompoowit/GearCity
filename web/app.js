@@ -897,28 +897,57 @@ document.addEventListener('DOMContentLoaded', () => {
               ${yearTag(ch.suspensionAvailable)}
               ${unavailableTag(unavailSusp)}
             </div>
-            ${ch.sliderValues || ch.techSliders ? `
+
             <div style="border-top: 1px solid #3d2314; padding-top: 8px; margin-top: 8px; font-size: 11px; color: var(--gc-text-muted);">
-              <div style="font-weight: 700; color: var(--gc-text-gold); margin-bottom: 6px;">🎛️ Design & Tech Sliders (Advanced Designer)</div>
-              ${ch.sliderValues ? `
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 6px;">
-                <div>Perf Slider: <strong style="color: #ef5350;">${ch.sliderValues.performance}%</strong></div>
-                <div>Strength: <strong style="color: #81c784;">${ch.sliderValues.strength}%</strong></div>
-                <div>Comfort: <strong style="color: #ce93d8;">${ch.sliderValues.comfort}%</strong></div>
-                <div>Durability: <strong style="color: #ffb74d;">${ch.sliderValues.durability}%</strong></div>
+              <div style="font-weight: 700; color: var(--gc-text-gold); margin-bottom: 6px;">🎛️ Detailed Advanced Designer Sliders</div>
+              ${ch.suspensionTuning ? `
+              <div style="background: rgba(0,0,0,0.25); padding: 6px 8px; border-radius: 4px; margin-bottom: 6px;">
+                <div style="color: #64b5f6; font-weight: 700; font-size: 10px; margin-bottom: 3px;">🌀 SUSPENSION TUNING (0-100)</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3px; font-size: 10px;">
+                  <div>Stability: <strong style="color: var(--gc-text-ivory);">${ch.suspensionTuning.stability}</strong></div>
+                  <div>Comfort: <strong style="color: var(--gc-text-ivory);">${ch.suspensionTuning.comfort}</strong></div>
+                  <div>Performance: <strong style="color: var(--gc-text-ivory);">${ch.suspensionTuning.performance}</strong></div>
+                  <div>Braking: <strong style="color: var(--gc-text-ivory);">${ch.suspensionTuning.braking}</strong></div>
+                  <div style="grid-column: span 2;">Durability: <strong style="color: var(--gc-text-ivory);">${ch.suspensionTuning.durability}</strong></div>
+                </div>
+              </div>
+              ` : ''}
+              ${ch.dimensions ? `
+              <div style="background: rgba(0,0,0,0.25); padding: 6px 8px; border-radius: 4px; margin-bottom: 6px;">
+                <div style="color: var(--gc-text-amber); font-weight: 700; font-size: 10px; margin-bottom: 3px;">📐 DIMENSIONS & WEIGHT (0-100)</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3px; font-size: 10px;">
+                  <div>Length: <strong style="color: var(--gc-text-ivory);">${ch.dimensions.length}</strong></div>
+                  <div>Width: <strong style="color: var(--gc-text-ivory);">${ch.dimensions.width}</strong></div>
+                  <div>Height: <strong style="color: var(--gc-text-ivory);">${ch.dimensions.height}</strong></div>
+                  <div>Weight Red.: <strong style="color: var(--gc-text-ivory);">${ch.dimensions.weight}</strong></div>
+                  <div style="grid-column: span 2;">Engine Bay: <strong style="color: var(--gc-text-ivory);">${ch.dimensions.engWidth}W × ${ch.dimensions.engLength}L</strong></div>
+                </div>
+              </div>
+              ` : ''}
+              ${ch.designFocus ? `
+              <div style="background: rgba(0,0,0,0.25); padding: 6px 8px; border-radius: 4px; margin-bottom: 6px;">
+                <div style="color: var(--gc-text-green); font-weight: 700; font-size: 10px; margin-bottom: 3px;">🎯 DESIGN FOCUS (0-100)</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3px; font-size: 10px;">
+                  <div>Perf Focus: <strong style="color: #ef5350;">${ch.designFocus.performance}</strong></div>
+                  <div>Control: <strong style="color: #81c784;">${ch.designFocus.control}</strong></div>
+                  <div>Strength: <strong style="color: #ce93d8;">${ch.designFocus.strength}</strong></div>
+                  <div>Dependability: <strong style="color: #ffb74d;">${ch.designFocus.dependability}</strong></div>
+                </div>
               </div>
               ` : ''}
               ${ch.techSliders ? `
-              <div style="background: rgba(0,0,0,0.25); padding: 5px 8px; border-radius: 3px; font-size: 10px;">
-                <span style="color: var(--gc-text-amber); font-weight: 700;">Tech Sliders: </span>
+              <div style="background: rgba(0,0,0,0.25); padding: 5px 8px; border-radius: 4px; font-size: 10px; margin-bottom: 8px;">
+                <span style="color: var(--gc-text-gold); font-weight: 700;">Tech Sliders: </span>
                 <span>Mat: <strong style="color: var(--gc-text-ivory);">${ch.techSliders.materials}</strong>, </span>
                 <span>Comp: <strong style="color: var(--gc-text-ivory);">${ch.techSliders.components}</strong>, </span>
                 <span>Tech: <strong style="color: var(--gc-text-ivory);">${ch.techSliders.technology}</strong>, </span>
                 <span>Techq: <strong style="color: var(--gc-text-ivory);">${ch.techSliders.techniques}</strong></span>
               </div>
               ` : ''}
+              <button class="btn btn-secondary btn-chassis-download-xml" data-chassis-name="${ch.name}" style="width: 100%; padding: 6px 10px; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; border: 1px solid var(--gc-border-gold); background: rgba(255,183,77,0.15);">
+                <span>📥</span> <span style="font-weight: 700; color: var(--gc-text-gold);">Download Chassis Blueprint (.xml)</span>
+              </button>
             </div>
-            ` : ''}
           </div>
         `;
       });
@@ -993,19 +1022,44 @@ document.addEventListener('DOMContentLoaded', () => {
               ${yearTag(gd.gearboxAvailable)}
               ${unavailableTag(unavailGears)}
             </div>
-            ${gd.sliderValues || gd.techSliders ? `
+
             <div style="border-top: 1px solid #3d2314; padding-top: 8px; margin-top: 8px; font-size: 11px; color: var(--gc-text-muted);">
-              <div style="font-weight: 700; color: #64b5f6; margin-bottom: 6px;">🎛️ Design & Tech Sliders (Advanced Designer)</div>
-              ${gd.sliderValues ? `
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 6px;">
-                <div>Comfort: <strong style="color: #ce93d8;">${gd.sliderValues.comfort}%</strong></div>
-                <div>Perf Slider: <strong style="color: #ef5350;">${gd.sliderValues.performance}%</strong></div>
-                <div>Reliability: <strong style="color: #ffb74d;">${gd.sliderValues.reliability}%</strong></div>
-                <div>Power Slider: <strong style="color: #ff7043;">${gd.sliderValues.power}%</strong></div>
+              <div style="font-weight: 700; color: #64b5f6; margin-bottom: 6px;">🎛️ Detailed Advanced Designer Sliders</div>
+              ${gd.gearing ? `
+              <div style="background: rgba(0,0,0,0.25); padding: 6px 8px; border-radius: 4px; margin-bottom: 6px;">
+                <div style="color: #64b5f6; font-weight: 700; font-size: 10px; margin-bottom: 3px;">⚙️ GEARING & TORQUE LIMITS</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3px; font-size: 10px;">
+                  <div>Lo-Ratio: <strong style="color: var(--gc-text-ivory);">${gd.gearing.loRatio}%</strong></div>
+                  <div>Hi-Ratio: <strong style="color: var(--gc-text-ivory);">${gd.gearing.hiRatio}%</strong></div>
+                  <div>Torque Slider: <strong style="color: var(--gc-text-ivory);">${gd.gearing.torqueInputRatio}%</strong></div>
+                  <div>Max Torque: <strong style="color: #ffb74d;">${gd.gearing.maxTorqueInput} Nm</strong></div>
+                </div>
+              </div>
+              ` : ''}
+              ${gd.features ? `
+              <div style="background: rgba(0,0,0,0.25); padding: 6px 8px; border-radius: 4px; margin-bottom: 6px;">
+                <div style="color: var(--gc-text-amber); font-weight: 700; font-size: 10px; margin-bottom: 3px;">🎚️ FEATURES & DRIVETRAIN</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3px; font-size: 10px;">
+                  <div>Forward Gears: <strong style="color: var(--gc-text-ivory);">${gd.features.gears}</strong></div>
+                  <div>Overdrive: <strong style="color: var(--gc-text-ivory);">${gd.features.overdrive ? 'Yes' : 'No'}</strong></div>
+                  <div>Limited Slip Diff: <strong style="color: var(--gc-text-ivory);">${gd.features.limited ? 'Yes' : 'No'}</strong></div>
+                  <div>Transaxle: <strong style="color: var(--gc-text-ivory);">${gd.features.transaxle ? 'Yes' : 'No'}</strong></div>
+                </div>
+              </div>
+              ` : ''}
+              ${gd.designFocus ? `
+              <div style="background: rgba(0,0,0,0.25); padding: 6px 8px; border-radius: 4px; margin-bottom: 6px;">
+                <div style="color: var(--gc-text-green); font-weight: 700; font-size: 10px; margin-bottom: 3px;">🎯 DESIGN FOCUS (0-100)</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3px; font-size: 10px;">
+                  <div>Comfort: <strong style="color: #ce93d8;">${gd.designFocus.comfort}%</strong></div>
+                  <div>Performance: <strong style="color: #ef5350;">${gd.designFocus.performance}%</strong></div>
+                  <div>Dependability: <strong style="color: #ffb74d;">${gd.designFocus.dependability}%</strong></div>
+                  <div>Fuel Economy: <strong style="color: #81c784;">${gd.designFocus.fuel}%</strong></div>
+                </div>
               </div>
               ` : ''}
               ${gd.techSliders ? `
-              <div style="background: rgba(0,0,0,0.25); padding: 5px 8px; border-radius: 3px; font-size: 10px;">
+              <div style="background: rgba(0,0,0,0.25); padding: 5px 8px; border-radius: 4px; font-size: 10px; margin-bottom: 8px;">
                 <span style="color: #64b5f6; font-weight: 700;">Tech Sliders: </span>
                 <span>Mat: <strong style="color: var(--gc-text-ivory);">${gd.techSliders.materials}</strong>, </span>
                 <span>Comp: <strong style="color: var(--gc-text-ivory);">${gd.techSliders.components}</strong>, </span>
@@ -1013,13 +1067,104 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span>Techq: <strong style="color: var(--gc-text-ivory);">${gd.techSliders.techniques}</strong></span>
               </div>
               ` : ''}
+              <button class="btn btn-secondary btn-gearbox-download-xml" data-gearbox-name="${gd.name}" style="width: 100%; padding: 6px 10px; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; border: 1px solid #64b5f6; background: rgba(100,181,246,0.15);">
+                <span>📥</span> <span style="font-weight: 700; color: #64b5f6;">Download Gearbox Blueprint (.xml)</span>
+              </button>
             </div>
-            ` : ''}
           </div>
         `;
       });
 
       designCards.innerHTML = html;
+
+      // Attach download listeners
+      designCards.querySelectorAll('.btn-chassis-download-xml').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const cName = e.currentTarget.getAttribute('data-chassis-name');
+          const chData = GEARCITY_DATA.chassisDesigns[cName];
+          if (!chData) return;
+          const carType = selectVehicle.value;
+          const currentYear = parseInt(inputYear.value) || 1960;
+
+          const getBestAvail = (text) => {
+            if (!text) return 'Standard';
+            const lines = text.split('\n');
+            let best = lines[0].replace(/^\d{4}\s+/, '').replace(/\?$/, '').trim();
+            for (const l of lines) {
+              const m = l.match(/^(\d{4})\s+(.+)$/);
+              if (m && parseInt(m[1]) <= currentYear) {
+                best = m[2].replace(/\?$/, '').trim();
+              }
+            }
+            return best;
+          };
+
+          const frameType = getBestAvail(chData.frame);
+          const drivetrain = getBestAvail(chData.drivetrain);
+          const frSusp = getBestAvail(chData.suspension);
+          const rrSusp = frSusp;
+
+          const xmlContent = GearCityEngine.generateChassisXml({
+            ...chData,
+            frameType,
+            drivetrain,
+            frSuspension: frSusp,
+            rrSuspension: rrSusp,
+          });
+
+          trackUsageEvent('download_xml_chassis', `Download Chassis XML: ${carType}_${cName}_${currentYear}`);
+          const blob = new Blob([xmlContent], { type: 'application/xml;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Chassis_${carType}_${cName}_${currentYear}.xml`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
+      });
+
+      designCards.querySelectorAll('.btn-gearbox-download-xml').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const gName = e.currentTarget.getAttribute('data-gearbox-name');
+          const gdData = GEARCITY_DATA.gearboxDesigns[gName];
+          if (!gdData) return;
+          const carType = selectVehicle.value;
+          const currentYear = parseInt(inputYear.value) || 1960;
+
+          const getBestAvail = (text) => {
+            if (!text) return 'Manual';
+            const lines = text.split('\n');
+            let best = lines[0].replace(/^\d{4}\s+/, '').replace(/\?$/, '').trim();
+            for (const l of lines) {
+              const m = l.match(/^(\d{4})\s+(.+)$/);
+              if (m && parseInt(m[1]) <= currentYear) {
+                best = m[2].replace(/\?$/, '').trim();
+              }
+            }
+            return best;
+          };
+
+          const gbType = getBestAvail(gdData.gearboxes);
+
+          const xmlContent = GearCityEngine.generateGearboxXml({
+            ...gdData,
+            gearboxType: gbType,
+          });
+
+          trackUsageEvent('download_xml_gearbox', `Download Gearbox XML: ${carType}_${gName}_${currentYear}`);
+          const blob = new Blob([xmlContent], { type: 'application/xml;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Gearbox_${carType}_${gName}_${currentYear}.xml`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
+      });
     }
 
     // Concept Reference Tables Rendering
@@ -1030,7 +1175,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tbGearbox.innerHTML = '';
         Object.values(GEARCITY_DATA.gearboxDesigns).forEach(g => {
           const tr = document.createElement('tr');
-          const sliderStr = g.sliderValues ? `Comf: ${g.sliderValues.comfort}%, Perf: ${g.sliderValues.performance}%, Rel: ${g.sliderValues.reliability}%, Pow: ${g.sliderValues.power}%` : '—';
+          const sliderStr = g.gearing ? `Lo: ${g.gearing.loRatio}%, Hi: ${g.gearing.hiRatio}%, MaxT: ${g.gearing.maxTorqueInput}Nm<br><span style="color: #64b5f6;">Focus:</span> Comf ${g.designFocus.comfort}%, Perf ${g.designFocus.performance}%, Rel ${g.designFocus.dependability}%` : (g.sliderValues ? `Comf: ${g.sliderValues.comfort}%, Perf: ${g.sliderValues.performance}%, Rel: ${g.sliderValues.reliability}%, Pow: ${g.sliderValues.power}%` : '—');
           const techStr = g.techSliders ? `Mat: ${g.techSliders.materials}, Comp: ${g.techSliders.components}, Tech: ${g.techSliders.technology}, Techq: ${g.techSliders.techniques}` : '—';
           tr.innerHTML = `
             <td style="font-weight: 800; color: #64b5f6;">${g.name}</td>
@@ -1055,7 +1200,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tbChassis.innerHTML = '';
         Object.values(GEARCITY_DATA.chassisDesigns).forEach(c => {
           const tr = document.createElement('tr');
-          const sliderStr = c.sliderValues ? `Perf: ${c.sliderValues.performance}%, Str: ${c.sliderValues.strength}%, Comf: ${c.sliderValues.comfort}%, Dur: ${c.sliderValues.durability}%` : '—';
+          const sliderStr = c.suspensionTuning ? `Sus: Stab ${c.suspensionTuning.stability}%, Comf ${c.suspensionTuning.comfort}%, Perf ${c.suspensionTuning.performance}%, Brk ${c.suspensionTuning.braking}%, Dur ${c.suspensionTuning.durability}%<br><span style="color: var(--gc-text-gold);">Focus:</span> Perf ${c.designFocus.performance}%, Str ${c.designFocus.strength}%, Dep ${c.designFocus.dependability}%` : (c.sliderValues ? `Perf: ${c.sliderValues.performance}%, Str: ${c.sliderValues.strength}%, Comf: ${c.sliderValues.comfort}%, Dur: ${c.sliderValues.durability}%` : '—');
           const techStr = c.techSliders ? `Mat: ${c.techSliders.materials}, Comp: ${c.techSliders.components}, Tech: ${c.techSliders.technology}, Techq: ${c.techSliders.techniques}` : '—';
           tr.innerHTML = `
             <td style="font-weight: 800; color: var(--gc-text-gold);">${c.name}</td>

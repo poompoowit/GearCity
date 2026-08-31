@@ -1,0 +1,21 @@
+	<Gearbox>
+		<LoRatio>40.0</LoRatio>
+ 		<HiRatio >40.0</HiRatio>
+		<TorqueInputRatio>40.0</TorqueInputRatio>
+		<MaxTorqueInput>40.0</MaxTorqueInput>
+ 		<Tech_Material>40.0</Tech_Material> 
+		<Tech_Parts>40.0</Tech_Parts>
+		<Tech_Techniques>40.0</Tech_Techniques>
+		<Tech_Tech>40.0</Tech_Tech>
+		<de_performance>40.0</de_performance>
+		<de_fuel>40.0</de_fuel>
+		<de_depend>40.0</de_depend> 
+		<de_comfort>40.0</de_comfort> 
+		<DesignPace>50.0</DesignPace> 
+		<Gears>4</Gears> 
+		<GearboxType>Non-Synchronous</GearboxType> 
+		<Reverse>1</Reverse> 
+		<Overdrive>0</Overdrive> 
+		<Limited>0</Limited> 
+		<Transaxle>0</Transaxle> 
+	</Gearbox>

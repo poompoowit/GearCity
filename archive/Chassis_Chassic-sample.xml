@@ -1,0 +1,26 @@
+	<Chassis>
+		<FD_Length>40.0</FD_Length>
+ 		<FD_Width >40.0</FD_Width>
+		<FD_Height>40.0</FD_Height>
+		<FD_Weight>40.0</FD_Weight>
+ 		<FD_ENG_Width>40.0</FD_ENG_Width> 
+		<FD_ENG_Length>40.0</FD_ENG_Length>
+		<SUS_Stability>40.0</SUS_Stability>
+		<SUS_Comfort>40.0</SUS_Comfort>
+		<SUS_Performance>40.0</SUS_Performance>
+		<SUS_Braking>40.0</SUS_Braking>
+		<SUS_Durability>40.0</SUS_Durability> 
+		<DE_Performance>40.0</DE_Performance>
+		<DE_Control>40.0</DE_Control>
+		<DE_Str>40.0</DE_Str>
+		<DE_Depend>40.0</DE_Depend>
+		<TECH_Materials>40.0</TECH_Materials>
+		<TECH_Compoenents>40.0</TECH_Compoenents>
+		<TECH_Techniques>40.0</TECH_Techniques>
+		<TECH_Tech>40.0</TECH_Tech>
+		<DesignPace>50.0</DesignPace>
+		<Frame_Type>Ladder Frame</Frame_Type>
+		<Drivetrain>FF</Drivetrain>
+		<Fr_Suspension>Leaf Spring</Fr_Suspension>
+		<Rr_Suspension>Leaf Spring</Rr_Suspension>
+	</Chassis>

@@ -647,6 +647,78 @@ const GearCityEngine = (() => {
 </Engine>`;
   }
 
+  function generateChassisXml(config) {
+    const dim = config.dimensions || { length: 50.0, width: 50.0, height: 50.0, weight: 50.0, engWidth: 50.0, engLength: 50.0 };
+    const sus = config.suspensionTuning || { stability: 50.0, comfort: 50.0, performance: 50.0, braking: 50.0, durability: 50.0 };
+    const de = config.designFocus || { performance: 50.0, control: 50.0, strength: 50.0, dependability: 50.0 };
+    const tech = config.techSliders || { materials: 30.0, components: 30.0, techniques: 30.0, technology: 30.0 };
+    const pace = config.designPace || 50.0;
+    const frame = config.frameType || 'Ladder Frame';
+    const drive = config.drivetrain || 'FR';
+    const frSusp = config.frSuspension || 'Swing Axle';
+    const rrSusp = config.rrSuspension || config.frSuspension || 'Swing Axle';
+
+    return `<?xml version="1.0" encoding="utf-8"?>
+<Chassis>
+\t<FD_Length>${dim.length.toFixed(1)}</FD_Length>
+\t<FD_Width >${dim.width.toFixed(1)}</FD_Width>
+\t<FD_Height>${dim.height.toFixed(1)}</FD_Height>
+\t<FD_Weight>${dim.weight.toFixed(1)}</FD_Weight>
+\t<FD_ENG_Width>${dim.engWidth.toFixed(1)}</FD_ENG_Width>
+\t<FD_ENG_Length>${dim.engLength.toFixed(1)}</FD_ENG_Length>
+\t<SUS_Stability>${sus.stability.toFixed(1)}</SUS_Stability>
+\t<SUS_Comfort>${sus.comfort.toFixed(1)}</SUS_Comfort>
+\t<SUS_Performance>${sus.performance.toFixed(1)}</SUS_Performance>
+\t<SUS_Braking>${sus.braking.toFixed(1)}</SUS_Braking>
+\t<SUS_Durability>${sus.durability.toFixed(1)}</SUS_Durability>
+\t<DE_Performance>${de.performance.toFixed(1)}</DE_Performance>
+\t<DE_Control>${de.control.toFixed(1)}</DE_Control>
+\t<DE_Str>${de.strength.toFixed(1)}</DE_Str>
+\t<DE_Depend>${de.dependability.toFixed(1)}</DE_Depend>
+\t<TECH_Materials>${tech.materials.toFixed(1)}</TECH_Materials>
+\t<TECH_Compoenents>${(tech.components != null ? tech.components : 30.0).toFixed(1)}</TECH_Compoenents>
+\t<TECH_Techniques>${(tech.techniques != null ? tech.techniques : 30.0).toFixed(1)}</TECH_Techniques>
+\t<TECH_Tech>${(tech.technology != null ? tech.technology : 30.0).toFixed(1)}</TECH_Tech>
+\t<DesignPace>${pace.toFixed(1)}</DesignPace>
+\t<Frame_Type>${frame}</Frame_Type>
+\t<Drivetrain>${drive}</Drivetrain>
+\t<Fr_Suspension>${frSusp}</Fr_Suspension>
+\t<Rr_Suspension>${rrSusp}</Rr_Suspension>
+</Chassis>`;
+  }
+
+  function generateGearboxXml(config) {
+    const gr = config.gearing || { loRatio: 50.0, hiRatio: 50.0, torqueInputRatio: 50.0, maxTorqueInput: 200.0 };
+    const de = config.designFocus || { performance: 50.0, fuel: 50.0, dependability: 50.0, comfort: 50.0 };
+    const tech = config.techSliders || { materials: 30.0, components: 30.0, techniques: 30.0, technology: 30.0 };
+    const feat = config.features || { gears: 4, reverse: 1, overdrive: 0, limited: 0, transaxle: 0 };
+    const pace = config.designPace || 50.0;
+    const gbType = config.gearboxType || 'Manual';
+
+    return `<?xml version="1.0" encoding="utf-8"?>
+<Gearbox>
+\t<LoRatio>${gr.loRatio.toFixed(1)}</LoRatio>
+\t<HiRatio >${gr.hiRatio.toFixed(1)}</HiRatio>
+\t<TorqueInputRatio>${gr.torqueInputRatio.toFixed(1)}</TorqueInputRatio>
+\t<MaxTorqueInput>${gr.maxTorqueInput.toFixed(1)}</MaxTorqueInput>
+\t<Tech_Material>${tech.materials.toFixed(1)}</Tech_Material>
+\t<Tech_Parts>${(tech.components != null ? tech.components : 30.0).toFixed(1)}</Tech_Parts>
+\t<Tech_Techniques>${(tech.techniques != null ? tech.techniques : 30.0).toFixed(1)}</Tech_Techniques>
+\t<Tech_Tech>${(tech.technology != null ? tech.technology : 30.0).toFixed(1)}</Tech_Tech>
+\t<de_performance>${de.performance.toFixed(1)}</de_performance>
+\t<de_fuel>${de.fuel.toFixed(1)}</de_fuel>
+\t<de_depend>${de.dependability.toFixed(1)}</de_depend>
+\t<de_comfort>${de.comfort.toFixed(1)}</de_comfort>
+\t<DesignPace>${pace.toFixed(1)}</DesignPace>
+\t<Gears>${feat.gears || 4}</Gears>
+\t<GearboxType>${gbType}</GearboxType>
+\t<Reverse>${feat.reverse != null ? feat.reverse : 1}</Reverse>
+\t<Overdrive>${feat.overdrive ? 1 : 0}</Overdrive>
+\t<Limited>${feat.limited ? 1 : 0}</Limited>
+\t<Transaxle>${feat.transaxle ? 1 : 0}</Transaxle>
+</Gearbox>`;
+  }
+
   function evaluateDemographics(vehicleType) {
     const profiles = GEARCITY_DATA.vehicleProfiles;
     const gMods = GEARCITY_DATA.genderModifiers;
@@ -729,6 +801,9 @@ const GearCityEngine = (() => {
         note: cd.note,
         ratings: cd.ratings,
         sliderValues: cd.sliderValues,
+        dimensions: cd.dimensions,
+        suspensionTuning: cd.suspensionTuning,
+        designFocus: cd.designFocus,
         techSliders: cd.techSliders,
         frameAll: frameOptions,
         frameAvailable: filterByYear(frameOptions),
@@ -819,6 +894,8 @@ const GearCityEngine = (() => {
     calculateComponentRatings,
     optimizeEngine,
     generateEngineXml,
+    generateChassisXml,
+    generateGearboxXml,
     evaluateDemographics,
     getVehicleDesignAdvice,
     getEngineDesignConstraints,
