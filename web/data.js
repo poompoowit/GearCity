@@ -4974,9 +4974,6 @@ gearboxDesigns: {
     note: "Consider Semi-Automatic after 1935.",
     ratings: { comfort: "Low", performance: "High", reliability: "High", power: "Mid +" },
     sliderValues: { comfort: 25, performance: 65, reliability: 65, power: 55 },
-    gearing: { loRatio: 50.0, hiRatio: 55.0, torqueInputRatio: 55.0, maxTorqueInput: 240.0 },
-    features: { gears: 4, reverse: 1, overdrive: 1, limited: 0, transaxle: 0 },
-    designFocus: { performance: 65.0, fuel: 65.0, dependability: 65.0, comfort: 25.0 },
     techSliders: { materials: 30.0, components: 30.0, techniques: 30.0, technology: 30.0 },
     gearboxes: "1912 Manual\n1925 Automatic?\n1950 DCT"
   },
@@ -4994,11 +4991,352 @@ gearboxDesigns: {
     techSliders: { materials: 20.0, components: 20.0, techniques: 10.0, technology: 20.0 },
     gearboxes: "1912 Manual\n1950 DCT"
   }
-}
+},
 
+  // ============================================================================
+  // === V2: 4+2 STREAMLINED CONCEPT FRAMEWORK ===
+  // 4 Mass-Market ($180–$350) + 2 Premium/Unlimited ($1,200–$4,500+)
+  // ============================================================================
+  v2: {
+    vehicleClasses: [
+      { carType: "Compact Car", chassis: "Eco", engineType: "Eco", gear: "Fuel", tier: "BUDGET", costTarget: "$180-$240", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Small Cargo", wealth: "Lower-Middle" },
+      { carType: "Compact SUV", chassis: "Balance", engineType: "Truck", gear: "Balance", tier: "BUDGET", costTarget: "$240-$300", milFleet: true, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Middle" },
+      { carType: "Compact Van", chassis: "Eco", engineType: "Eco", gear: "Balance", tier: "BUDGET", costTarget: "$200-$260", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Lower-Middle" },
+      { carType: "Coupe", chassis: "Sport", engineType: "Sport", gear: "Sport", tier: "BUDGET", costTarget: "$320-$380", milFleet: false, civFleet: true, lowFunding: true, highFunding: true, bodyFocus: "Small Cargo", wealth: "Upper" },
+      { carType: "Coupe 2+2", chassis: "Sport", engineType: "Sport", gear: "Sport", tier: "BUDGET", costTarget: "$280-$350", milFleet: false, civFleet: true, lowFunding: true, highFunding: true, bodyFocus: "Small Cargo", wealth: "Upper-Middle" },
+      { carType: "Coupe Utility", chassis: "Truck", engineType: "Truck", gear: "Truck", tier: "BUDGET", costTarget: "$260-$320", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Upper-Middle" },
+      { carType: "Crossover", chassis: "Balance", engineType: "Balance", gear: "Balance", tier: "BUDGET", costTarget: "$240-$300", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Upper-Middle" },
+      { carType: "Fastback", chassis: "Sport", engineType: "Sport", gear: "Sport", tier: "BUDGET", costTarget: "$320-$380", milFleet: false, civFleet: false, lowFunding: true, highFunding: true, bodyFocus: "Small Cargo", wealth: "Upper" },
+      { carType: "Full Sized Sedan", chassis: "Balance", engineType: "Sport", gear: "Balance", tier: "BUDGET", costTarget: "$300-$380", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Upper" },
+      { carType: "Hatchback", chassis: "Balance", engineType: "Balance", gear: "Balance", tier: "BUDGET", costTarget: "$240-$300", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Balance", wealth: "Middle" },
+      { carType: "Landaulet", chassis: "Lux", engineType: "Lux", gear: "Lux", tier: "PREMIUM", costTarget: "$1,500-$3,000+", milFleet: false, civFleet: false, lowFunding: true, highFunding: false, bodyFocus: "Large Cargo", wealth: "Ultra-Wealthy" },
+      { carType: "Limousine", chassis: "Lux", engineType: "Lux", gear: "Lux", tier: "PREMIUM", costTarget: "$1,500-$3,000+", milFleet: false, civFleet: true, lowFunding: true, highFunding: false, bodyFocus: "Large Cargo", wealth: "Ultra-Wealthy" },
+      { carType: "Luxury Sedan", chassis: "Lux", engineType: "Lux", gear: "Lux", tier: "PREMIUM", costTarget: "$1,200-$2,500+", milFleet: false, civFleet: true, lowFunding: true, highFunding: true, bodyFocus: "Large Cargo", wealth: "Wealthy" },
+      { carType: "Microcar", chassis: "Eco", engineType: "Eco", gear: "Fuel", tier: "BUDGET", costTarget: "$180-$240", milFleet: false, civFleet: false, lowFunding: false, highFunding: false, bodyFocus: "Small Cargo", wealth: "Low" },
+      { carType: "Microvan", chassis: "Eco", engineType: "Eco", gear: "Balance", tier: "BUDGET", costTarget: "$200-$260", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Lower-Middle" },
+      { carType: "Minivan", chassis: "Balance", engineType: "Balance", gear: "Balance", tier: "BUDGET", costTarget: "$240-$300", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Middle" },
+      { carType: "Phaeton", chassis: "Eco", engineType: "Eco", gear: "Fuel", tier: "BUDGET", costTarget: "$180-$240", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Small Cargo", wealth: "Low" },
+      { carType: "Pickup Truck", chassis: "Truck", engineType: "Truck", gear: "Truck", tier: "BUDGET", costTarget: "$240-$320", milFleet: true, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Middle" },
+      { carType: "Roadster", chassis: "Sport", engineType: "Sport", gear: "Sport", tier: "BUDGET", costTarget: "$320-$380", milFleet: false, civFleet: false, lowFunding: true, highFunding: true, bodyFocus: "Small Cargo", wealth: "Upper" },
+      { carType: "Roadster 2+2", chassis: "Sport", engineType: "Sport", gear: "Sport", tier: "BUDGET", costTarget: "$280-$350", milFleet: false, civFleet: false, lowFunding: true, highFunding: true, bodyFocus: "Small Cargo", wealth: "Upper-Middle" },
+      { carType: "Sedan", chassis: "Balance", engineType: "Balance", gear: "Balance", tier: "BUDGET", costTarget: "$240-$300", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Balance", wealth: "Upper-Middle" },
+      { carType: "Shooting Brake", chassis: "Balance", engineType: "Balance", gear: "Balance", tier: "BUDGET", costTarget: "$240-$300", milFleet: false, civFleet: false, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Upper-Middle" },
+      { carType: "Sports", chassis: "Sport", engineType: "Sport", gear: "Sport", tier: "BUDGET", costTarget: "$350-$450", milFleet: false, civFleet: false, lowFunding: true, highFunding: true, bodyFocus: "Small Cargo", wealth: "Upper" },
+      { carType: "Station Wagon", chassis: "Balance", engineType: "Balance", gear: "Balance", tier: "BUDGET", costTarget: "$240-$300", milFleet: false, civFleet: false, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Middle" },
+      { carType: "Subcompact", chassis: "Eco", engineType: "Eco", gear: "Fuel", tier: "BUDGET", costTarget: "$180-$240", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Small Cargo", wealth: "Low" },
+      { carType: "Supercar", chassis: "Race", engineType: "Race", gear: "Race", tier: "PREMIUM", costTarget: "$3,500-$5,000+", milFleet: false, civFleet: false, lowFunding: false, highFunding: true, bodyFocus: "Small Cargo", wealth: "Ultra-Wealthy" },
+      { carType: "SUV", chassis: "Truck", engineType: "Truck", gear: "Truck", tier: "BUDGET", costTarget: "$240-$320", milFleet: true, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Middle" },
+      { carType: "Touring", chassis: "Sport", engineType: "Balance", gear: "Balance", tier: "BUDGET", costTarget: "$260-$320", milFleet: false, civFleet: false, lowFunding: false, highFunding: false, bodyFocus: "Balance", wealth: "Middle" },
+      { carType: "Town Car", chassis: "Balance", engineType: "Balance", gear: "Lux", tier: "BUDGET", costTarget: "$350-$450", milFleet: false, civFleet: false, lowFunding: true, highFunding: false, bodyFocus: "Large Cargo", wealth: "Upper" },
+      { carType: "Van", chassis: "Truck", engineType: "Truck", gear: "Truck", tier: "BUDGET", costTarget: "$240-$320", milFleet: true, civFleet: true, lowFunding: true, highFunding: false, bodyFocus: "Large Cargo", wealth: "Middle" }
+    ],
+
+    chassisDesigns: {
+      "Eco": {
+        name: "Eco",
+        tier: "BUDGET",
+        cost: "$180 - $240",
+        category: "Micro",
+        maxEngine: "Eco",
+        note: "Lightweight, highly durable & fuel-efficient for mass commuter vehicles",
+        ratings: { performance: "Mid -", strength: "Mid +", comfort: "Low Mid", durability: "Very High" },
+        sliderValues: { performance: 40, strength: 55, comfort: 35, durability: 80 },
+        dimensions: { length: 38.0, width: 42.0, height: 42.0, weight: 75.0, engWidth: 42.0, engLength: 42.0 },
+        suspensionTuning: { stability: 60.0, comfort: 35.0, performance: 40.0, braking: 65.0, durability: 75.0 },
+        designFocus: { performance: 40.0, control: 60.0, strength: 55.0, dependability: 80.0 },
+        techSliders: { materials: 20.0, components: 20.0, techniques: 10.0, technology: 10.0 },
+        frame: "1902 Ladder\n1930 Unibody", drivetrain: "1902 FF\n1910 FR", suspension: "1901 Swing Axle\n1939 MacPherson"
+      },
+      "Balance": {
+        name: "Balance",
+        tier: "BUDGET",
+        cost: "$240 - $300",
+        category: "General",
+        maxEngine: "Balance",
+        note: "High safety strength & comfort balance for sedans, wagons, minivans and crossovers",
+        ratings: { performance: "Mid", strength: "Very High", comfort: "Mid +", durability: "Very High" },
+        sliderValues: { performance: 50, strength: 75, comfort: 55, durability: 75 },
+        dimensions: { length: 50.0, width: 50.0, height: 50.0, weight: 50.0, engWidth: 50.0, engLength: 50.0 },
+        suspensionTuning: { stability: 70.0, comfort: 65.0, performance: 50.0, braking: 70.0, durability: 75.0 },
+        designFocus: { performance: 50.0, control: 60.0, strength: 75.0, dependability: 75.0 },
+        techSliders: { materials: 30.0, components: 30.0, techniques: 30.0, technology: 30.0 },
+        frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1902 FF\n1910 FMR", suspension: "1901 Swing Axle\n1924 Wishbone\n1939 MacPherson"
+      },
+      "Truck": {
+        name: "Truck",
+        tier: "BUDGET",
+        cost: "$260 - $320",
+        category: "Truck",
+        maxEngine: "Truck",
+        note: "Heavy-duty ladder frame with maximum durability and load strength",
+        ratings: { performance: "Low", strength: "Highest", comfort: "Low", durability: "Highest" },
+        sliderValues: { performance: 25, strength: 85, comfort: 25, durability: 90 },
+        dimensions: { length: 65.0, width: 60.0, height: 65.0, weight: 20.0, engWidth: 65.0, engLength: 65.0 },
+        suspensionTuning: { stability: 65.0, comfort: 25.0, performance: 25.0, braking: 65.0, durability: 95.0 },
+        designFocus: { performance: 25.0, control: 40.0, strength: 85.0, dependability: 90.0 },
+        techSliders: { materials: 25.0, components: 35.0, techniques: 10.0, technology: 10.0 },
+        frame: "1902 Ladder", drivetrain: "FR\nF4", suspension: "Leaf Spring"
+      },
+      "Sport": {
+        name: "Sport",
+        tier: "BUDGET",
+        cost: "$300 - $380",
+        category: "Sport",
+        maxEngine: "Sport",
+        note: "Stiff suspension tuning, sharp handling and high stability for enthusiasts",
+        ratings: { performance: "Very High", strength: "Mid", comfort: "Mid -", durability: "Mid +" },
+        sliderValues: { performance: 80, strength: 50, comfort: 40, durability: 60 },
+        dimensions: { length: 45.0, width: 50.0, height: 40.0, weight: 65.0, engWidth: 52.0, engLength: 52.0 },
+        suspensionTuning: { stability: 80.0, comfort: 40.0, performance: 80.0, braking: 75.0, durability: 60.0 },
+        designFocus: { performance: 80.0, control: 80.0, strength: 50.0, dependability: 60.0 },
+        techSliders: { materials: 35.0, components: 30.0, techniques: 25.0, technology: 25.0 },
+        frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR\n1940 RMR", suspension: "1901 Swing Axle\n1924 Wishbone\n1988 MultiLink"
+      },
+      "Lux": {
+        name: "Lux",
+        tier: "PREMIUM",
+        cost: "$1,200 - $2,500",
+        category: "Luxury",
+        maxEngine: "Lux",
+        note: "Air / hydropneumatic suspension for supreme comfort, quietness and prestige",
+        ratings: { performance: "High", strength: "Highest", comfort: "Highest", durability: "Highest" },
+        sliderValues: { performance: 70, strength: 85, comfort: 95, durability: 85 },
+        dimensions: { length: 60.0, width: 55.0, height: 50.0, weight: 35.0, engWidth: 60.0, engLength: 60.0 },
+        suspensionTuning: { stability: 80.0, comfort: 95.0, performance: 65.0, braking: 85.0, durability: 85.0 },
+        designFocus: { performance: 70.0, control: 80.0, strength: 85.0, dependability: 85.0 },
+        techSliders: { materials: 85.0, components: 80.0, techniques: 80.0, technology: 80.0 },
+        frame: "1902 Ladder\n1930 Unibody", drivetrain: "FR\n1910 FMR", suspension: "1915 Air\n1944 Hydropneumatic\n1990 Magnetorheological"
+      },
+      "Race": {
+        name: "Race",
+        tier: "PREMIUM",
+        cost: "$2,500 - $4,500+",
+        category: "Sport",
+        maxEngine: "Race",
+        note: "Ultra-lightweight superleggera / carbon frame, maximum braking & high-G cornering",
+        ratings: { performance: "Highest", strength: "Mid -", comfort: "Minimum", durability: "Mid" },
+        sliderValues: { performance: 95, strength: 40, comfort: 15, durability: 50 },
+        dimensions: { length: 40.0, width: 55.0, height: 30.0, weight: 90.0, engWidth: 60.0, engLength: 60.0 },
+        suspensionTuning: { stability: 90.0, comfort: 15.0, performance: 95.0, braking: 95.0, durability: 50.0 },
+        designFocus: { performance: 95.0, control: 95.0, strength: 40.0, dependability: 50.0 },
+        techSliders: { materials: 95.0, components: 95.0, techniques: 95.0, technology: 95.0 },
+        frame: "1924 Superleggera\n1960 Monocoque", drivetrain: "F4\n1940 RMR\n1945 M4", suspension: "1924 Wishbone\n1988 MultiLink"
+      }
+    },
+
+    engineDesigns: {
+      "Eco": {
+        name: "Eco",
+        tier: "BUDGET",
+        concept: "Commuter, Maximum Fuel Saving & Dependability",
+        ratingNeed: "Fuel",
+        optimizeFocus: "Torque",
+        maxWeight: 100,
+        maxHpTorqueRatio: 1.3,
+        designDependability: 75,
+        performanceFuel: 95,
+        techComponent: 25,
+        techTechnology: 15,
+        techTechnique: 15,
+        costTargets: { "1932": 180, "1944": 210, "1954": 240 }
+      },
+      "Balance": {
+        name: "Balance",
+        tier: "BUDGET",
+        concept: "Smooth Family Power & Fuel Balance",
+        ratingNeed: "Balance",
+        optimizeFocus: "Torque",
+        maxWeight: 150,
+        maxHpTorqueRatio: 1.6,
+        designDependability: 70,
+        performanceFuel: 65,
+        techComponent: 30,
+        techTechnology: 25,
+        techTechnique: 25,
+        costTargets: { "1932": 240, "1944": 280, "1954": 300 }
+      },
+      "Truck": {
+        name: "Truck",
+        tier: "BUDGET",
+        concept: "High Torque & Heavy-Duty Dependability",
+        ratingNeed: "Dependability",
+        optimizeFocus: "Torque",
+        maxWeight: 220,
+        maxHpTorqueRatio: 2.8,
+        designDependability: 90,
+        performanceFuel: 35,
+        techComponent: 30,
+        techTechnology: 10,
+        techTechnique: 10,
+        costTargets: { "1932": 260, "1944": 300, "1954": 320 }
+      },
+      "Sport": {
+        name: "Sport",
+        tier: "BUDGET",
+        concept: "High Revs, Responsive Horsepower & Throttle",
+        ratingNeed: "Performance",
+        optimizeFocus: "HP",
+        maxWeight: 160,
+        maxHpTorqueRatio: 1.2,
+        designDependability: 50,
+        performanceFuel: 30,
+        techComponent: 30,
+        techTechnology: 20,
+        techTechnique: 20,
+        costTargets: { "1932": 320, "1944": 360, "1954": 380 }
+      },
+      "Lux": {
+        name: "Lux",
+        tier: "PREMIUM",
+        concept: "Ultra-Smooth Multi-Cylinder Power (V8/V12) for Luxury",
+        ratingNeed: "Luxury",
+        optimizeFocus: "Torque",
+        maxWeight: 220,
+        maxHpTorqueRatio: 2.0,
+        designDependability: 85,
+        performanceFuel: 40,
+        techComponent: 80,
+        techTechnology: 75,
+        techTechnique: 75,
+        costTargets: { "1932": 1200, "1944": 1500, "1954": 1800 }
+      },
+      "Race": {
+        name: "Race",
+        tier: "PREMIUM",
+        concept: "Maximum Peak Horsepower & Redline for Competition",
+        ratingNeed: "Race",
+        optimizeFocus: "HP",
+        maxWeight: 250,
+        maxHpTorqueRatio: null,
+        designDependability: null,
+        performanceFuel: null,
+        techComponent: 95,
+        techTechnology: 95,
+        techTechnique: 95,
+        costTargets: { "1932": 3500, "1944": 4200, "1954": 4800 }
+      }
+    },
+
+    gearboxDesigns: {
+      "Fuel": {
+        name: "Fuel",
+        tier: "BUDGET",
+        concept: "Economical Overdrive for Commuter Cars",
+        maxEngineType: "Eco",
+        cost: "$180 - $240",
+        ratings: { comfort: "Low", performance: "Low", reliability: "Very High", power: "Low" },
+        sliderValues: { comfort: 30, performance: 20, reliability: 80, power: 20 },
+        gearing: { loRatio: 40.0, hiRatio: 80.0, torqueInputRatio: 40.0, maxTorqueInput: 180.0 },
+        features: { gears: 4, reverse: 1, overdrive: 1, limited: 0, transaxle: 0 },
+        designFocus: { performance: 20.0, fuel: 95.0, dependability: 80.0, comfort: 30.0 },
+        techSliders: { materials: 20.0, components: 20.0, techniques: 15.0, technology: 15.0 },
+        gearboxes: "1912 Manual\n1950 DCT"
+      },
+      "Balance": {
+        name: "Balance",
+        tier: "BUDGET",
+        concept: "Balanced Smoothness & Reliability for Family Cars",
+        maxEngineType: "Balance",
+        cost: "$220 - $280",
+        ratings: { comfort: "Mid", performance: "Mid +", reliability: "High", power: "Mid +" },
+        sliderValues: { comfort: 50, performance: 60, reliability: 70, power: 55 },
+        gearing: { loRatio: 55.0, hiRatio: 60.0, torqueInputRatio: 60.0, maxTorqueInput: 260.0 },
+        features: { gears: 4, reverse: 1, overdrive: 1, limited: 0, transaxle: 0 },
+        designFocus: { performance: 60.0, fuel: 65.0, dependability: 70.0, comfort: 50.0 },
+        techSliders: { materials: 30.0, components: 30.0, techniques: 30.0, technology: 30.0 },
+        gearboxes: "1912 Manual\n1925 Automatic\n1950 DCT"
+      },
+      "Truck": {
+        name: "Truck",
+        tier: "BUDGET",
+        concept: "High Torque Input & Heavy-Duty Low Gearing",
+        maxEngineType: "Truck",
+        cost: "$240 - $300",
+        ratings: { comfort: "Low", performance: "Mid -", reliability: "Highest", power: "Highest" },
+        sliderValues: { comfort: 20, performance: 35, reliability: 90, power: 90 },
+        gearing: { loRatio: 85.0, hiRatio: 35.0, torqueInputRatio: 95.0, maxTorqueInput: 550.0 },
+        features: { gears: 4, reverse: 1, overdrive: 0, limited: 1, transaxle: 0 },
+        designFocus: { performance: 35.0, fuel: 30.0, dependability: 90.0, comfort: 20.0 },
+        techSliders: { materials: 25.0, components: 35.0, techniques: 15.0, technology: 15.0 },
+        gearboxes: "1912 Manual\n1925 Automatic"
+      },
+      "Sport": {
+        name: "Sport",
+        tier: "BUDGET",
+        concept: "Close-Ratio 5-Speed for Sharp Acceleration & Handling",
+        maxEngineType: "Sport",
+        cost: "$280 - $350",
+        ratings: { comfort: "Low Mid", performance: "Highest", reliability: "Mid +", power: "High" },
+        sliderValues: { comfort: 35, performance: 85, reliability: 60, power: 65 },
+        gearing: { loRatio: 70.0, hiRatio: 75.0, torqueInputRatio: 65.0, maxTorqueInput: 320.0 },
+        features: { gears: 5, reverse: 1, overdrive: 1, limited: 1, transaxle: 0 },
+        designFocus: { performance: 85.0, fuel: 40.0, dependability: 60.0, comfort: 35.0 },
+        techSliders: { materials: 40.0, components: 35.0, techniques: 25.0, technology: 25.0 },
+        gearboxes: "1912 Manual\n1950 DCT"
+      },
+      "Lux": {
+        name: "Lux",
+        tier: "PREMIUM",
+        concept: "Ultra-Smooth Automatic/DCT for Effortless Cruising",
+        maxEngineType: "Lux",
+        cost: "$800 - $1,800",
+        ratings: { comfort: "Highest", performance: "High", reliability: "Very High", power: "High" },
+        sliderValues: { comfort: 95, performance: 60, reliability: 85, power: 65 },
+        gearing: { loRatio: 55.0, hiRatio: 70.0, torqueInputRatio: 75.0, maxTorqueInput: 400.0 },
+        features: { gears: 5, reverse: 1, overdrive: 1, limited: 0, transaxle: 0 },
+        designFocus: { performance: 60.0, fuel: 45.0, dependability: 85.0, comfort: 95.0 },
+        techSliders: { materials: 80.0, components: 75.0, techniques: 75.0, technology: 75.0 },
+        gearboxes: "1925 Automatic\n1950 DCT"
+      },
+      "Race": {
+        name: "Race",
+        tier: "PREMIUM",
+        concept: "Ultra-Lightweight Racing Sequential / DCT",
+        maxEngineType: "Race",
+        cost: "$1,500 - $3,000",
+        ratings: { comfort: "Minimum", performance: "Highest", reliability: "Mid", power: "Highest" },
+        sliderValues: { comfort: 10, performance: 95, reliability: 50, power: 95 },
+        gearing: { loRatio: 80.0, hiRatio: 90.0, torqueInputRatio: 90.0, maxTorqueInput: 500.0 },
+        features: { gears: 5, reverse: 1, overdrive: 1, limited: 1, transaxle: 1 },
+        designFocus: { performance: 95.0, fuel: 20.0, dependability: 50.0, comfort: 10.0 },
+        techSliders: { materials: 90.0, components: 90.0, techniques: 90.0, technology: 90.0 },
+        gearboxes: "1912 Manual\n1950 DCT"
+      }
+    }
+  },
+
+  /**
+   * Helper to retrieve active dataset by version ('v1' | 'v2')
+   */
+  getData: function(version = 'v2') {
+    if (version === 'v2' && GEARCITY_DATA.v2) {
+      return {
+        vehicleClasses: GEARCITY_DATA.v2.vehicleClasses,
+        chassisDesigns: GEARCITY_DATA.v2.chassisDesigns,
+        engineDesigns: GEARCITY_DATA.v2.engineDesigns,
+        gearboxDesigns: GEARCITY_DATA.v2.gearboxDesigns,
+        vehicleProfiles: GEARCITY_DATA.vehicleProfiles,
+        demographics: GEARCITY_DATA.demographics,
+        chassisTargetWeights: GEARCITY_DATA.chassisTargetWeights,
+        decadeChassisBenchmarks: GEARCITY_DATA.decadeChassisBenchmarks,
+      };
+    }
+    // Fallback: V1 Classic
+    return {
+      vehicleClasses: GEARCITY_DATA.vehicleClasses,
+      chassisDesigns: GEARCITY_DATA.chassisDesigns,
+      engineDesigns: GEARCITY_DATA.engineDesigns,
+      gearboxDesigns: GEARCITY_DATA.gearboxDesigns,
+      vehicleProfiles: GEARCITY_DATA.vehicleProfiles,
+      demographics: GEARCITY_DATA.demographics,
+      chassisTargetWeights: GEARCITY_DATA.chassisTargetWeights,
+      decadeChassisBenchmarks: GEARCITY_DATA.decadeChassisBenchmarks,
+    };
+  }
 };
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = GEARCITY_DATA;
 }
+
 

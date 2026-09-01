@@ -22,6 +22,37 @@ document.addEventListener('DOMContentLoaded', () => {
      Session & Preset State Persistence (localStorage)
      ========================================================================== */
   const CACHE_KEY = 'gearcity_app_state_v1';
+  const FRAMEWORK_VERSION_KEY = 'gearcity_framework_version';
+
+  let currentFrameworkVersion = localStorage.getItem(FRAMEWORK_VERSION_KEY) || 'v2';
+  GearCityEngine.setVersion(currentFrameworkVersion);
+
+  const versionToggles = document.querySelectorAll('.btn-version-toggle');
+  function updateVersionToggleUI() {
+    versionToggles.forEach(btn => {
+      if (btn.dataset.version === currentFrameworkVersion) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  }
+  updateVersionToggleUI();
+
+  versionToggles.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const ver = e.currentTarget.dataset.version;
+      if (ver && (ver === 'v1' || ver === 'v2')) {
+        currentFrameworkVersion = ver;
+        GearCityEngine.setVersion(ver);
+        localStorage.setItem(FRAMEWORK_VERSION_KEY, ver);
+        updateVersionToggleUI();
+        if (typeof window.refreshAllVersionedViews === 'function') {
+          window.refreshAllVersionedViews();
+        }
+      }
+    });
+  });
 
   function getCachedState() {
     try {
@@ -872,13 +903,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Populate vehicle class reference table
     function renderTable() {
-      const vc = GEARCITY_DATA.vehicleClasses;
-      tableBody.innerHTML = vc.map(v => `
+      const data = GearCityEngine.getActiveData();
+      const vc = data.vehicleClasses;
+      const isV2 = GearCityEngine.getVersion() === 'v2';
+
+      tableBody.innerHTML = vc.map(v => {
+        const tierBadge = v.tier
+          ? (v.tier === 'PREMIUM'
+              ? '<span class="badge-premium" style="margin-left: 6px;">💎 Premium</span>'
+              : '<span class="badge-budget" style="margin-left: 6px;">💰 Budget</span>')
+          : '';
+        const costStr = v.costTarget ? `<span style="font-size: 10px; color: var(--gc-text-muted); display: block;">${v.costTarget}</span>` : '';
+
+        return `
         <tr data-vehicle="${v.carType}" style="cursor: pointer;" class="vehicle-class-row">
-          <td style="font-weight: 700; color: var(--gc-text-gold);">${v.carType}</td>
-          <td><span style="color: var(--gc-text-amber);">${v.chassis}</span></td>
-          <td><span style="color: var(--gc-text-green);">${v.engineType}</span></td>
-          <td><span style="color: #64b5f6;">${v.gear}</span></td>
+          <td style="font-weight: 700; color: var(--gc-text-gold);">${v.carType}${tierBadge}${costStr}</td>
+          <td><span style="color: var(--gc-text-amber); font-weight: 600;">${v.chassis}</span></td>
+          <td><span style="color: var(--gc-text-green); font-weight: 600;">${v.engineType}</span></td>
+          <td><span style="color: #64b5f6; font-weight: 600;">${v.gear}</span></td>
           <td style="text-align: center;">${v.milFleet ? '✓' : '—'}</td>
           <td style="text-align: center;">${v.civFleet ? '✓' : '—'}</td>
           <td style="text-align: center;">${v.lowFunding ? '💰' : '—'}</td>
@@ -886,7 +928,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <td style="font-size: 11px;">${v.bodyFocus}</td>
           <td style="font-size: 11px;">${v.wealth}</td>
         </tr>
-      `).join('');
+      `;
+      }).join('');
 
       // Click row to select vehicle
       tableBody.querySelectorAll('.vehicle-class-row').forEach(row => {
@@ -1270,37 +1313,59 @@ document.addEventListener('DOMContentLoaded', () => {
     const assemblyDashboard = document.getElementById('assembly-ratings-dashboard');
     const assemblyFitBadge = document.getElementById('assembly-fit-badge');
 
-    // Populate assembly dropdown options once
-    if (selectAssemblyChassis && selectAssemblyChassis.options.length === 0) {
-      Object.keys(GEARCITY_DATA.chassisDesigns).forEach(k => {
-        const opt = document.createElement('option');
-        opt.value = k;
-        opt.textContent = `${k} (${GEARCITY_DATA.chassisDesigns[k].category || 'Chassis'})`;
-        selectAssemblyChassis.appendChild(opt);
-      });
+    function populateAssemblyDropdowns() {
+      const data = GearCityEngine.getActiveData();
+      if (selectAssemblyChassis) {
+        const prevVal = selectAssemblyChassis.value;
+        selectAssemblyChassis.innerHTML = '';
+        Object.keys(data.chassisDesigns).forEach(k => {
+          const opt = document.createElement('option');
+          opt.value = k;
+          const tierTag = data.chassisDesigns[k].tier ? ` [${data.chassisDesigns[k].tier}]` : '';
+          opt.textContent = `${k} (${data.chassisDesigns[k].category || 'Chassis'})${tierTag}`;
+          selectAssemblyChassis.appendChild(opt);
+        });
+        if (prevVal && Array.from(selectAssemblyChassis.options).some(o => o.value === prevVal)) {
+          selectAssemblyChassis.value = prevVal;
+        }
+      }
+      if (selectAssemblyEngine) {
+        const prevVal = selectAssemblyEngine.value;
+        selectAssemblyEngine.innerHTML = '';
+        Object.keys(data.engineDesigns).forEach(k => {
+          const opt = document.createElement('option');
+          opt.value = k;
+          const tierTag = data.engineDesigns[k].tier ? ` [${data.engineDesigns[k].tier}]` : '';
+          opt.textContent = `${k} (${data.engineDesigns[k].concept || 'Engine'})${tierTag}`;
+          selectAssemblyEngine.appendChild(opt);
+        });
+        if (prevVal && Array.from(selectAssemblyEngine.options).some(o => o.value === prevVal)) {
+          selectAssemblyEngine.value = prevVal;
+        }
+      }
+      if (selectAssemblyGearbox) {
+        const prevVal = selectAssemblyGearbox.value;
+        selectAssemblyGearbox.innerHTML = '';
+        Object.keys(data.gearboxDesigns).forEach(k => {
+          const opt = document.createElement('option');
+          opt.value = k;
+          const tierTag = data.gearboxDesigns[k].tier ? ` [${data.gearboxDesigns[k].tier}]` : '';
+          opt.textContent = `${k} (${data.gearboxDesigns[k].concept || 'Gearbox'})${tierTag}`;
+          selectAssemblyGearbox.appendChild(opt);
+        });
+        if (prevVal && Array.from(selectAssemblyGearbox.options).some(o => o.value === prevVal)) {
+          selectAssemblyGearbox.value = prevVal;
+        }
+      }
     }
-    if (selectAssemblyEngine && selectAssemblyEngine.options.length === 0) {
-      Object.keys(GEARCITY_DATA.engineDesigns).forEach(k => {
-        const opt = document.createElement('option');
-        opt.value = k;
-        opt.textContent = `${k} (${GEARCITY_DATA.engineDesigns[k].concept || 'Engine'})`;
-        selectAssemblyEngine.appendChild(opt);
-      });
-    }
-    if (selectAssemblyGearbox && selectAssemblyGearbox.options.length === 0) {
-      Object.keys(GEARCITY_DATA.gearboxDesigns).forEach(k => {
-        const opt = document.createElement('option');
-        opt.value = k;
-        opt.textContent = `${k} (${GEARCITY_DATA.gearboxDesigns[k].concept || 'Gearbox'})`;
-        selectAssemblyGearbox.appendChild(opt);
-      });
-    }
+    populateAssemblyDropdowns();
 
     function renderAssemblyEvaluation(resetDefaults = false) {
       if (!assemblyDashboard || !assemblyFitBadge) return;
       const carType = selectVehicle.value;
       const currentYear = parseInt(inputYear.value) || 1960;
-      const vc = GEARCITY_DATA.vehicleClasses.find(v => v.carType === carType) || GEARCITY_DATA.vehicleClasses[0];
+      const data = GearCityEngine.getActiveData();
+      const vc = data.vehicleClasses.find(v => v.carType === carType) || data.vehicleClasses[0];
 
       const defChassis = vc.chassis.split(/[>,/]/)[0].trim();
       const defEngine = vc.engineType.split(/[>/]/)[0].trim();
@@ -1417,21 +1482,22 @@ document.addEventListener('DOMContentLoaded', () => {
       const tbGearbox = document.getElementById('table-ref-gearbox-body');
       if (tbGearbox) {
         tbGearbox.innerHTML = '';
-        Object.values(GEARCITY_DATA.gearboxDesigns).forEach(g => {
+        Object.values(GearCityEngine.getActiveData().gearboxDesigns).forEach(g => {
           const tr = document.createElement('tr');
           const sliderStr = g.gearing ? `Lo: ${g.gearing.loRatio}%, Hi: ${g.gearing.hiRatio}%, MaxT: ${g.gearing.maxTorqueInput}Nm<br><span style="color: #64b5f6;">Focus:</span> Comf ${g.designFocus.comfort}%, Perf ${g.designFocus.performance}%, Rel ${g.designFocus.dependability}%` : (g.sliderValues ? `Comf: ${g.sliderValues.comfort}%, Perf: ${g.sliderValues.performance}%, Rel: ${g.sliderValues.reliability}%, Pow: ${g.sliderValues.power}%` : '—');
           const techStr = g.techSliders ? `Mat: ${g.techSliders.materials}, Comp: ${g.techSliders.components}, Tech: ${g.techSliders.technology}, Techq: ${g.techSliders.techniques}` : '—';
+          const tierBadge = g.tier === 'PREMIUM' ? '<span class="badge-premium" style="margin-left: 4px;">💎 Premium</span>' : '<span class="badge-budget" style="margin-left: 4px;">💰 Budget</span>';
           tr.innerHTML = `
-            <td style="font-weight: 800; color: #64b5f6;">${g.name}</td>
+            <td style="font-weight: 800; color: #64b5f6;">${g.name}${g.tier ? tierBadge : ''}</td>
             <td style="font-size: 12px;">${g.concept}</td>
-            <td><strong style="color: var(--gc-text-gold); background: rgba(100,181,246,0.1); padding: 2px 6px; border-radius: 3px; border: 1px solid rgba(100,181,246,0.2);">${g.maxEngineType}</strong></td>
+            <td><strong style="color: var(--gc-text-gold); background: rgba(100,181,246,0.1); padding: 2px 6px; border-radius: 3px; border: 1px solid rgba(100,181,246,0.2);">${g.maxEngineType || 'Standard'}</strong></td>
             <td>${g.ratings.comfort}</td>
             <td>${g.ratings.performance}</td>
             <td>${g.ratings.reliability}</td>
             <td>${g.ratings.power}</td>
             <td style="font-size: 11px; color: var(--gc-text-muted);">${sliderStr}</td>
             <td style="font-size: 11px; color: var(--gc-text-muted);">${techStr}</td>
-            <td style="font-size: 11px; white-space: pre-line;">${g.gearboxes}</td>
+            <td style="font-size: 11px; white-space: pre-line;">${g.gearboxes || 'Manual / Automatic'}</td>
             <td style="font-size: 11px; color: var(--gc-text-muted);">${g.cost || '$200 - $300'}${g.note ? `<div style="color: var(--gc-text-amber); margin-top: 4px;">${g.note}</div>` : ''}</td>
             <td>
               <button class="btn btn-secondary btn-ref-dl-gearbox" data-gearbox-name="${g.name}" style="padding: 3px 8px; font-size: 11px; white-space: nowrap; border: 1px solid #64b5f6; background: rgba(100,181,246,0.15); color: #64b5f6; cursor: pointer; border-radius: 3px; font-weight: 700;">
@@ -1445,13 +1511,14 @@ document.addEventListener('DOMContentLoaded', () => {
         tbGearbox.querySelectorAll('.btn-ref-dl-gearbox').forEach(btn => {
           btn.addEventListener('click', (e) => {
             const gName = e.currentTarget.getAttribute('data-gearbox-name');
-            const gdData = GEARCITY_DATA.gearboxDesigns[gName];
-            if (!gdData) return;
+            const gbData = GearCityEngine.getActiveData().gearboxDesigns[gName] || GEARCITY_DATA.gearboxDesigns[gName];
+            if (!gbData) return;
             const currentYear = parseInt(inputYear?.value) || 1960;
-            const gbType = getBestAvailForYear(gdData.gearboxes, currentYear);
+            const gbType = getBestAvailForYear(gbData.gearboxes, currentYear);
 
             const xmlContent = GearCityEngine.generateGearboxXml({
-              ...gdData,
+              ...gbData,
+              year: currentYear,
               gearboxType: gbType,
             });
 
@@ -1473,30 +1540,20 @@ document.addEventListener('DOMContentLoaded', () => {
       const tbChassis = document.getElementById('table-ref-chassis-body');
       if (tbChassis) {
         tbChassis.innerHTML = '';
-        const catMap = {
-          Micro: 'Minicar / Micro',
-          Sport: 'Sport',
-          General: 'General (Sedan/Hatch)',
-          Luxury: 'Luxury',
-          Truck: 'Truck / Utility'
-        };
-
-        Object.values(GEARCITY_DATA.chassisDesigns).forEach(c => {
+        Object.values(GearCityEngine.getActiveData().chassisDesigns).forEach(c => {
           const tr = document.createElement('tr');
-          const catKey = c.category || 'General';
-          const catName = catMap[catKey] || catKey;
+          const catName = c.category || 'General';
 
-          // Build decade targets progression
-          const decs = GEARCITY_DATA.decadeChassisBenchmarks;
-          const b00 = decs['1900s'][catKey];
-          const b30 = decs['1930s'][catKey];
-          const b60 = decs['1960s'][catKey];
-          const b90 = decs['1990s'][catKey];
-          const b20 = decs['2020s'][catKey];
+          const b00 = (GEARCITY_DATA.decadeChassisBenchmarks?.['1900s'] && GEARCITY_DATA.decadeChassisBenchmarks['1900s'][catName]) || { avgChassisKg: 250, curbRangeKg: '—' };
+          const b30 = (GEARCITY_DATA.decadeChassisBenchmarks?.['1930s'] && GEARCITY_DATA.decadeChassisBenchmarks['1930s'][catName]) || { avgChassisKg: 300, curbRangeKg: '—' };
+          const b60 = (GEARCITY_DATA.decadeChassisBenchmarks?.['1960s'] && GEARCITY_DATA.decadeChassisBenchmarks['1960s'][catName]) || { avgChassisKg: 350, curbRangeKg: '—' };
+          const b90 = (GEARCITY_DATA.decadeChassisBenchmarks?.['1990s'] && GEARCITY_DATA.decadeChassisBenchmarks['1990s'][catName]) || { avgChassisKg: 400, curbRangeKg: '—' };
+          const b20 = (GEARCITY_DATA.decadeChassisBenchmarks?.['2020s'] && GEARCITY_DATA.decadeChassisBenchmarks['2020s'][catName]) || { avgChassisKg: 450, curbRangeKg: '—' };
 
           let allDecadesHtml = '';
-          for (const [dKey, dCats] of Object.entries(decs)) {
-            const db = dCats[catKey];
+          const decades = ['1900s', '1910s', '1920s', '1930s', '1940s', '1950s', '1960s', '1970s', '1980s', '1990s', '2000s', '2010s', '2020s'];
+          for (const dKey of decades) {
+            const db = (GEARCITY_DATA.decadeChassisBenchmarks?.[dKey] && GEARCITY_DATA.decadeChassisBenchmarks[dKey][catName]) || { avgChassisKg: '—', curbRangeKg: '—' };
             allDecadesHtml += `<div style="display: flex; justify-content: space-between; gap: 6px; padding: 1px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
               <span style="color: var(--gc-text-gold); font-weight: 700;">${dKey}:</span>
               <span style="color: #81c784;">${db.avgChassisKg}kg</span>
@@ -1525,9 +1582,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
           const sliderStr = c.suspensionTuning ? `Sus: Stab ${c.suspensionTuning.stability}%, Comf ${c.suspensionTuning.comfort}%, Perf ${c.suspensionTuning.performance}%, Brk ${c.suspensionTuning.braking}%, Dur ${c.suspensionTuning.durability}%<br><span style="color: var(--gc-text-gold);">Focus:</span> Perf ${c.designFocus.performance}%, Str ${c.designFocus.strength}%, Dep ${c.designFocus.dependability}%` : (c.sliderValues ? `Perf: ${c.sliderValues.performance}%, Str: ${c.sliderValues.strength}%, Comf: ${c.sliderValues.comfort}%, Dur: ${c.sliderValues.durability}%` : '—');
           const techStr = c.techSliders ? `Mat: ${c.techSliders.materials}, Comp: ${c.techSliders.components}, Tech: ${c.techSliders.technology}, Techq: ${c.techSliders.techniques}` : '—';
+          const tierBadge = c.tier === 'PREMIUM' ? '<span class="badge-premium" style="margin-left: 4px;">💎 Premium</span>' : '<span class="badge-budget" style="margin-left: 4px;">💰 Budget</span>';
+          
           tr.innerHTML = `
-            <td style="font-weight: 800; color: var(--gc-text-gold);">${c.name}</td>
-            <td><strong style="color: var(--gc-text-amber); background: rgba(255,183,77,0.1); padding: 2px 6px; border-radius: 3px; border: 1px solid rgba(255,183,77,0.2);">${c.maxEngine}</strong></td>
+            <td style="font-weight: 800; color: var(--gc-text-gold);">${c.name}${c.tier ? tierBadge : ''}</td>
+            <td><strong style="color: var(--gc-text-amber); background: rgba(255,183,77,0.1); padding: 2px 6px; border-radius: 3px; border: 1px solid rgba(255,183,77,0.2);">${c.maxEngine || 'Standard'}</strong></td>
             <td>${decadeTargetHtml}</td>
             <td>${c.ratings.performance}</td>
             <td>${c.ratings.strength}</td>
@@ -1538,7 +1597,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <td style="font-size: 11px; white-space: pre-line;">${c.frame}</td>
             <td style="font-size: 11px; white-space: pre-line;">${c.drivetrain}</td>
             <td style="font-size: 11px; white-space: pre-line;">${c.suspension}</td>
-            <td style="font-size: 11px; color: var(--gc-text-amber);">${c.note || '—'}</td>
+            <td style="font-size: 11px; color: var(--gc-text-amber);">${c.note || (c.cost ? `Cost: ${c.cost}` : '—')}</td>
             <td>
               <button class="btn btn-secondary btn-ref-dl-chassis" data-chassis-name="${c.name}" style="padding: 3px 8px; font-size: 11px; white-space: nowrap; border: 1px solid var(--gc-border-gold); background: rgba(255,183,77,0.15); color: var(--gc-text-gold); cursor: pointer; border-radius: 3px; font-weight: 700;">
                 📥 .xml
@@ -1551,7 +1610,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tbChassis.querySelectorAll('.btn-ref-dl-chassis').forEach(btn => {
           btn.addEventListener('click', (e) => {
             const cName = e.currentTarget.getAttribute('data-chassis-name');
-            const chData = GEARCITY_DATA.chassisDesigns[cName];
+            const chData = GearCityEngine.getActiveData().chassisDesigns[cName] || GEARCITY_DATA.chassisDesigns[cName];
             if (!chData) return;
             const currentYear = parseInt(inputYear?.value) || 1960;
 
@@ -1587,12 +1646,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const tbEngine = document.getElementById('table-ref-engine-body');
       if (tbEngine) {
         tbEngine.innerHTML = '';
-        Object.values(GEARCITY_DATA.engineDesigns).forEach(e => {
+        Object.values(GearCityEngine.getActiveData().engineDesigns).forEach(e => {
           const tr = document.createElement('tr');
-          const costStr = `$${e.costTargets['1932'] || '—'} / $${e.costTargets['1944'] || '—'} / $${e.costTargets['1954'] || '—'}`;
+          const costStr = e.costTargets ? `$${e.costTargets['1932'] || '—'} / $${e.costTargets['1944'] || '—'} / $${e.costTargets['1954'] || '—'}` : (e.cost || '—');
           const sliderStr = `Dep: ${e.designDependability ?? '—'}, Fuel: ${e.performanceFuel ?? '—'}, Comp: ${e.techComponent ?? '—'}, Tech: ${e.techTechnology ?? '—'}, Techq: ${e.techTechnique ?? '—'}`;
+          const tierBadge = e.tier === 'PREMIUM' ? '<span class="badge-premium" style="margin-left: 4px;">💎 Premium</span>' : '<span class="badge-budget" style="margin-left: 4px;">💰 Budget</span>';
           tr.innerHTML = `
-            <td style="font-weight: 800; color: var(--gc-text-green);">${e.name}</td>
+            <td style="font-weight: 800; color: var(--gc-text-green);">${e.name}${e.tier ? tierBadge : ''}</td>
             <td style="font-size: 12px;">${e.concept}</td>
             <td><strong style="color: var(--gc-text-gold);">${e.optimizeFocus}</strong></td>
             <td>${e.maxWeight} kg</td>
@@ -1821,14 +1881,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnYearNext) btnYearNext.addEventListener('click', () => setVoptYear(Number(inputYear.value) + 1));
 
     function updateConceptDropdown() {
-      const vc = GEARCITY_DATA.vehicleClasses.find(v => v.carType === selectVehicle.value);
+      const data = GearCityEngine.getActiveData();
+      const vc = data.vehicleClasses.find(v => v.carType === selectVehicle.value);
       selectConcept.innerHTML = '';
       if (!vc) return;
       const concepts = vc.engineType.split(/[,\/]/).map(s => s.trim()).filter(Boolean);
       concepts.forEach(c => {
         const opt = document.createElement('option');
         opt.value = c;
-        opt.textContent = c + (GEARCITY_DATA.engineDesigns[c] ? ` — ${GEARCITY_DATA.engineDesigns[c].concept}` : '');
+        const ed = data.engineDesigns[c] || GEARCITY_DATA.engineDesigns[c];
+        const tierTag = ed && ed.tier ? ` [${ed.tier}]` : '';
+        opt.textContent = c + (ed ? ` — ${ed.concept}${tierTag}` : '');
         selectConcept.appendChild(opt);
       });
       populateConceptDefaults();
@@ -2091,6 +2154,12 @@ document.addEventListener('DOMContentLoaded', () => {
   initDemographics();
   initVehicleAdvisor();
   initVehicleEngineOptimizer();
+
+  // Global version refresh hook
+  window.refreshAllVersionedViews = function() {
+    initVehicleAdvisor();
+    initVehicleEngineOptimizer();
+  };
 
   // Restore Active Tab
   if (cached.activeTab) {

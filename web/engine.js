@@ -1,8 +1,41 @@
-/**
- * GearCity Pure JavaScript Calculation & Fast Optimizer Engine
- */
+if (typeof GEARCITY_DATA === 'undefined') {
+  if (typeof globalThis !== 'undefined' && !globalThis.GEARCITY_DATA && typeof require !== 'undefined') {
+    try { globalThis.GEARCITY_DATA = require('./data.js'); } catch (e) {}
+  }
+}
 
 const GearCityEngine = (() => {
+  let activeVersion = 'v2';
+
+  function setVersion(version) {
+    activeVersion = (version === 'v1' ? 'v1' : 'v2');
+    return activeVersion;
+  }
+
+  function getVersion() {
+    return activeVersion;
+  }
+
+  function getActiveData(ver) {
+    const v = ver || activeVersion;
+    let dataObj = typeof GEARCITY_DATA !== 'undefined' ? GEARCITY_DATA : null;
+    if (!dataObj && typeof global !== 'undefined' && global.GEARCITY_DATA) {
+      dataObj = global.GEARCITY_DATA;
+    }
+    if (!dataObj && typeof window !== 'undefined' && window.GEARCITY_DATA) {
+      dataObj = window.GEARCITY_DATA;
+    }
+    if (!dataObj && typeof require !== 'undefined') {
+      try {
+        dataObj = require('./data.js');
+      } catch (e) {}
+    }
+    if (dataObj && typeof dataObj.getData === 'function') {
+      return dataObj.getData(v);
+    }
+    return dataObj || {};
+  }
+
   const BASE_YEAR_1899 = 1899;
   const MAX_YEAR_LIMIT = 2050;
   const DEFAULT_ENGINE_SKILL = 100.0;
@@ -647,19 +680,28 @@ const GearCityEngine = (() => {
 </Engine>`;
   }
 
-  function getChassisEraBenchmark(chassisName, year) {
-    const cd = GEARCITY_DATA.chassisDesigns[chassisName];
-    const category = cd ? (cd.category || 'General') : 'General';
-    const yr = Math.max(1900, Math.min(2020, Number(year) || 1960));
+  function getChassisEraBenchmark(chassisName, year, ver) {
+    const data = getActiveData(ver);
+    let cd = data.chassisDesigns ? data.chassisDesigns[chassisName] : null;
+    if (!cd && typeof GEARCITY_DATA !== 'undefined') {
+      if (GEARCITY_DATA.chassisDesigns && GEARCITY_DATA.chassisDesigns[chassisName]) {
+        cd = GEARCITY_DATA.chassisDesigns[chassisName];
+      } else if (GEARCITY_DATA.v2?.chassisDesigns && GEARCITY_DATA.v2.chassisDesigns[chassisName]) {
+        cd = GEARCITY_DATA.v2.chassisDesigns[chassisName];
+      }
+    }
+    if (!cd) return null;
 
+    const cat = cd.category || 'General';
+    const yr = Math.max(1900, Math.min(2020, Number(year) || 1960));
     const decadeNum = Math.floor(yr / 10) * 10;
     const decadeKey = `${decadeNum}s`;
-    const decadeData = GEARCITY_DATA.decadeChassisBenchmarks[decadeKey] || GEARCITY_DATA.decadeChassisBenchmarks['1960s'];
-    const benchmark = decadeData[category] || decadeData['General'];
+    const decadeData = data.decadeChassisBenchmarks[decadeKey] || data.decadeChassisBenchmarks['1960s'];
+    const benchmark = decadeData[cat] || decadeData['General'];
 
     return {
       decade: decadeKey,
-      category,
+      category: cat,
       avgChassisKg: benchmark.avgChassisKg,
       chassisRangeKg: benchmark.chassisRangeKg,
       curbRangeKg: benchmark.curbRangeKg,
@@ -782,8 +824,9 @@ const GearCityEngine = (() => {
    * Get full design advice for a vehicle type from the spreadsheet data.
    * Returns chassis, engine, and gearbox design concepts with year-aware components.
    */
-  function getVehicleDesignAdvice(carType, year) {
-    const vc = GEARCITY_DATA.vehicleClasses.find(v => v.carType === carType);
+  function getVehicleDesignAdvice(carType, year, ver) {
+    const data = getActiveData(ver);
+    const vc = data.vehicleClasses.find(v => v.carType === carType);
     if (!vc) return null;
 
     // Parse comma/slash-separated concepts into arrays
@@ -795,7 +838,7 @@ const GearCityEngine = (() => {
 
     // Look up each design concept
     const chassisDetails = chassisConcepts.map(c => {
-      const cd = GEARCITY_DATA.chassisDesigns[c];
+      const cd = data.chassisDesigns[c];
       if (!cd) return { name: c, notFound: true };
 
       // Parse year-based component lines into {year, name} arrays
@@ -833,26 +876,28 @@ const GearCityEngine = (() => {
         drivetrainAvailable: filterByYear(drivetrainOptions),
         suspensionAll: suspensionOptions,
         suspensionAvailable: filterByYear(suspensionOptions),
-        eraBenchmark: getChassisEraBenchmark(c, year),
+        eraBenchmark: getChassisEraBenchmark(c, year, ver),
       };
     });
 
     const engineDetails = engineConcepts.map(c => {
-      const ed = GEARCITY_DATA.engineDesigns[c];
+      const ed = data.engineDesigns[c];
       if (!ed) return { name: c, notFound: true };
 
       // Find cost target for the current year
       let costTarget = null;
-      const eras = Object.keys(ed.costTargets).map(Number).sort((a, b) => a - b);
-      for (const era of eras) {
-        if (year >= era) costTarget = ed.costTargets[String(era)];
+      if (ed.costTargets) {
+        const eras = Object.keys(ed.costTargets).map(Number).sort((a, b) => a - b);
+        for (const era of eras) {
+          if (year >= era) costTarget = ed.costTargets[String(era)];
+        }
       }
 
       return { ...ed, costTarget };
     });
 
     const gearDetails = gearConcepts.map(c => {
-      const gd = GEARCITY_DATA.gearboxDesigns[c];
+      const gd = data.gearboxDesigns[c];
       if (!gd) return { name: c, notFound: true };
 
       const parseYearLines = (text) => {
@@ -885,14 +930,24 @@ const GearCityEngine = (() => {
   /**
    * Get optimizer-ready constraints from an Engine Design concept name.
    */
-  function getEngineDesignConstraints(conceptName, year) {
-    const ed = GEARCITY_DATA.engineDesigns[conceptName];
+  function getEngineDesignConstraints(conceptName, year, ver) {
+    const data = getActiveData(ver);
+    let ed = data.engineDesigns ? data.engineDesigns[conceptName] : null;
+    if (!ed && typeof GEARCITY_DATA !== 'undefined') {
+      if (GEARCITY_DATA.engineDesigns && GEARCITY_DATA.engineDesigns[conceptName]) {
+        ed = GEARCITY_DATA.engineDesigns[conceptName];
+      } else if (GEARCITY_DATA.v2?.engineDesigns && GEARCITY_DATA.v2.engineDesigns[conceptName]) {
+        ed = GEARCITY_DATA.v2.engineDesigns[conceptName];
+      }
+    }
     if (!ed) return null;
 
     let targetCost = null;
-    const eras = Object.keys(ed.costTargets).map(Number).sort((a, b) => a - b);
-    for (const era of eras) {
-      if (year >= era) targetCost = ed.costTargets[String(era)];
+    if (ed.costTargets) {
+      const eras = Object.keys(ed.costTargets).map(Number).sort((a, b) => a - b);
+      for (const era of eras) {
+        if (year >= era) targetCost = ed.costTargets[String(era)];
+      }
     }
 
     return {
@@ -911,8 +966,8 @@ const GearCityEngine = (() => {
   /**
    * Optimize engine based on vehicle class and design concept requirements
    */
-  function optimizeEngineForVehicle(carType, concept, year, customConstraints = {}) {
-    const defaultConstraints = getEngineDesignConstraints(concept, year) || {};
+  function optimizeEngineForVehicle(carType, concept, year, customConstraints = {}, ver) {
+    const defaultConstraints = getEngineDesignConstraints(concept, year, ver) || {};
 
     const constraints = {
       ...defaultConstraints,
@@ -1121,8 +1176,9 @@ const GearCityEngine = (() => {
   /**
    * Complete vehicle evaluation combining Chassis, Engine, and Gearbox concepts
    */
-  function evaluateCompleteVehicle(vehicleTypeName, year = 1960, overrides = {}) {
-    const vc = GEARCITY_DATA.vehicleClasses.find((v) => v.carType === vehicleTypeName) || GEARCITY_DATA.vehicleClasses[0];
+  function evaluateCompleteVehicle(vehicleTypeName, year = 1960, overrides = {}, ver) {
+    const data = getActiveData(ver);
+    const vc = data.vehicleClasses.find((v) => v.carType === vehicleTypeName) || data.vehicleClasses[0];
 
     const rawChassis = vc.chassis.split(/[>,/]/)[0].trim();
     const rawEngine = vc.engineType.split(/[>/]/)[0].trim();
@@ -1132,8 +1188,8 @@ const GearCityEngine = (() => {
     const engineKey = overrides.engineConcept || rawEngine;
     const gearKey = overrides.gearboxConcept || rawGear;
 
-    const chassisData = GEARCITY_DATA.chassisDesigns[chassisKey] || GEARCITY_DATA.chassisDesigns['Balance'] || {};
-    const gearboxData = GEARCITY_DATA.gearboxDesigns[gearKey] || GEARCITY_DATA.gearboxDesigns['Balance'] || {};
+    const chassisData = data.chassisDesigns[chassisKey] || data.chassisDesigns['Balance'] || data.chassisDesigns['Eco'] || {};
+    const gearboxData = data.gearboxDesigns[gearKey] || data.gearboxDesigns['Balance'] || data.gearboxDesigns['Fuel'] || {};
 
     let decadeKey = '1960s';
     if (year < 1910) decadeKey = '1900s';
@@ -1149,7 +1205,7 @@ const GearCityEngine = (() => {
     else if (year < 2010) decadeKey = '2000s';
     else decadeKey = '2010s';
 
-    const decadeBench = GEARCITY_DATA.chassisTargetWeights?.[decadeKey] || {};
+    const decadeBench = data.chassisTargetWeights?.[decadeKey] || {};
     const cat = chassisData.category || 'General';
     const eraTargetKg = decadeBench[cat]?.avgChassisKg || 250;
 
@@ -1157,7 +1213,7 @@ const GearCityEngine = (() => {
     let engineConfig = overrides.engineConfig;
 
     if (!enginePerf) {
-      const constraints = getEngineDesignConstraints(engineKey, year) || {};
+      const constraints = getEngineDesignConstraints(engineKey, year, ver) || {};
       const optResult = optimizeEngine(year, constraints);
       if (optResult && optResult.config && optResult.performance) {
         enginePerf = optResult.performance;
@@ -1188,6 +1244,7 @@ const GearCityEngine = (() => {
     return {
       vehicleTypeName,
       year,
+      version: ver || activeVersion,
       vehicleClass: vc,
       chassisConcept: chassisKey,
       engineConcept: engineKey,
@@ -1204,6 +1261,9 @@ const GearCityEngine = (() => {
   }
 
   return {
+    setVersion,
+    getVersion,
+    getActiveData,
     calculateYearFactors,
     getBoreStrokeLimits,
     getWorldRates,

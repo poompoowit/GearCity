@@ -877,3 +877,91 @@ select option:hover, select option:focus, select option:checked,
   }
 }
 
+/* ==========================================================================
+   Framework Version Switcher (V1 Classic vs V2 Streamlined 4+2)
+   ========================================================================== */
+.version-toggle-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(10, 5, 2, 0.85);
+  padding: 3px 8px 3px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(229, 147, 68, 0.35);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), inset 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.version-toggle-label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--gc-text-gold);
+  font-family: var(--font-game-mono);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.version-segmented-control {
+  display: inline-flex;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 16px;
+  padding: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 2px;
+}
+
+.btn-version-toggle {
+  background: transparent;
+  color: #c9b09a;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  font-family: var(--font-game-ui);
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.btn-version-toggle:hover:not(.active) {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-version-toggle.active {
+  background: linear-gradient(180deg, #f0a04b 0%, #b8621b 100%);
+  color: #ffffff;
+  font-weight: 800;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  border: 1px solid #ffd59e;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.badge-budget {
+  background: rgba(46, 117, 65, 0.25);
+  color: #85e89d;
+  border: 1px solid #347d39;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.badge-premium {
+  background: rgba(138, 77, 184, 0.25);
+  color: #d2a8ff;
+  border: 1px solid #8957e5;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
