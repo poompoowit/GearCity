@@ -5000,8 +5000,8 @@ gearboxDesigns: {
   v2: {
     vehicleClasses: [
       { carType: "Compact Car", chassis: "Eco", engineType: "Eco", gear: "Fuel", tier: "BUDGET", costTarget: "$180-$240", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Small Cargo", wealth: "Lower-Middle" },
-      { carType: "Compact SUV", chassis: "Balance", engineType: "Truck", gear: "Balance", tier: "BUDGET", costTarget: "$240-$300", milFleet: true, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Middle" },
-      { carType: "Compact Van", chassis: "Eco", engineType: "Eco", gear: "Balance", tier: "BUDGET", costTarget: "$200-$260", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Lower-Middle" },
+      { carType: "Compact SUV", chassis: "Truck", engineType: "Truck", gear: "Truck", tier: "BUDGET", costTarget: "$240-$320", milFleet: true, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Middle" },
+      { carType: "Compact Van", chassis: "Truck", engineType: "Eco", gear: "Balance", tier: "BUDGET", costTarget: "$200-$260", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Lower-Middle" },
       { carType: "Coupe", chassis: "Sport", engineType: "Sport", gear: "Sport", tier: "BUDGET", costTarget: "$320-$380", milFleet: false, civFleet: true, lowFunding: true, highFunding: true, bodyFocus: "Small Cargo", wealth: "Upper" },
       { carType: "Coupe 2+2", chassis: "Sport", engineType: "Sport", gear: "Sport", tier: "BUDGET", costTarget: "$280-$350", milFleet: false, civFleet: true, lowFunding: true, highFunding: true, bodyFocus: "Small Cargo", wealth: "Upper-Middle" },
       { carType: "Coupe Utility", chassis: "Truck", engineType: "Truck", gear: "Truck", tier: "BUDGET", costTarget: "$260-$320", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Upper-Middle" },
@@ -5013,7 +5013,7 @@ gearboxDesigns: {
       { carType: "Limousine", chassis: "Lux", engineType: "Lux", gear: "Lux", tier: "PREMIUM", costTarget: "$1,500-$3,000+", milFleet: false, civFleet: true, lowFunding: true, highFunding: false, bodyFocus: "Large Cargo", wealth: "Ultra-Wealthy" },
       { carType: "Luxury Sedan", chassis: "Lux", engineType: "Lux", gear: "Lux", tier: "PREMIUM", costTarget: "$1,200-$2,500+", milFleet: false, civFleet: true, lowFunding: true, highFunding: true, bodyFocus: "Large Cargo", wealth: "Wealthy" },
       { carType: "Microcar", chassis: "Eco", engineType: "Eco", gear: "Fuel", tier: "BUDGET", costTarget: "$180-$240", milFleet: false, civFleet: false, lowFunding: false, highFunding: false, bodyFocus: "Small Cargo", wealth: "Low" },
-      { carType: "Microvan", chassis: "Eco", engineType: "Eco", gear: "Balance", tier: "BUDGET", costTarget: "$200-$260", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Lower-Middle" },
+      { carType: "Microvan", chassis: "Truck", engineType: "Eco", gear: "Balance", tier: "BUDGET", costTarget: "$200-$260", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Lower-Middle" },
       { carType: "Minivan", chassis: "Balance", engineType: "Balance", gear: "Balance", tier: "BUDGET", costTarget: "$240-$300", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Middle" },
       { carType: "Phaeton", chassis: "Eco", engineType: "Eco", gear: "Fuel", tier: "BUDGET", costTarget: "$180-$240", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Small Cargo", wealth: "Low" },
       { carType: "Pickup Truck", chassis: "Truck", engineType: "Truck", gear: "Truck", tier: "BUDGET", costTarget: "$240-$320", milFleet: true, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Middle" },
@@ -5026,7 +5026,7 @@ gearboxDesigns: {
       { carType: "Subcompact", chassis: "Eco", engineType: "Eco", gear: "Fuel", tier: "BUDGET", costTarget: "$180-$240", milFleet: false, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Small Cargo", wealth: "Low" },
       { carType: "Supercar", chassis: "Race", engineType: "Race", gear: "Race", tier: "PREMIUM", costTarget: "$3,500-$5,000+", milFleet: false, civFleet: false, lowFunding: false, highFunding: true, bodyFocus: "Small Cargo", wealth: "Ultra-Wealthy" },
       { carType: "SUV", chassis: "Truck", engineType: "Truck", gear: "Truck", tier: "BUDGET", costTarget: "$240-$320", milFleet: true, civFleet: true, lowFunding: false, highFunding: false, bodyFocus: "Large Cargo", wealth: "Middle" },
-      { carType: "Touring", chassis: "Sport", engineType: "Balance", gear: "Balance", tier: "BUDGET", costTarget: "$260-$320", milFleet: false, civFleet: false, lowFunding: false, highFunding: false, bodyFocus: "Balance", wealth: "Middle" },
+      { carType: "Touring", chassis: "Balance", engineType: "Sport", gear: "Balance", tier: "BUDGET", costTarget: "$260-$340", milFleet: false, civFleet: false, lowFunding: false, highFunding: false, bodyFocus: "Balance", wealth: "Middle" },
       { carType: "Town Car", chassis: "Balance", engineType: "Balance", gear: "Lux", tier: "BUDGET", costTarget: "$350-$450", milFleet: false, civFleet: false, lowFunding: true, highFunding: false, bodyFocus: "Large Cargo", wealth: "Upper" },
       { carType: "Van", chassis: "Truck", engineType: "Truck", gear: "Truck", tier: "BUDGET", costTarget: "$240-$320", milFleet: true, civFleet: true, lowFunding: true, highFunding: false, bodyFocus: "Large Cargo", wealth: "Middle" }
     ],

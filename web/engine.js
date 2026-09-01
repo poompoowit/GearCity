@@ -1128,8 +1128,9 @@ const GearCityEngine = (() => {
    * Calculate overall Buyer Fit % (0-100%) against target vehicle demand weights
    */
   function calculateVehicleTypeFit(ratings, vehicleTypeName) {
-    const demoData = GEARCITY_DATA.demographics?.vehicle_types || {};
-    const weights = demoData[vehicleTypeName] || demoData['Sedan'] || {
+    const profiles = GEARCITY_DATA.vehicleProfiles || GEARCITY_DATA.demographics?.vehicle_types || {};
+    const normName = vehicleTypeName === 'Compact SUV' ? 'Compact Sport Utility' : (vehicleTypeName === 'SUV' ? 'Sport Utility Vehicle' : vehicleTypeName);
+    const weights = profiles[normName] || profiles[vehicleTypeName] || profiles['Sedan'] || {
       Performance: 0.4,
       Driveability: 0.4,
       Luxury: 0.45,
