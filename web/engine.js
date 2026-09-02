@@ -526,9 +526,16 @@ const GearCityEngine = (() => {
       if (maxWidth != null && res.widthCm > maxWidth) {
         penalty += Math.pow(res.widthCm - maxWidth, 2) * 15;
       }
-      if (effectiveMaxRatio != null && res.horsepower > 0 && (res.torqueNm / res.horsepower) > effectiveMaxRatio) {
-        const excess = (res.torqueNm / res.horsepower) - effectiveMaxRatio;
-        penalty += 50000.0 + excess * 10000.0 + Math.pow(excess, 2) * 50000.0;
+      if (effectiveMaxRatio != null && res.horsepower > 0) {
+        const actualRatio = res.torqueNm / res.horsepower;
+        const RATIO_TOLERANCE = 0.05;
+        if (actualRatio > effectiveMaxRatio + RATIO_TOLERANCE) {
+          const hardExcess = actualRatio - (effectiveMaxRatio + RATIO_TOLERANCE);
+          penalty += 50000.0 + hardExcess * 10000.0 + Math.pow(hardExcess, 2) * 50000.0;
+        } else if (actualRatio > effectiveMaxRatio) {
+          const softExcess = actualRatio - effectiveMaxRatio;
+          penalty += Math.pow(softExcess, 2) * 500.0;
+        }
       }
       return penalty;
     }
@@ -632,6 +639,36 @@ const GearCityEngine = (() => {
               }
             }
           }
+        }
+      }
+    }
+
+    // Pass 3: Micro-tuning around best candidate's bore & stroke
+    if (bestConfig) {
+      const baseBore = bestConfig.sliders.boreSlide;
+      const baseStroke = bestConfig.sliders.strokeSlide;
+      const fineBores = [Math.max(0, baseBore - 50), baseBore, Math.min(1000, baseBore + 50)];
+      const fineStrokes = [
+        Math.max(0, baseStroke - 60),
+        Math.max(0, baseStroke - 30),
+        baseStroke,
+        Math.min(1000, baseStroke + 30),
+        Math.min(1000, baseStroke + 60),
+      ];
+
+      for (const fb of fineBores) {
+        for (const fs of fineStrokes) {
+          const tunedSliders = { ...bestConfig.sliders, boreSlide: fb, strokeSlide: fs };
+          const testConfig = { ...bestConfig, sliders: tunedSliders };
+          try {
+            const res = calculatePerformance(testConfig, year);
+            const score = (focus === 'Torque' ? res.torqueNm : res.horsepower) - evaluatePenalty(res);
+            if (score > bestScore) {
+              bestScore = score;
+              bestConfig = testConfig;
+              bestPerf = res;
+            }
+          } catch (e) {}
         }
       }
     }
