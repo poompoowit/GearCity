@@ -527,7 +527,8 @@ const GearCityEngine = (() => {
         penalty += Math.pow(res.widthCm - maxWidth, 2) * 15;
       }
       if (effectiveMaxRatio != null && res.horsepower > 0 && (res.torqueNm / res.horsepower) > effectiveMaxRatio) {
-        penalty += Math.pow((res.torqueNm / res.horsepower) - effectiveMaxRatio, 2) * 50;
+        const excess = (res.torqueNm / res.horsepower) - effectiveMaxRatio;
+        penalty += 50000.0 + excess * 10000.0 + Math.pow(excess, 2) * 50000.0;
       }
       return penalty;
     }
@@ -535,38 +536,44 @@ const GearCityEngine = (() => {
     // Pass 1: Quick screening across candidate component combinations
     const screened = [];
     const screenBores = [150, 400, 700];
-    const screenStrokes = [200, 500, 750];
+    const screenStrokes = effectiveMaxRatio != null ? [0, 150, 400, 750] : [200, 500, 750];
+    const screenRpms = effectiveMaxRatio != null ? [0.8, 1.0] : [0.8];
+    const screenTorques = effectiveMaxRatio != null ? [0.4, 0.7] : [0.7];
 
     for (const comp of candidateComponents) {
       let bestCompScore = -Infinity;
       for (const sb of screenBores) {
         for (const ss of screenStrokes) {
-          const testConfig = {
-            components: comp,
-            sliders: {
-              boreSlide: sb,
-              strokeSlide: ss,
-              performanceTorque: 0.7,
-              performanceRevolutions: 0.8,
-              performanceFuelEconomy: 0.0,
-              designFocusPerformance: 0.8,
-              designFocusFuelEconomy: 0.0,
-              designFocusDependability: 0.5,
-              layoutLength: 0.25,
-              layoutWidth: 0.25,
-              layoutWeight: 0.5,
-              technologyMaterials: 0.4,
-              technologyComponents: 0.0,
-              technologyTechnologies: 0.0,
-              technologyTechniques: 0.0,
-            },
-            year,
-            name: constraints.modelName || `Engine_${year}`,
-          };
-          const res = calculatePerformance(testConfig, year);
-          const score = (focus === 'Torque' ? res.torqueNm : res.horsepower) - evaluatePenalty(res);
-          if (score > bestCompScore) {
-            bestCompScore = score;
+          for (const sr of screenRpms) {
+            for (const st of screenTorques) {
+              const testConfig = {
+                components: comp,
+                sliders: {
+                  boreSlide: sb,
+                  strokeSlide: ss,
+                  performanceTorque: st,
+                  performanceRevolutions: sr,
+                  performanceFuelEconomy: 0.0,
+                  designFocusPerformance: 0.8,
+                  designFocusFuelEconomy: 0.0,
+                  designFocusDependability: 0.5,
+                  layoutLength: 0.25,
+                  layoutWidth: 0.25,
+                  layoutWeight: 0.5,
+                  technologyMaterials: 0.4,
+                  technologyComponents: 0.0,
+                  technologyTechnologies: 0.0,
+                  technologyTechniques: 0.0,
+                },
+                year,
+                name: constraints.modelName || `Engine_${year}`,
+              };
+              const res = calculatePerformance(testConfig, year);
+              const score = (focus === 'Torque' ? res.torqueNm : res.horsepower) - evaluatePenalty(res);
+              if (score > bestCompScore) {
+                bestCompScore = score;
+              }
+            }
           }
         }
       }
@@ -574,7 +581,7 @@ const GearCityEngine = (() => {
     }
 
     screened.sort((a, b) => b.initialScore - a.initialScore);
-    const topCandidates = screened.slice(0, 20).map((s) => s.comp);
+    const topCandidates = screened.slice(0, 25).map((s) => s.comp);
 
     // Pass 2: Fine-grained slider search across top candidate architectures
     let bestScore = -Infinity;
@@ -582,8 +589,8 @@ const GearCityEngine = (() => {
     let bestPerf = null;
 
     const boreSteps = [50, 200, 350, 500, 650, 800, 950];
-    const strokeSteps = [100, 250, 400, 550, 700, 850, 1000];
-    const torqueSteps = [0.4, 0.7, 0.95];
+    const strokeSteps = [0, 50, 150, 250, 400, 550, 700, 850, 1000];
+    const torqueSteps = [0.3, 0.5, 0.7, 0.95];
     const rpmSteps = [0.65, 0.85, 1.0];
     const matSteps = [0.25, 0.5, 0.75];
 
