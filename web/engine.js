@@ -802,6 +802,27 @@ const GearCityEngine = (() => {
     };
   }
 
+  /**
+   * Check Torque-to-Weight adequacy based on GearCity simulation mechanics
+   * (Report Page 21: Strategic Engine Sizing and Platform Integration)
+   * - Saloons / Passenger Cars: >= 0.12 Nm / kg
+   * - Commercial Trucks / Heavy: >= 0.22 Nm / kg
+   */
+  function checkTorqueToWeightAdequacy(torqueNm, totalVehicleWeightKg, carType) {
+    const isTruck = ['Pickup Truck', 'SUV', 'Sport Utility Vehicle', 'Van', 'Coupe Utility'].includes(carType);
+    const minRatio = isTruck ? 0.22 : 0.12;
+    const actualRatio = totalVehicleWeightKg > 0 ? (Number(torqueNm) / Number(totalVehicleWeightKg)) : 0;
+    const isAdequate = actualRatio >= minRatio;
+    return {
+      actualRatio: Number(actualRatio.toFixed(3)),
+      minRatio,
+      isAdequate,
+      isTruck,
+      marginPct: Number(((actualRatio - minRatio) / minRatio * 100).toFixed(1)),
+      warning: !isAdequate ? (isTruck ? '⚠️ Underpowered: Commercial trucks require ≥ 0.22 Nm/kg to avoid utility & tow penalties' : '⚠️ Engine Too Weak: Requires ≥ 0.12 Nm/kg to avoid buyer acceleration penalties') : null
+    };
+  }
+
   function generateChassisXml(config) {
     let dim = config.dimensions ? { ...config.dimensions } : { length: 50.0, width: 50.0, height: 50.0, weight: 50.0, engWidth: 50.0, engLength: 50.0 };
     const sus = config.suspensionTuning || { stability: 50.0, comfort: 50.0, performance: 50.0, braking: 50.0, durability: 50.0 };
@@ -1760,6 +1781,7 @@ const GearCityEngine = (() => {
     getEngineDesignConstraints,
     getChassisEraBenchmark,
     getEngineEraBenchmark,
+    checkTorqueToWeightAdequacy,
     getChassisGearboxRecommendations: getVehicleDesignAdvice,
   };
 })();

@@ -4882,121 +4882,121 @@ vehicleArchetypeMapping: {
 // Comprehensive 7-Archetype Decade Engine Weight Matrix (1900s - 2020s)
 decadeEngineBenchmarks: {
   "1900s": {
-    Micro:   { minKg: 50,  targetKg: 75,  maxKg: 110, notes: "Single/Twin-cylinder air/water-cooled iron engine" },
-    Compact: { minKg: 80,  targetKg: 130, maxKg: 170, notes: "Early 2-4 cylinder small-bore engine" },
-    Midsize: { minKg: 130, targetKg: 190, maxKg: 250, notes: "3-5L 4-cylinder cast-iron monobloc" },
-    Sports:  { minKg: 160, targetKg: 220, maxKg: 280, notes: "High-displacement 4-6 cyl, e.g. Mercedes 60hp / Napier" },
-    Luxury:  { minKg: 240, targetKg: 330, maxKg: 420, notes: "Large 4-6 cylinder luxury chassis engine (7-11L)" },
-    Truck:   { minKg: 260, targetKg: 360, maxKg: 460, notes: "Heavy-duty commercial/industrial iron engine" },
-    Race:    { minKg: 220, targetKg: 320, maxKg: 440, notes: "Grand Prix racing monster engines (up to 14L)" }
+    Micro:   { minKg: 45,  targetKg: 65,  maxKg: 90,  notes: "1-Cyl / 2-Cyl Iron Block (0.6L–1.0L), splash lubrication" },
+    Compact: { minKg: 65,  targetKg: 95,  maxKg: 130, notes: "Early 2-4 cylinder small-bore iron engine" },
+    Midsize: { minKg: 105, targetKg: 135, maxKg: 170, notes: "Inline-2 / Inline-4 Side-Valve (1.5L–2.5L), low-speed tractive pull" },
+    Sports:  { minKg: 140, targetKg: 190, maxKg: 245, notes: "High-Compression Inline-4 (3.0L–5.5L), mechanical valves, dual carbs" },
+    Luxury:  { minKg: 240, targetKg: 310, maxKg: 390, notes: "Large-Displacement Inline-4 / Early I6 (5.0L–8.0L), dual-ignition" },
+    Truck:   { minKg: 200, targetKg: 260, maxKg: 330, notes: "Heavy Inline-2 / Inline-4 Iron (3.5L–5.5L), heavy flywheel, sustained torque" },
+    Race:    { minKg: 220, targetKg: 285, maxKg: 360, notes: "Stripped Monster Displacement I4 (9.0L–16.0L), exposed valvetrain" }
   },
   "1910s": {
-    Micro:   { minKg: 55,  targetKg: 85,  maxKg: 120, notes: "Twin/4-cylinder light cyclecar engine" },
-    Compact: { minKg: 90,  targetKg: 140, maxKg: 180, notes: "En bloc 4-cylinder cast iron, e.g. Ford Model T (~180 kg)" },
-    Midsize: { minKg: 140, targetKg: 200, maxKg: 260, notes: "Early Inline-6 or durable 4-cylinder" },
-    Sports:  { minKg: 170, targetKg: 230, maxKg: 290, notes: "High-revving 4-cyl or overhead-cam 6-cyl" },
-    Luxury:  { minKg: 260, targetKg: 360, maxKg: 450, notes: "Refined 6-cylinder or early V8 (Cadillac Type 51)" },
-    Truck:   { minKg: 280, targetKg: 390, maxKg: 500, notes: "Industrial channel iron truck engine" },
-    Race:    { minKg: 200, targetKg: 300, maxKg: 420, notes: "Aero-engine conversions and early DOHC racers" }
+    Micro:   { minKg: 55,  targetKg: 80,  maxKg: 110, notes: "Inline-2 / Small Inline-4 (0.8L–1.3L), cyclecar layout, thermo-siphon" },
+    Compact: { minKg: 80,  targetKg: 120, maxKg: 155, notes: "Early monobloc 4-cylinder casting" },
+    Midsize: { minKg: 130, targetKg: 165, maxKg: 205, notes: "Monobloc Inline-4 Side-Valve (2.0L–3.0L), pressurized lubrication" },
+    Sports:  { minKg: 140, targetKg: 185, maxKg: 235, notes: "Tuned Inline-4 / Monobloc I6 (3.0L–4.5L), aluminum pistons, dual spark" },
+    Luxury:  { minKg: 280, targetKg: 360, maxKg: 440, notes: "Large Straight-6 / Early 90° V8 (5.0L–7.5L), vibration dampening, quiet idle" },
+    Truck:   { minKg: 240, targetKg: 320, maxKg: 400, notes: "Heavy Industrial Inline-4 / I6 (4.5L–7.0L), massive iron crankcase" },
+    Race:    { minKg: 160, targetKg: 210, maxKg: 265, notes: "Twin-Cam (DOHC) 4-Valve I4 (3.0L–4.5L), hemi chambers, alloy sump" }
   },
   "1920s": {
-    Micro:   { minKg: 60,  targetKg: 90,  maxKg: 125, notes: "Austin 7 four-cylinder (~65 kg) or European twin" },
-    Compact: { minKg: 95,  targetKg: 145, maxKg: 185, notes: "Standard flathead 4-cylinder" },
-    Midsize: { minKg: 150, targetKg: 210, maxKg: 270, notes: "Smooth Inline-6 flathead/OHV" },
-    Sports:  { minKg: 160, targetKg: 220, maxKg: 280, notes: "Bentley 3L/4.5L, Bugatti Type 35/37" },
-    Luxury:  { minKg: 280, targetKg: 380, maxKg: 480, notes: "Long straight-eights, e.g. Duesenberg Model A, Packard" },
-    Truck:   { minKg: 300, targetKg: 410, maxKg: 520, notes: "Heavy-duty commercial Inline-6" },
-    Race:    { minKg: 180, targetKg: 270, maxKg: 380, notes: "Supercharged straight-eights, Bugatti / Alfa Romeo" }
+    Micro:   { minKg: 55,  targetKg: 75,  maxKg: 100, notes: "Small-Bore Inline-4 Side-Valve (0.7L–1.1L), aluminum pistons" },
+    Compact: { minKg: 85,  targetKg: 125, maxKg: 160, notes: "Standard production 4-cylinder side-valve" },
+    Midsize: { minKg: 140, targetKg: 180, maxKg: 225, notes: "Inline-4 / Compact Straight-6 (1.8L–3.2L), Ricardo turbulent heads" },
+    Sports:  { minKg: 125, targetKg: 165, maxKg: 210, notes: "High-Compression I4 / Small I8 (2.0L–3.0L), OHV, dual carbs" },
+    Luxury:  { minKg: 300, targetKg: 380, maxKg: 460, notes: "Large Straight-8 / V8 (5.0L–7.5L), nine-bearing crankshaft, silence" },
+    Truck:   { minKg: 270, targetKg: 350, maxKg: 440, notes: "Heavy Cast-Iron Straight-6 (5.0L–8.0L), deep oil pan, sustained torque" },
+    Race:    { minKg: 130, targetKg: 170, maxKg: 215, notes: "Supercharged Straight-8 DOHC (1.5L–2.0L), roller bearings, gear-driven cams" }
   },
   "1930s": {
-    Micro:   { minKg: 60,  targetKg: 95,  maxKg: 130, notes: "Fiat 500 Topolino 4-cyl (~75 kg)" },
-    Compact: { minKg: 100, targetKg: 150, maxKg: 190, notes: "Ford V8-60 or European light 4-cyl" },
-    Midsize: { minKg: 160, targetKg: 220, maxKg: 280, notes: "Ford Flathead V8 (250 kg) or Chevrolet 216 Stovebolt" },
-    Sports:  { minKg: 170, targetKg: 230, maxKg: 290, notes: "Alfa Romeo 8C, BMW 328 (lightweight 2.0L 6-cyl)" },
-    Luxury:  { minKg: 300, targetKg: 410, maxKg: 520, notes: "Cadillac V12/V16, Duesenberg Model J straight-8" },
-    Truck:   { minKg: 320, targetKg: 430, maxKg: 540, notes: "Heavy commercial 6-cylinder and early diesels" },
-    Race:    { minKg: 180, targetKg: 260, maxKg: 360, notes: "Silver Arrows supercharged Grand Prix monsters" }
+    Micro:   { minKg: 50,  targetKg: 70,  maxKg: 90,  notes: "Subcompact Inline-4 / Flat-Twin (0.6L–1.1L), compact packaging" },
+    Compact: { minKg: 90,  targetKg: 130, maxKg: 165, notes: "Ford V8-60 or European light 4-cyl" },
+    Midsize: { minKg: 155, targetKg: 195, maxKg: 240, notes: "Side-Valve Straight-6 / Flathead V8 (2.5L–3.6L), monobloc casting" },
+    Sports:  { minKg: 135, targetKg: 175, maxKg: 220, notes: "Overhead-Cam Straight-6 / DOHC I8 (2.0L–3.5L), hemi crossflow heads" },
+    Luxury:  { minKg: 330, targetKg: 420, maxKg: 510, notes: "Multi-Cylinder 60° V12 / 45° V16 (5.5L–8.0L), hydraulic lifters, total balance" },
+    Truck:   { minKg: 290, targetKg: 375, maxKg: 470, notes: "Heavy Iron I6 / Early Diesel (4.5L–7.5L), direct injection, reinforced ribbing" },
+    Race:    { minKg: 160, targetKg: 205, maxKg: 255, notes: "Supercharged Grand Prix V12 / V16 (3.0L–5.6L), magnesium castings" }
   },
   "1940s": {
-    Micro:   { minKg: 55,  targetKg: 85,  maxKg: 120, notes: "Post-war microcars, lightweight singles/twins" },
-    Compact: { minKg: 90,  targetKg: 140, maxKg: 180, notes: "VW Beetle air-cooled flat-4 (90 kg), Morris Minor" },
-    Midsize: { minKg: 160, targetKg: 220, maxKg: 275, notes: "Cast-iron inline-6 and early modern OHV V8s" },
-    Sports:  { minKg: 160, targetKg: 220, maxKg: 275, notes: "Jaguar XK 3.4L twin-cam (~220 kg), Cisitalia" },
-    Luxury:  { minKg: 280, targetKg: 380, maxKg: 480, notes: "Pre-war straight-8s and 1949 Cadillac 331 OHV V8 (~300 kg)" },
-    Truck:   { minKg: 300, targetKg: 410, maxKg: 520, notes: "Military-derived heavy-duty inline-6" },
-    Race:    { minKg: 160, targetKg: 240, maxKg: 340, notes: "Alfa Romeo 158 Alfetta supercharged 1.5L" }
+    Micro:   { minKg: 45,  targetKg: 65,  maxKg: 85,  notes: "Air-Cooled Flat-Twin / Small I4 (0.4L–0.9L), stamped steel components" },
+    Compact: { minKg: 80,  targetKg: 120, maxKg: 155, notes: "Lightweight European utility four-cylinder" },
+    Midsize: { minKg: 150, targetKg: 190, maxKg: 235, notes: "Robust Inline-4 / Moderate Iron I6 (1.8L–3.5L), leaded-fuel heads" },
+    Sports:  { minKg: 140, targetKg: 185, maxKg: 235, notes: "Advanced DOHC Inline-6 / Tuned I4 (2.0L–3.4L), alloy head, chain-drive cams" },
+    Luxury:  { minKg: 290, targetKg: 365, maxKg: 445, notes: "Refined Straight-8 / Overhead-Valve V8 (4.5L–6.0L), hydraulic lash adjusters" },
+    Truck:   { minKg: 280, targetKg: 360, maxKg: 450, notes: "Heavy Cast-Iron I6 / Low-RPM V8 (4.0L–7.0L), low-wear iron sleeves" },
+    Race:    { minKg: 125, targetKg: 165, maxKg: 205, notes: "1.5L Two-Stage Supercharged / 4.5L Atmo I6, Roots blowers, nitrided crank" }
   },
   "1950s": {
-    Micro:   { minKg: 50,  targetKg: 80,  maxKg: 115, notes: "Isetta 250/300cc, Messerschmitt, Fiat 500" },
-    Compact: { minKg: 90,  targetKg: 135, maxKg: 175, notes: "BMC A-Series 4-cyl (~110 kg), Peugeot 203" },
-    Midsize: { minKg: 170, targetKg: 230, maxKg: 290, notes: "Chevy Small-Block 265/283 V8 (240 kg), Ford Y-Block" },
-    Sports:  { minKg: 150, targetKg: 210, maxKg: 265, notes: "Porsche 356 flat-4 (100 kg), Jaguar XK140, Corvette V8" },
-    Luxury:  { minKg: 270, targetKg: 360, maxKg: 450, notes: "Chrysler 392 FirePower Hemi (330 kg), Rolls-Royce V8" },
-    Truck:   { minKg: 280, targetKg: 390, maxKg: 490, notes: "Industrial 6-cylinder and heavy V8 workhorses" },
-    Race:    { minKg: 140, targetKg: 210, maxKg: 300, notes: "Mercedes W196 straight-8, Maserati 250F 6-cyl" }
+    Micro:   { minKg: 40,  targetKg: 60,  maxKg: 80,  notes: "1-Cyl / 2-Cyl Air-Cooled Micro (0.25L–0.6L), integrated transmission" },
+    Compact: { minKg: 75,  targetKg: 110, maxKg: 145, notes: "Small OHV 4-cylinder (e.g. BMC A-Series ~110 kg)" },
+    Midsize: { minKg: 135, targetKg: 175, maxKg: 215, notes: "OHV Inline-4 / Small OHV V8 (2.2L–4.0L), short-stroke geometry" },
+    Sports:  { minKg: 120, targetKg: 160, maxKg: 205, notes: "High-Compression Small V8 / Alloy Flat-4 (1.5L–3.5L), solid-lifter cams" },
+    Luxury:  { minKg: 265, targetKg: 330, maxKg: 400, notes: "Large-Displacement Pushrod OHV V8 (5.0L–6.5L), quiet valvetrain" },
+    Truck:   { minKg: 270, targetKg: 345, maxKg: 430, notes: "High-Torque OHV V8 / Heavy Diesel (4.5L–6.5L), forged steel crank" },
+    Race:    { minKg: 95,   targetKg: 125, maxKg: 160, notes: "Purpose-Built Alloy DOHC 4-Cyl / V8 (2.5L Spec), dry-sump, all-aluminum" }
   },
   "1960s": {
-    Micro:   { minKg: 55,  targetKg: 85,  maxKg: 120, notes: "Honda N360 2-cyl air-cooled, Subaru 360" },
-    Compact: { minKg: 95,  targetKg: 140, maxKg: 180, notes: "Ford Kent crossflow (~105 kg), Chevy II 4-cyl" },
-    Midsize: { minKg: 170, targetKg: 240, maxKg: 300, notes: "Ford 289/302 V8 (215 kg), Chevy 327/350 V8 (250 kg)" },
-    Sports:  { minKg: 150, targetKg: 215, maxKg: 280, notes: "Jaguar 3.8/4.2L, Ferrari Colombo V12 (~190 kg), Porsche flat-6" },
-    Luxury:  { minKg: 280, targetKg: 370, maxKg: 460, notes: "Big-Block V8s (Chevy 427, Ford 429, Cadillac 472)" },
-    Truck:   { minKg: 260, targetKg: 360, maxKg: 460, notes: "Heavy-duty truck Big-Blocks and diesel inline-6" },
-    Race:    { minKg: 130, targetKg: 190, maxKg: 270, notes: "Ford 427 FE, Cosworth DFV V8 (168 kg)" }
+    Micro:   { minKg: 45,  targetKg: 65,  maxKg: 85,  notes: "Water-Cooled 2-Cyl Kei / Small I4 (0.36L–1.0L), thin-wall alloy" },
+    Compact: { minKg: 75,  targetKg: 110, maxKg: 145, notes: "Thin-wall cast 4-cylinder (e.g. Ford Kent ~105 kg)" },
+    Midsize: { minKg: 125, targetKg: 160, maxKg: 200, notes: "Thin-Wall Cast-Iron I4 / Moderate V8 (2.0L–4.0L), modern wedge chambers" },
+    Sports:  { minKg: 130, targetKg: 170, maxKg: 215, notes: "High-Revving SOHC/DOHC I4 / Alloy V8 (2.0L–4.7L), high-flow ports" },
+    Luxury:  { minKg: 275, targetKg: 340, maxKg: 415, notes: "Big-Block V8 / Multi-Carb Alloy V12 (5.5L–7.5L), intake silencers" },
+    Truck:   { minKg: 290, targetKg: 365, maxKg: 460, notes: "Heavy-Duty Cast-Iron Big-Block V8 (5.0L–7.0L), deep-skirt crankcase" },
+    Race:    { minKg: 105, targetKg: 135, maxKg: 165, notes: "Stressed Structural All-Alloy DOHC V8 (3.0L Spec, e.g. Cosworth DFV ~168 kg)" }
   },
   "1970s": {
-    Micro:   { minKg: 60,  targetKg: 90,  maxKg: 125, notes: "Japanese Kei 550cc, European economy twin" },
-    Compact: { minKg: 90,  targetKg: 135, maxKg: 175, notes: "VW EA827 4-cyl (~120 kg), Toyota 2T, Pinto 2.0L" },
-    Midsize: { minKg: 160, targetKg: 225, maxKg: 285, notes: "Buick 231 V6 (~170 kg), Chevy 305/350" },
-    Sports:  { minKg: 140, targetKg: 200, maxKg: 260, notes: "Datsun L24/L28 (165 kg), Porsche 911 2.7/3.0 flat-6" },
-    Luxury:  { minKg: 260, targetKg: 350, maxKg: 440, notes: "Cadillac 500 cid V8 (300 kg), Lincoln 460 cid" },
-    Truck:   { minKg: 250, targetKg: 350, maxKg: 440, notes: "Standard 350/360 V8 or heavy inline-6" },
-    Race:    { minKg: 120, targetKg: 180, maxKg: 250, notes: "Cosworth DFV, Porsche 930 turbo flat-6" }
+    Micro:   { minKg: 75,  targetKg: 95,  maxKg: 115, notes: "Transverse SOHC Inline-4 (1.0L–1.3L), stratified charge, toothed belt drive" },
+    Compact: { minKg: 95,  targetKg: 125, maxKg: 155, notes: "Transverse FWD 4-cylinder with early emissions hardware" },
+    Midsize: { minKg: 120, targetKg: 150, maxKg: 180, notes: "Crossflow Inline-4 / Compact V6 (1.8L–3.0L), EGR integration, balance shafts" },
+    Sports:  { minKg: 125, targetKg: 160, maxKg: 200, notes: "DOHC 16V I4 / Flat-6 / Alloy V6 (2.0L–3.0L), continuous fuel injection" },
+    Luxury:  { minKg: 255, targetKg: 320, maxKg: 385, notes: "Low-Compression Pushrod V8 / V12 (5.0L–7.5L), electronic ignition, dampening" },
+    Truck:   { minKg: 280, targetKg: 355, maxKg: 440, notes: "Low-Compression Iron V8 / Medium Diesel (5.7L–7.5L), low-RPM torque" },
+    Race:    { minKg: 115, targetKg: 145, maxKg: 175, notes: "Structural DOHC V8 / Flat-12 / 1.5L Turbo, intercoolers, titanium valves" }
   },
   "1980s": {
-    Micro:   { minKg: 55,  targetKg: 85,  maxKg: 115, notes: "Kei 550cc/660cc 3-cylinder turbo (~65 kg)" },
-    Compact: { minKg: 85,  targetKg: 125, maxKg: 165, notes: "Transverse 4-cyl, GM Iron Duke / Chrysler 2.2L" },
-    Midsize: { minKg: 140, targetKg: 195, maxKg: 250, notes: "Aluminum-head V6s (Ford Vulcan, GM 3.8L V6)" },
-    Sports:  { minKg: 130, targetKg: 185, maxKg: 240, notes: "Toyota 4A-GE (120 kg), Nissan VG30, Buick Grand National turbo" },
-    Luxury:  { minKg: 220, targetKg: 300, maxKg: 380, notes: "BMW M70 5.0L V12 (240 kg), Mercedes M117 V8" },
-    Truck:   { minKg: 230, targetKg: 320, maxKg: 410, notes: "Ford 300 Inline-6, Chevy 454, Cummins 5.9L Turbo-Diesel" },
-    Race:    { minKg: 110, targetKg: 160, maxKg: 230, notes: "Turbo 1.5L F1 monsters (BMW M12 ~140 kg, Honda RA168E)" }
+    Micro:   { minKg: 70,  targetKg: 90,  maxKg: 110, notes: "Transverse Multi-Point EFI I3 / I4 (1.0L–1.3L), roller finger followers" },
+    Compact: { minKg: 85,  targetKg: 115, maxKg: 145, notes: "Electronic fuel injection transverse 4-cylinder" },
+    Midsize: { minKg: 110, targetKg: 140, maxKg: 170, notes: "Iron Block / Alloy Head DOHC I4 (1.8L–2.5L), digital ignition management" },
+    Sports:  { minKg: 120, targetKg: 155, maxKg: 195, notes: "Turbocharged DOHC 16V I4 / 24V I6 (2.0L–3.0L), oil-cooled forged pistons" },
+    Luxury:  { minKg: 210, targetKg: 265, maxKg: 325, notes: "All-Aluminum DOHC 32V V8 / V12 (4.0L–5.6L), Alusil/Nikasil block" },
+    Truck:   { minKg: 290, targetKg: 380, maxKg: 480, notes: "Direct-Injection Turbodiesel / Iron V8 (5.8L–7.3L), heavy-duty torque" },
+    Race:    { minKg: 100, targetKg: 130, maxKg: 160, notes: "Qualifying-Boost 1.5L Turbo / 3.5L Atmo V8/V10, 4+ bar boost, carbon composites" }
   },
   "1990s": {
-    Micro:   { minKg: 50,  targetKg: 75,  maxKg: 105, notes: "Kei 660cc aluminum DOHC 3-cyl (Suzuki K6A ~65 kg)" },
-    Compact: { minKg: 80,  targetKg: 120, maxKg: 155, notes: "Honda B-series / D-series (115-125 kg), Toyota 4E/4A" },
-    Midsize: { minKg: 130, targetKg: 175, maxKg: 225, notes: "All-aluminum V6s (Toyota 1MZ-FE ~150 kg, Nissan VQ30)" },
-    Sports:  { minKg: 140, targetKg: 190, maxKg: 245, notes: "Toyota 2JZ-GTE (217 kg), Nissan RB26DETT (205 kg), Chevy LS1 (205 kg)" },
-    Luxury:  { minKg: 200, targetKg: 270, maxKg: 340, notes: "Toyota 1UZ-FE V8 (180 kg), BMW M60/M62 V8, Mercedes M120 V12" },
-    Truck:   { minKg: 220, targetKg: 295, maxKg: 380, notes: "Ford Modular 4.6/5.4L, Dodge Magnum 318/360" },
-    Race:    { minKg: 95,   targetKg: 135, maxKg: 190, notes: "High-revving 3.0L F1 V10 (~105-120 kg)" }
+    Micro:   { minKg: 65,  targetKg: 85,  maxKg: 105, notes: "All-Aluminum 16V DOHC I4 (1.0L–1.4L), lean-burn combustion, low friction" },
+    Compact: { minKg: 80,  targetKg: 110, maxKg: 135, notes: "All-alloy DOHC 16V I4 (e.g. Honda B-series ~115-125 kg)" },
+    Midsize: { minKg: 110, targetKg: 135, maxKg: 160, notes: "All-Alloy DOHC 16V I4 / 24V V6 (1.8L–2.5L), variable intake manifolds" },
+    Sports:  { minKg: 120, targetKg: 150, maxKg: 185, notes: "High-Specific-Output VVT Alloy I4 / V6 (2.0L–3.2L), individual intake runners" },
+    Luxury:  { minKg: 190, targetKg: 240, maxKg: 295, notes: "All-Aluminum DOHC 32V V8 / 48V V12 (4.0L–6.0L), continuous VVT" },
+    Truck:   { minKg: 285, targetKg: 395, maxKg: 490, notes: "Direct-Injection Turbodiesel I6 / V8 (5.9L–7.3L), electronic high-pressure diesel" },
+    Race:    { minKg: 88,   targetKg: 110, maxKg: 135, notes: "High-Revving Atmospheric 3.0L V10 Spec, pneumatic valves (17,000+ RPM)" }
   },
   "2000s": {
-    Micro:   { minKg: 50,  targetKg: 70,  maxKg: 95,  notes: "Smart Fortwo 3-cyl (60 kg), Kei DOHC turbo" },
-    Compact: { minKg: 75,  targetKg: 110, maxKg: 145, notes: "Toyota 1ZZ/2ZZ (~105 kg), Ford Duratec, Honda K20 (125 kg)" },
-    Midsize: { minKg: 120, targetKg: 160, maxKg: 205, notes: "Honda J35 V6 (~160 kg), Toyota 2GR-FE V6 (163 kg)" },
-    Sports:  { minKg: 135, targetKg: 180, maxKg: 230, notes: "BMW S54 3.2L 6-cyl, GM LS3/LS7 (200 kg), Porsche M96 flat-6" },
-    Luxury:  { minKg: 185, targetKg: 245, maxKg: 310, notes: "Aluminum DOHC V8s (Mercedes M273, Audi 4.2 V8, BMW N62)" },
-    Truck:   { minKg: 200, targetKg: 275, maxKg: 350, notes: "GM Vortec 5.3L, Ford Triton V8, Toyota 5.7L V8" },
-    Race:    { minKg: 90,   targetKg: 120, maxKg: 170, notes: "F1 2.4L V8 (95 kg minimum regulation limit)" }
+    Micro:   { minKg: 60,  targetKg: 80,  maxKg: 100, notes: "Ultra-Compact Alloy DOHC I3 / I4 (1.0L–1.3L), composite plastic manifolds" },
+    Compact: { minKg: 75,  targetKg: 105, maxKg: 130, notes: "Lightweight all-aluminum 4-cylinder with dual VVT" },
+    Midsize: { minKg: 105, targetKg: 130, maxKg: 155, notes: "All-Alloy DOHC VVT I4 / 3.5L V6 (2.0L–3.5L), dual variable cam phasing" },
+    Sports:  { minKg: 125, targetKg: 155, maxKg: 190, notes: "High-Revving Alloy V8 / Turbocharged I4 (2.0L–4.0L), bedplate crankcase" },
+    Luxury:  { minKg: 185, targetKg: 230, maxKg: 280, notes: "Modular Alloy 32V V8 / Twin-Turbo V12 (4.2L–6.0L), direct injection" },
+    Truck:   { minKg: 270, targetKg: 390, maxKg: 480, notes: "Heavy Common-Rail Turbodiesel V8 / Gas V8, variable-geometry turbos" },
+    Race:    { minKg: 85,   targetKg: 100, maxKg: 125, notes: "Regulated Minimum-Weight 3.0L V10 / 2.4L V8 Spec (19,000 RPM)" }
   },
   "2010s": {
-    Micro:   { minKg: 45,  targetKg: 65,  maxKg: 90,  notes: "Downsized 3-cylinder turbo (e.g. Ford 1.0L EcoBoost ~70 kg)" },
-    Compact: { minKg: 70,  targetKg: 100, maxKg: 135, notes: "Downsized 1.4-1.6L turbo-4 (VW 1.4 TSI ~105 kg)" },
-    Midsize: { minKg: 110, targetKg: 145, maxKg: 185, notes: "2.0L Turbo 4-cyl replacing V6 (Honda K20C, BMW B48 ~140 kg)" },
-    Sports:  { minKg: 125, targetKg: 165, maxKg: 215, notes: "High-output turbo-4/6, Porsche 3.0 twin-turbo flat-6, Ferrari F154 V8" },
-    Luxury:  { minKg: 170, targetKg: 225, maxKg: 285, notes: "Twin-turbo aluminum V8 (BMW N63, Mercedes M177 ~210 kg)" },
-    Truck:   { minKg: 180, targetKg: 250, maxKg: 320, notes: "Twin-Turbo 3.5L EcoBoost V6 (200 kg) or GM 5.3/6.2L EcoTec3" },
-    Race:    { minKg: 90,   targetKg: 120, maxKg: 165, notes: "1.6L Turbo V6 Hybrid Power Unit (~145 kg total PU)" }
+    Micro:   { minKg: 58,  targetKg: 75,  maxKg: 95,  notes: "Turbocharged Direct-Injection I3 (0.9L–1.2L), integrated manifold head" },
+    Compact: { minKg: 70,  targetKg: 95,  maxKg: 120, notes: "Downsized 1.2-1.4L turbo-4 (e.g. VW TSI, Ford EcoBoost)" },
+    Midsize: { minKg: 100, targetKg: 125, maxKg: 150, notes: "Downsized Direct-Injection Turbo I4 (1.5L–2.0L), twin-scroll turbo" },
+    Sports:  { minKg: 115, targetKg: 150, maxKg: 185, notes: "Hot-V Twin-Turbo Alloy V8 / Turbo Flat-4/6, charge-air coolers" },
+    Luxury:  { minKg: 170, targetKg: 215, maxKg: 265, notes: "Twin-Turbo Direct-Injection Alloy V6 / V8 (3.0L–4.4L), electric supercharger" },
+    Truck:   { minKg: 230, targetKg: 340, maxKg: 450, notes: "Compacted graphite iron Twin-Turbo GDI V6 / High-Output Turbodiesel" },
+    Race:    { minKg: 92,   targetKg: 115, maxKg: 145, notes: "1.6L Direct-Injection V6 Turbo Hybrid ICE Unit, 50%+ thermal efficiency" }
   },
   "2020s": {
-    Micro:   { minKg: 40,  targetKg: 60,  maxKg: 85,  notes: "Modular 3-cyl micro hybrid or range extender" },
-    Compact: { minKg: 65,  targetKg: 95,  maxKg: 125, notes: "High-efficiency 3/4-cylinder hybrid engine" },
-    Midsize: { minKg: 100, targetKg: 135, maxKg: 175, notes: "High thermal efficiency 2.0L turbo / hybrid engine" },
-    Sports:  { minKg: 120, targetKg: 155, maxKg: 200, notes: "Electrified performance turbo-4 / flat-6" },
-    Luxury:  { minKg: 160, targetKg: 210, maxKg: 265, notes: "Hybrid twin-turbo V6/V8 with composite integration" },
-    Truck:   { minKg: 170, targetKg: 235, maxKg: 300, notes: "Twin-Turbo V6 Hybrid (Toyota i-FORCE MAX ~220 kg)" },
-    Race:    { minKg: 85,   targetKg: 110, maxKg: 150, notes: "Ultra-compact hypercar hybrid power unit" }
+    Micro:   { minKg: 55,  targetKg: 72,  maxKg: 90,  notes: "Direct-Injection 48V Mild-Hybrid I3 (1.0L–1.2L), Atkinson/Miller cycle" },
+    Compact: { minKg: 65,  targetKg: 90,  maxKg: 115, notes: "Modular high-efficiency hybrid 3/4-cylinder engine" },
+    Midsize: { minKg: 95,  targetKg: 120, maxKg: 145, notes: "Modular Direct-Injection Turbo I4 (1.5L–2.0L), variable compression" },
+    Sports:  { minKg: 110, targetKg: 145, maxKg: 180, notes: "Extreme-Boost Modular Turbo I4 / Hot-V V8 (2.0L–4.0L), 3D cooling galleries" },
+    Luxury:  { minKg: 160, targetKg: 205, maxKg: 255, notes: "Hybridized Twin-Turbo Alloy V6 / V8 (3.0L–4.0L), 48V electric anti-lag" },
+    Truck:   { minKg: 210, targetKg: 310, maxKg: 430, notes: "CGI Twin-Turbo Gas V6 / Commercial Turbodiesel, 2,500+ bar fuel rails" },
+    Race:    { minKg: 90,   targetKg: 110, maxKg: 140, notes: "Direct-Injection High-Boost V6 / Modular ICE Core, carbon-composite sumps" }
   }
 },
 
