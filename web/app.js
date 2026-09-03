@@ -1639,7 +1639,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const yr = currentVehicleSliders.year;
         const xml = GearCityEngine.generateVehicleXml(currentVehicleSliders);
         const cleanVehicle = carType.replace(/[^a-zA-Z0-9]/g, '');
-        const filename = `Vehicle_${cleanVehicle}_${yr}.xml`;
+        const filename = `Car_${cleanVehicle}_${yr}.xml`;
 
         const blob = new Blob([xml], { type: 'application/xml;charset=utf-8' });
         const url = URL.createObjectURL(blob);

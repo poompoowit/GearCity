@@ -1081,7 +1081,7 @@ const GearCityEngine = (() => {
     const v = (val, def = 50.0) => (val != null ? Number(val) : def).toFixed(1);
 
     return `<?xml version="1.0" encoding="utf-8"?>
-<Vehicle>
+<Car>
 \t<Slider_Interior_Style>${v(it.style)}</Slider_Interior_Style>
 \t<Slider_Interior_Innovation>${v(it.innovation)}</Slider_Interior_Innovation>
 \t<Slider_Interior_Luxury>${v(it.luxury)}</Slider_Interior_Luxury>
@@ -1107,8 +1107,10 @@ const GearCityEngine = (() => {
 \t<Slider_Testing_Comfort>${v(ts.comfort)}</Slider_Testing_Comfort>
 \t<Slider_Testing_Utility>${v(ts.utility)}</Slider_Testing_Utility>
 \t<Slider_Testing_Reliability>${v(ts.reliability)}</Slider_Testing_Reliability>
-</Vehicle>`;
+</Car>`;
   }
+
+  const generateCarXml = generateVehicleXml;
 
   function evaluateDemographics(vehicleType) {
     const data = getActiveData();
@@ -1676,6 +1678,7 @@ const GearCityEngine = (() => {
     generateChassisXml,
     generateGearboxXml,
     generateVehicleXml,
+    generateCarXml,
     calculateVehicleSliders,
     simulateWikiVehicleRatings,
     evaluateDemographics,

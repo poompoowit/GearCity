@@ -89,7 +89,7 @@ Solves for all 23 Vehicle Designer sliders across 4 distinct panels:
   - 🔧 **Dependability Rating** (0–100%)
   - 🎯 **Market Class Match** (0–100%)
   - **hyperCost Badge**: `Premium Prestige` (for Luxury/Wealth 5–7), `Balanced` (Wealth 3–4), or `Cost Optimized` (Wealth 1–2).
-- **Download Vehicle XML**: Download `Vehicle_<Class>_<Year>.xml` for direct in-game `SavedSliders` import.
+- **Download Vehicle XML**: Download `Car_<Class>_<Year>.xml` for direct in-game `SavedSliders` import.
 
 ---
 

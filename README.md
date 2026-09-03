@@ -47,7 +47,7 @@ The web application runs entirely client-side in pure JavaScript with zero depen
 - **Complete Vehicle Assembly & Synergy Evaluation**: Assembles Chassis + Engine + Gearbox to calculate 9 canonical vehicle ratings (Performance, Drivability, Luxury, Safety, Fuel Economy, Power, Cargo, Dependability, and Overall) and buyer demand fit %.
 - **🚗 Vehicle Designer Sliders & XML Blueprints**: Solves all 23 in-game sliders across **Design Focus**, **Interior Tuning**, **Materials & Build**, and **Testing Allocation**.
 - **📈 Live Wiki In-Game Rating Forecast**: Simulates predicted Luxury, Quality, Safety, Dependability, and Market Fit according to canonical GearCity wiki mechanics (`gamemanual:gm_vehicles_design`), with hyperCost index classification (`Premium Prestige`, `Balanced`, `Cost Optimized`).
-- **Export Vehicle XML**: Direct one-click download of `Vehicle_<Type>_<Year>.xml` for in-game `SavedSliders` import.
+- **Export Vehicle XML**: Direct one-click download of `Car_<Type>_<Year>.xml` for in-game `SavedSliders` import.
 - **📚 Design Concepts Reference Directory**: Full interactive reference tables for Gearbox Concepts, Chassis Concepts, and Engine Concepts with complete slider setups, compatibility, and blueprint downloads.
 
 ### 4. 👥 Vehicle Target Demographic Analyzer (Tab 4)

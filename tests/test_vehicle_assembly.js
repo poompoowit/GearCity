@@ -171,15 +171,15 @@ const sedanXml = E.generateVehicleXml(sedanSliders);
 assert(
   sedanXml &&
   sedanXml.includes('<?xml version="1.0" encoding="utf-8"?>') &&
-  sedanXml.includes('<Vehicle>') &&
-  sedanXml.includes('</Vehicle>') &&
+  sedanXml.includes('<Car>') &&
+  sedanXml.includes('</Car>') &&
   sedanXml.includes('<Slider_Interior_Style>') &&
   sedanXml.includes('<Slider_Materials_Paint>') &&
   sedanXml.includes('<Slider_Design_Safety>') &&
   sedanXml.includes('<Slider_Demographics_Wealth>') &&
   sedanXml.includes('<Slider_Testing_Reliability>'),
-  'generateVehicleXml produces valid GearCity SavedSliders XML blueprint',
-  `XML length: ${sedanXml.length} chars, Root: <Vehicle>`
+  'generateVehicleXml produces valid GearCity SavedSliders XML blueprint with <Car> root tag',
+  `XML length: ${sedanXml.length} chars, Root: <Car>`
 );
 
 // 4. Test all 30 vehicle classes for valid slider ranges (0-100%) and valid XML
@@ -188,7 +188,7 @@ const classes = DATA.vehicleClasses.map(v => v.carType);
 for (const vClass of classes) {
   const vs = E.calculateVehicleSliders(vClass, 1960);
   const xml = E.generateVehicleXml(vs);
-  if (!xml.includes('<Vehicle>') || !xml.includes('</Vehicle>')) {
+  if (!xml.includes('<Car>') || !xml.includes('</Car>')) {
     allVehiclesValid = false;
   }
   for (const cat of ['designFocus', 'interior', 'materials', 'testing']) {
@@ -201,7 +201,7 @@ for (const vClass of classes) {
 }
 assert(
   allVehiclesValid,
-  'All 30 Vehicle Classes generate valid, bounded (0-100%) sliders and XML blueprints',
+  'All 30 Vehicle Classes generate valid, bounded (0-100%) sliders and XML blueprints with <Car>',
   `Checked ${classes.length} classes`
 );
 
