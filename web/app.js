@@ -2075,19 +2075,30 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
             </div>
             ` : ''}
+            ${customConstraints.maxCost != null && perf.unitCost > customConstraints.maxCost ? `
+            <div style="margin-top: 14px; padding: 10px 14px; background: rgba(239, 83, 80, 0.12); border-left: 3px solid #ef5350; border-radius: 4px; font-size: 11px; color: #ffcdd2; line-height: 1.5;">
+              <div style="color: #ef5350; font-weight: 700; margin-bottom: 3px;">💡 Budget Notice ($${perf.unitCost.toFixed(0)} vs $${customConstraints.maxCost} Target):</div>
+              <div>Multi-passenger vehicles require at least 2 cylinders. At <strong>Engineer Skill ${perf.designSkill || 0}/100</strong>, the closest viable 2-cylinder engine exceeds your cost target by <strong>+$${Math.round(perf.unitCost - customConstraints.maxCost)}</strong>.</div>
+              <div style="margin-top: 4px; color: #fff; font-size: 10.5px;">&bull; <em>To lower unit cost:</em> Train Engineer Design Skill or lower non-essential technology sliders (Component / Tech / Dependability).</div>
+            </div>
+            ` : ''}
             ${result.config && result.config.sliders ? `
             <div style="margin-top: 14px; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(212, 163, 89, 0.25); border-radius: 5px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <span style="font-weight: 700; font-size: 11px; color: var(--gc-text-gold);">🎛️ Exact In-Game Sliders to Set (0–100)</span>
-                <span style="font-size: 10px; color: var(--gc-text-muted);">Matches In-Game Designer</span>
+                <button id="btn-copy-sliders" class="btn-secondary" style="font-size: 10px; padding: 2px 8px; margin: 0; cursor: pointer;">📋 Copy Sliders</button>
               </div>
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(125px, 1fr)); gap: 6px; font-size: 11px;">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 6px; font-size: 11px;">
                 <div style="background: rgba(255,255,255,0.04); padding: 5px 8px; border-radius: 3px;">Bore Slider: <strong style="color: #fff;">${Math.round(result.config.sliders.boreSlide / 10)}</strong></div>
                 <div style="background: rgba(255,255,255,0.04); padding: 5px 8px; border-radius: 3px;">Stroke Slider: <strong style="color: #fff;">${Math.round(result.config.sliders.strokeSlide / 10)}</strong></div>
-                <div style="background: rgba(255,255,255,0.04); padding: 5px 8px; border-radius: 3px;">Revolutions (RPM): <strong style="color: #81c784;">${Math.round(result.config.sliders.performanceRevolutions * 100)}</strong></div>
-                <div style="background: rgba(255,255,255,0.04); padding: 5px 8px; border-radius: 3px;">Torque Slider: <strong style="color: var(--gc-text-gold);">${Math.round(result.config.sliders.performanceTorque * 100)}</strong></div>
-                <div style="background: rgba(255,255,255,0.04); padding: 5px 8px; border-radius: 3px;">Materials: <strong style="color: #64b5f6;">${Math.round(result.config.sliders.technologyMaterials * 100)}</strong></div>
+                <div style="background: rgba(255,255,255,0.04); padding: 5px 8px; border-radius: 3px;">Revolutions (RPM): <strong style="color: #81c784;">${Math.round(result.config.sliders.performanceRevolutions * 100)}</strong> <span style="font-size: 9px; color: #81c784;">[⚡ RPM]</span></div>
+                <div style="background: rgba(255,255,255,0.04); padding: 5px 8px; border-radius: 3px;">Torque Slider: <strong style="color: var(--gc-text-gold);">${Math.round(result.config.sliders.performanceTorque * 100)}</strong> <span style="font-size: 9px; color: var(--gc-text-gold);">[⚡ Torque]</span></div>
+                <div style="background: rgba(255,255,255,0.04); padding: 5px 8px; border-radius: 3px;">Materials: <strong style="color: #64b5f6;">${Math.round(result.config.sliders.technologyMaterials * 100)}</strong> <span style="font-size: 9px; color: #ffb74d;">[💰 Cost]</span></div>
                 <div style="background: rgba(255,255,255,0.04); padding: 5px 8px; border-radius: 3px;">Layout Weight: <strong style="color: #ffb74d;">${Math.round(result.config.sliders.layoutWeight * 100)}</strong></div>
+                <div style="background: rgba(255,255,255,0.04); padding: 5px 8px; border-radius: 3px;">Tech Component: <strong style="color: #fff;">${Math.round((result.config.sliders.technologyComponents || 0) * 100)}</strong> <span style="font-size: 9px; color: #ffb74d;">[💰 Cost]</span></div>
+                <div style="background: rgba(255,255,255,0.04); padding: 5px 8px; border-radius: 3px;">Tech Technology: <strong style="color: #fff;">${Math.round((result.config.sliders.technologyTechnologies || 0) * 100)}</strong> <span style="font-size: 9px; color: #ffb74d;">[💰 Cost]</span></div>
+                <div style="background: rgba(255,255,255,0.04); padding: 5px 8px; border-radius: 3px;">Tech Technique: <strong style="color: #fff;">${Math.round((result.config.sliders.technologyTechniques || 0) * 100)}</strong> <span style="font-size: 9px; color: #ffb74d;">[💰 Cost]</span></div>
+                <div style="background: rgba(255,255,255,0.04); padding: 5px 8px; border-radius: 3px;">Fuel Economy: <strong style="color: #81c784;">${Math.round((result.config.sliders.performanceFuelEconomy || 0) * 100)}</strong></div>
               </div>
             </div>
             ` : ''}
@@ -2121,6 +2132,54 @@ document.addEventListener('DOMContentLoaded', () => {
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+          });
+        }
+
+        const btnCopy = document.getElementById('btn-copy-sliders');
+        if (btnCopy && result.config && result.config.sliders) {
+          btnCopy.addEventListener('click', () => {
+            const s = result.config.sliders;
+            const text = [
+              `GearCity Engine Sliders - ${selectVehicle.value} (${year})`,
+              `Architecture: ${b.layout} ${b.cylinders} Cyl ${b.valvetrain} (${b.fuel})`,
+              `----------------------------------------`,
+              `• Bore Slider: ${Math.round(s.boreSlide / 10)}%`,
+              `• Stroke Slider: ${Math.round(s.strokeSlide / 10)}%`,
+              `• Revolutions (RPM): ${Math.round(s.performanceRevolutions * 100)}%`,
+              `• Torque Slider: ${Math.round(s.performanceTorque * 100)}%`,
+              `• Fuel Economy Focus: ${Math.round((s.performanceFuelEconomy || 0) * 100)}%`,
+              `• Materials: ${Math.round(s.technologyMaterials * 100)}%`,
+              `• Layout Weight: ${Math.round(s.layoutWeight * 100)}%`,
+              `• Tech Components: ${Math.round((s.technologyComponents || 0) * 100)}%`,
+              `• Tech Technologies: ${Math.round((s.technologyTechnologies || 0) * 100)}%`,
+              `• Tech Techniques: ${Math.round((s.technologyTechniques || 0) * 100)}%`,
+              `----------------------------------------`,
+              `Output: ${perf.torqueNm.toFixed(1)} Nm | ${perf.horsepower.toFixed(1)} HP | Est. Cost: $${perf.unitCost.toFixed(0)}`,
+            ].join('\n');
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(text).then(() => {
+                const oldText = btnCopy.textContent;
+                btnCopy.textContent = '✅ Copied!';
+                btnCopy.style.background = '#2e7d32';
+                setTimeout(() => {
+                  btnCopy.textContent = oldText;
+                  btnCopy.style.background = '';
+                }, 2000);
+              }).catch(() => {
+                btnCopy.textContent = '❌ Failed';
+              });
+            } else {
+              // Fallback for older browsers
+              const ta = document.createElement('textarea');
+              ta.value = text;
+              document.body.appendChild(ta);
+              ta.select();
+              document.execCommand('copy');
+              document.body.removeChild(ta);
+              btnCopy.textContent = '✅ Copied!';
+              setTimeout(() => { btnCopy.textContent = '📋 Copy Sliders'; }, 2000);
+            }
           });
         }
 

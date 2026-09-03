@@ -202,6 +202,56 @@ assert(
 );
 
 // =========================================================================
+// SUITE 7: Era-Scaled Ratio, Cylinder Floor & Soft Budget Fallback
+// =========================================================================
+console.log('\n--- SUITE 7: Era-Scaled Ratio, Cylinder Floor & Soft Budget Fallback ---');
+
+// 1. Era-scaled ratio test
+const c1901 = E.getEngineDesignConstraints('Balance', 1901);
+const c1930 = E.getEngineDesignConstraints('Balance', 1930);
+assert(
+  c1901 && c1901.maxHpTorqueRatio >= 2.15 && c1901.maxHpTorqueRatio <= 2.25,
+  '1901 Balance Ratio is Era-Scaled Upward (Target: ~2.18)',
+  `1901 Ratio: ${c1901?.maxHpTorqueRatio}`
+);
+assert(
+  c1930 && c1930.maxHpTorqueRatio === 1.6,
+  '1930 Balance Ratio Remains Base (Target: 1.6)',
+  `1930 Ratio: ${c1930?.maxHpTorqueRatio}`
+);
+
+// 2. Cylinder floor for multi-passenger vehicles (Sedan @ 1901)
+const sedan1901 = E.optimizeEngineForVehicle('Sedan', 'Balance', 1901, {
+  maxCost: 270,
+  maxHpTorqueRatio: 1.6,
+  designSkill: 2,
+  techComponent: 30,
+  techTechnology: 25,
+  techTechnique: 25,
+  designDependability: 70,
+});
+assert(
+  sedan1901 && sedan1901.bestCandidate && sedan1901.bestCandidate.cylinders !== 'Cylinder' && sedan1901.bestCandidate.layout !== 'Single',
+  '1901 Sedan Enforces Minimum 2-Cylinder Floor (Not Single Cylinder)',
+  `Selected: ${sedan1901?.bestCandidate?.layout} ${sedan1901?.bestCandidate?.cylinders}-cyl ${sedan1901?.bestCandidate?.valvetrain}`
+);
+
+// 3. Subcompact exemption (Microcar @ 1901 is permitted Single Cylinder)
+const micro1901 = E.optimizeEngineForVehicle('Microcar', 'SmallB', 1901, { maxCost: 270 });
+assert(
+  micro1901 && micro1901.bestCandidate,
+  '1901 Microcar Successfully Optimizes',
+  `Selected: ${micro1901?.bestCandidate?.layout} ${micro1901?.bestCandidate?.cylinders}-cyl`
+);
+
+// 4. Soft budget fallback flags budgetExceeded when low skill pushes cost over target
+assert(
+  sedan1901 && sedan1901.budgetExceeded === true,
+  '1901 Sedan at Skill 2 Flags budgetExceeded for Soft Budget Fallback',
+  `Cost: $${sedan1901?.performance?.unitCost?.toFixed(0)} (Excess: +$${sedan1901?.budgetExcess})`
+);
+
+// =========================================================================
 // SUMMARY
 // =========================================================================
 console.log('\n═══════════════════════════════════════════════════════════════');

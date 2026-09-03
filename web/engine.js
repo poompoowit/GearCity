@@ -473,11 +473,11 @@ const GearCityEngine = (() => {
     const allowedValves = constraints.allowedValves && constraints.allowedValves.length > 0 ? constraints.allowedValves : null;
 
     // 1. Gather all valid unlocked components (respecting year and manual overrides)
-    const validLayouts = GEARCITY_DATA.layouts.filter((l) => (!allowedLayouts ? Number(l.Year) <= year : allowedLayouts.includes(l.Name)));
-    const validCylinders = GEARCITY_DATA.cylinders.filter((c) => (!allowedCylinders ? Number(c.Year) <= year : allowedCylinders.includes(c.Name)));
-    const validFuels = GEARCITY_DATA.fuel.filter((f) => (!allowedFuels ? Number(f.Year) <= year : allowedFuels.includes(f.Name)));
-    const validInductions = GEARCITY_DATA.induction.filter((i) => (!allowedInductions ? Number(i.Year) <= year : allowedInductions.includes(i.Name)));
-    const validValves = GEARCITY_DATA.valvetrain.filter((v) => (!allowedValves ? Number(v.Year) <= year : allowedValves.includes(v.Name)));
+    const validLayouts = GEARCITY_DATA.layouts.filter((l) => (Number(l.Year) <= year && (!allowedLayouts || allowedLayouts.includes(l.Name))));
+    const validCylinders = GEARCITY_DATA.cylinders.filter((c) => (Number(c.Year) <= year && (!allowedCylinders || allowedCylinders.includes(c.Name))));
+    const validFuels = GEARCITY_DATA.fuel.filter((f) => (Number(f.Year) <= year && (!allowedFuels || allowedFuels.includes(f.Name))));
+    const validInductions = GEARCITY_DATA.induction.filter((i) => (Number(i.Year) <= year && (!allowedInductions || allowedInductions.includes(i.Name))));
+    const validValves = GEARCITY_DATA.valvetrain.filter((v) => (Number(v.Year) <= year && (!allowedValves || allowedValves.includes(v.Name))));
 
     const candidateComponents = [];
 
@@ -674,11 +674,16 @@ const GearCityEngine = (() => {
     }
 
     const elapsedMs = performance.now() - startTime;
+    const budgetExceeded = maxCost != null && bestPerf != null && bestPerf.unitCost > maxCost;
+    const budgetExcess = budgetExceeded ? Math.round(bestPerf.unitCost - maxCost) : 0;
+
     return {
       config: bestConfig,
       performance: bestPerf,
       score: bestScore,
       elapsedMs: Math.round(elapsedMs * 10) / 10,
+      budgetExceeded,
+      budgetExcess,
       best: bestConfig ? {
         layout: bestConfig.components.layout,
         cylinders: bestConfig.components.cylinders,
@@ -1001,10 +1006,16 @@ const GearCityEngine = (() => {
       }
     }
 
+    let maxHpTorqueRatio = ed.optimizeFocus === 'HP' ? null : ed.maxHpTorqueRatio;
+    if (maxHpTorqueRatio != null && year < 1930) {
+      const eraDelta = Math.max(0, 1930 - year);
+      maxHpTorqueRatio = Number((maxHpTorqueRatio + (eraDelta / 30.0) * 0.6).toFixed(2));
+    }
+
     return {
       maxCost: targetCost,
       maxWeight: ed.maxWeight,
-      maxHpTorqueRatio: ed.optimizeFocus === 'HP' ? null : ed.maxHpTorqueRatio,
+      maxHpTorqueRatio,
       focus: ed.optimizeFocus === 'HP' ? 'HP' : 'Torque',
       designDependability: ed.designDependability,
       performanceFuel: ed.performanceFuel,
@@ -1049,6 +1060,36 @@ const GearCityEngine = (() => {
       constraints.allowedValves = customConstraints.allowedValves;
     }
 
+    // Vehicle-Class Cylinder Floor:
+    // Multi-passenger and cargo vehicles (Sedan, Coupe, Truck, Wagon, etc.) require at least 2 cylinders.
+    // Single Cylinder is only permitted for subcompact classes, or if the user explicitly selected Single in custom filters.
+    const SUBCOMPACT_CLASSES = ['Microcar', 'Microvan', 'Compact Car', 'Subcompact'];
+    const isSubcompact = SUBCOMPACT_CLASSES.includes(carType);
+
+    if (!isSubcompact) {
+      const explicitlySelectedSingle = customConstraints.allowedCylinders &&
+        customConstraints.allowedCylinders.length === 1 &&
+        (customConstraints.allowedCylinders[0] === 'Cylinder' || customConstraints.allowedCylinders[0] === 'Single');
+
+      if (!explicitlySelectedSingle) {
+        if (!constraints.allowedCylinders || constraints.allowedCylinders.length === 0) {
+          constraints.allowedCylinders = GEARCITY_DATA.cylinders
+            .filter((c) => Number(c.Year) <= year && c.Name !== 'Cylinder')
+            .map((c) => c.Name);
+        } else {
+          constraints.allowedCylinders = constraints.allowedCylinders.filter((c) => c !== 'Cylinder');
+        }
+
+        if (!constraints.allowedLayouts || constraints.allowedLayouts.length === 0) {
+          constraints.allowedLayouts = GEARCITY_DATA.layouts
+            .filter((l) => Number(l.Year) <= year && l.Name !== 'Single')
+            .map((l) => l.Name);
+        } else {
+          constraints.allowedLayouts = constraints.allowedLayouts.filter((l) => l !== 'Single');
+        }
+      }
+    }
+
     const optResult = optimizeEngine(year, constraints);
 
     if (!optResult || !optResult.config || !optResult.performance) {
@@ -1064,6 +1105,8 @@ const GearCityEngine = (() => {
       performance: optResult.performance,
       score: optResult.score,
       elapsedMs: optResult.elapsedMs,
+      budgetExceeded: optResult.budgetExceeded,
+      budgetExcess: optResult.budgetExcess,
       bestCandidate: {
         layout: optResult.config.components.layout,
         cylinders: optResult.config.components.cylinders,
