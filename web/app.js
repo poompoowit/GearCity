@@ -779,13 +779,16 @@ document.addEventListener('DOMContentLoaded', () => {
       // Populate summary table
       const res = GearCityEngine.evaluateDemographics(v);
       const tr = document.createElement('tr');
-      const gClass = res.bestGender === 'Female' ? 'tag-female' : 'tag-male';
+      const gClass = res.bestGender === 'Female' ? 'tag-female' : (res.bestGender === 'Male' ? 'tag-male' : '');
+      const bonusText = (res.bonuses || []).slice(0, 3).map(b => `<span class="tag-badge" style="background: rgba(0, 240, 255, 0.12); color: var(--accent-cyan); font-size: 11px; margin-right: 4px;">${b.delta} ${b.stat}</span>`).join('');
 
       tr.innerHTML = `
         <td style="font-weight: 600;">${v}</td>
+        <td><span class="tag-badge" style="background: rgba(255,183,77,0.15); color: var(--gc-text-amber); font-weight: 600;">${res.wealthLabel} (T${res.wealthTier})</span></td>
         <td><span class="tag-badge ${gClass}">${res.bestGender}</span></td>
         <td><span class="tag-badge" style="background: rgba(255,255,255,0.08);">${res.bestAge}</span></td>
-        <td><span class="tag-badge tag-score">${res.bestScore.toFixed(4)}</span></td>
+        <td style="font-weight: 700; color: var(--gc-text-gold); font-family: var(--font-game-mono);">${res.recommendedTesting.toFixed(1)}%</td>
+        <td>${bonusText || '<span style="color: var(--gc-text-muted); font-size: 11px;">Balanced</span>'}</td>
       `;
       tableDemographicsBody.appendChild(tr);
     });
@@ -809,19 +812,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const res = GearCityEngine.evaluateDemographics(v);
     if (!res) return;
 
-    const gClass = res.bestGender === 'Female' ? 'tag-female' : 'tag-male';
+    const gClass = res.bestGender === 'Female' ? 'tag-female' : (res.bestGender === 'Male' ? 'tag-male' : '');
+    const bonusPills = (res.bonuses || []).map(b => `<span class="tag-badge" style="background: rgba(0, 240, 255, 0.15); color: var(--accent-cyan); font-size: 11.5px; padding: 3px 8px; margin: 2px;">${b.delta} ${b.stat}</span>`).join('');
+    const penaltyPills = (res.penalties || []).map(p => `<span class="tag-badge" style="background: rgba(239, 83, 80, 0.15); color: #ef5350; font-size: 11.5px; padding: 3px 8px; margin: 2px;">${p.delta} ${p.stat}</span>`).join('');
+
     demoHighlightBox.innerHTML = `
       <div class="metric-item">
         <div class="metric-item-label">Optimal Buyer Gender</div>
-        <div class="metric-item-val"><span class="tag-badge ${gClass}" style="font-size: 16px;">${res.bestGender}</span></div>
+        <div class="metric-item-val"><span class="tag-badge ${gClass}" style="font-size: 15px;">${res.bestGender}</span></div>
       </div>
       <div class="metric-item">
         <div class="metric-item-label">Optimal Age Bracket</div>
-        <div class="metric-item-val" style="color: var(--gc-text-amber); font-size: 18px;">${res.bestAge}</div>
+        <div class="metric-item-val" style="color: var(--gc-text-amber); font-size: 17px; font-weight: 700;">${res.bestAge}</div>
       </div>
       <div class="metric-item">
-        <div class="metric-item-label">Top Preference Score</div>
-        <div class="metric-item-val"><span class="tag-badge tag-score" style="font-size: 16px;">${res.bestScore.toFixed(4)}</span></div>
+        <div class="metric-item-label">Target Wealth Tier</div>
+        <div class="metric-item-val" style="color: #81c784; font-size: 17px; font-weight: 700;">${res.wealthLabel} <span style="font-size: 13px; color: var(--gc-text-muted); font-weight: normal;">(Tier ${res.wealthTier})</span></div>
+      </div>
+      <div class="metric-item">
+        <div class="metric-item-label">Market Testing Allocation</div>
+        <div class="metric-item-val" style="color: var(--gc-text-gold); font-size: 17px; font-weight: 800; font-family: var(--font-game-mono);">${res.recommendedTesting.toFixed(1)}% <span style="font-size: 11px; color: var(--gc-text-muted); font-weight: normal;">(Slider_Testing_Demographics)</span></div>
+      </div>
+      <div class="metric-item" style="grid-column: 1 / -1;">
+        <div class="metric-item-label">Active In-Game Demographic Stat Modifiers (Wiki Mechanics)</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; align-items: center;">
+          <div style="display: flex; flex-wrap: wrap; gap: 4px; align-items: center;">
+            <span style="font-size: 11px; color: var(--gc-text-muted); margin-right: 4px;">Bonuses:</span>
+            ${bonusPills || '<span style="color: var(--gc-text-muted); font-size: 11px;">None</span>'}
+          </div>
+          ${penaltyPills ? `
+          <div style="display: flex; flex-wrap: wrap; gap: 4px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 10px; align-items: center;">
+            <span style="font-size: 11px; color: var(--gc-text-muted); margin-right: 4px;">Penalties:</span>
+            ${penaltyPills}
+          </div>` : ''}
+        </div>
       </div>
     `;
   }
@@ -1588,7 +1612,7 @@ document.addEventListener('DOMContentLoaded', () => {
           ${sliderRow('Manufacturing Tech', mat.techniques, '#4fc3f7')}
           <div style="margin-top: 10px; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 3px; font-size: 10.5px; color: var(--gc-text-muted); line-height: 1.4;">
             <span style="color: var(--gc-text-ivory); font-weight: 600;">Buyer Targeting:</span>
-            ${dg.gender} &bull; ${dg.age}
+            ${dg.age} &bull; ${dg.wealthLabel} (Tier ${dg.wealth}) &bull; ${dg.gender}
           </div>
         </div>
 

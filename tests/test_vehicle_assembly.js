@@ -206,6 +206,43 @@ assert(
 );
 
 // -------------------------------------------------------------
+// TEST 7: Canonical Demographic Profiling & Wealth Synchronization
+// -------------------------------------------------------------
+console.log('\n--- TEST 7: Canonical Demographic Profiling & Wealth Synchronization ---');
+
+const luxDemo = E.evaluateDemographics('Luxury Sedan');
+assert(
+  luxDemo &&
+  luxDemo.bestAge === 'Greater Than 55' &&
+  luxDemo.wealthTier === 5 &&
+  luxDemo.bonuses.some(b => b.stat === 'Luxury') &&
+  luxDemo.bonuses.some(b => b.stat === 'Quality') &&
+  luxDemo.recommendedTesting >= 90.0,
+  'Luxury Sedan Demographic targets Greater Than 55 and Wealth 5 with active Luxury & Quality bonuses',
+  `Age: ${luxDemo.bestAge}, Wealth: ${luxDemo.wealthLabel} (Tier ${luxDemo.wealthTier}), Rec Test: ${luxDemo.recommendedTesting}%`
+);
+
+const superDemo = E.evaluateDemographics('Supercar');
+assert(
+  superDemo &&
+  superDemo.bestAge === '35-55' &&
+  superDemo.bestGender === 'Male' &&
+  superDemo.bonuses.some(b => b.stat === 'Performance') &&
+  superDemo.bonuses.some(b => b.stat === 'Power'),
+  'Supercar Demographic targets Male 35-55 with active Performance & Power bonuses',
+  `Gender: ${superDemo.bestGender}, Age: ${superDemo.bestAge}, Wealth: ${superDemo.wealthLabel}`
+);
+
+const luxXml = E.generateVehicleXml(luxSliders);
+assert(
+  luxXml.includes('<Slider_Demographics_Age>Greater Than 55</Slider_Demographics_Age>') &&
+  luxXml.includes('<Slider_Demographics_Wealth>5</Slider_Demographics_Wealth>') &&
+  luxXml.includes('<Slider_Testing_Demographics>93.3</Slider_Testing_Demographics>'),
+  'Luxury Sedan XML blueprint contains canonical Greater Than 55, Wealth 5, and 93.3% testing slider',
+  'XML demographic tags match canonical wiki targeting'
+);
+
+// -------------------------------------------------------------
 // SUMMARY
 // -------------------------------------------------------------
 console.log('\n═══════════════════════════════════════════════════════════════');

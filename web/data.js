@@ -4289,7 +4289,8 @@ const GEARCITY_DATA = {
     "Fuel": 0.05,
     "Safety": -0.05,
     "Luxury": -0.05,
-    "Dependability": 0.05
+    "Dependability": 0.05,
+    "Quality": -0.05
   },
   "25-35": {
     "Performance": -0.05,
@@ -4306,7 +4307,8 @@ const GEARCITY_DATA = {
     "Safety": -0.05,
     "Cargo": -0.05,
     "Luxury": 0.05,
-    "Dependability": -0.05
+    "Dependability": -0.05,
+    "Quality": 0.05
   },
   "Greater Than 55": {
     "Performance": -0.05,
@@ -4315,7 +4317,8 @@ const GEARCITY_DATA = {
     "Safety": 0.05,
     "Luxury": 0.05,
     "Dependability": 0.05,
-    "Driveability": -0.05
+    "Driveability": -0.05,
+    "Quality": 0.05
   }
 },
   archetypes: {

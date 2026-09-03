@@ -1041,12 +1041,12 @@ const GearCityEngine = (() => {
       gender: overrides.gender || demo.bestGender || 'Neutral',
       wealth: overrides.wealth || String(wealthLevel),
       wealthLabel: wealthStr,
-      age: overrides.age || demo.bestAge || 'Middle Aged',
+      age: overrides.age || demo.bestAge || (isPremium ? 'Greater Than 55' : '35-55'),
     };
 
     // 5. Testing Sliders (0 - 100%)
     const testing = {
-      demographics: clamp(overrides.testDemographics ?? (isPremium ? (88.0 + (wFactor * 8.0)) : (65.0 + (wFactor * 20.0)))),
+      demographics: clamp(overrides.testDemographics ?? (demo.recommendedTesting || (isPremium ? (88.0 + (wFactor * 8.0)) : (65.0 + (wFactor * 20.0))))),
       performance: clamp(overrides.testPerformance ?? (20.0 + (p.Performance * 75.0))),
       fuelEconomy: clamp(overrides.testFuelEconomy ?? (15.0 + (p.Fuel * 80.0))),
       comfort: clamp(overrides.testComfort ?? (isPremium ? (84.0 + (p.Driveability * 12.0)) : (20.0 + (p.Driveability * 40.0) + (p.Luxury * 25.0)))),
@@ -1100,7 +1100,7 @@ const GearCityEngine = (() => {
 \t<Slider_Design_DesignPace>${v(df.designPace)}</Slider_Design_DesignPace>
 \t<Slider_Demographics_Gender>${dg.gender || 'Neutral'}</Slider_Demographics_Gender>
 \t<Slider_Demographics_Wealth>${dg.wealth != null ? dg.wealth : '3'}</Slider_Demographics_Wealth>
-\t<Slider_Demographics_Age>${dg.age || 'Middle Aged'}</Slider_Demographics_Age>
+\t<Slider_Demographics_Age>${dg.age || '35-55'}</Slider_Demographics_Age>
 \t<Slider_Testing_Demographics>${v(ts.demographics)}</Slider_Testing_Demographics>
 \t<Slider_Testing_Performance>${v(ts.performance)}</Slider_Testing_Performance>
 \t<Slider_Testing_FuelEconomy>${v(ts.fuelEconomy)}</Slider_Testing_FuelEconomy>
@@ -1111,22 +1111,34 @@ const GearCityEngine = (() => {
   }
 
   function evaluateDemographics(vehicleType) {
+    const data = getActiveData();
     const profiles = GEARCITY_DATA.vehicleProfiles;
     const gMods = GEARCITY_DATA.genderModifiers;
     const aMods = GEARCITY_DATA.ageModifiers;
+    const vc = (data.vehicleClasses && data.vehicleClasses.find(v => v.carType === vehicleType)) ||
+               (GEARCITY_DATA.vehicleClasses && GEARCITY_DATA.vehicleClasses.find(v => v.carType === vehicleType)) || {};
 
-    const attr = profiles[vehicleType];
-    if (!attr) return null;
+    const wealthStr = vc.wealth || 'Middle';
+    const wealthLevel = WEALTH_LEVELS[wealthStr] || 3;
+    const wFactor = (wealthLevel - 1) / 6.0;
+
+    const baseAttr = profiles[vehicleType];
+    if (!baseAttr) return null;
+    const attr = { ...baseAttr };
+    // Quality importance in GearCity scales with buyer wealth tier
+    attr.Quality = 0.40 + (wFactor * 0.50);
 
     let bestScore = -Infinity;
     let bestGender = 'Neutral';
-    let bestAge = '25-35';
+    let bestAge = '35-55';
     const allScores = {};
 
     for (const [gName, gVal] of Object.entries(gMods)) {
       for (const [aName, aVal] of Object.entries(aMods)) {
         let score = 0;
-        for (const [col, baseVal] of Object.entries(attr)) {
+        const allStats = new Set([...Object.keys(attr), ...Object.keys(gVal), ...Object.keys(aVal)]);
+        for (const col of allStats) {
+          const baseVal = attr[col] != null ? attr[col] : 0.5;
           const mod = 1.0 + (gVal[col] || 0) + (aVal[col] || 0);
           score += baseVal * mod;
         }
@@ -1139,11 +1151,30 @@ const GearCityEngine = (() => {
       }
     }
 
+    const bestG = gMods[bestGender] || {};
+    const bestA = aMods[bestAge] || {};
+    const bonuses = [];
+    const penalties = [];
+    const combinedStats = new Set([...Object.keys(bestG), ...Object.keys(bestA)]);
+    for (const st of combinedStats) {
+      const net = (bestG[st] || 0) + (bestA[st] || 0);
+      if (net > 0) bonuses.push({ stat: st, delta: `+${net.toFixed(2)}` });
+      else if (net < 0) penalties.push({ stat: st, delta: net.toFixed(2) });
+    }
+
+    const isPremium = (wealthLevel >= 5 || (baseAttr.Luxury && baseAttr.Luxury >= 0.65));
+    const recommendedTesting = isPremium ? Math.round((88.0 + (wFactor * 8.0)) * 10) / 10 : Math.round((65.0 + (wFactor * 20.0)) * 10) / 10;
+
     return {
       vehicleType,
       bestGender,
       bestAge,
+      wealthLabel: wealthStr,
+      wealthTier: wealthLevel,
+      recommendedTesting,
       bestScore: Math.round(bestScore * 10000) / 10000,
+      bonuses,
+      penalties,
       allScores,
     };
   }
