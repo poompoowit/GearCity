@@ -166,8 +166,11 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Max Engine Weight (kg)</label>
-            <input type="number" id="input-max-weight" class="input-text" placeholder="e.g. 110" value="110">
+            <label class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
+              <span>Max Engine Weight (kg)</span>
+              <button type="button" id="btn-apply-era-weight" class="btn-secondary" style="margin-top: 0; padding: 1px 6px; font-size: 10px; height: 18px; line-height: 14px;" title="Apply era recommended weight">💡 Era Rec: 185 kg</button>
+            </label>
+            <input type="number" id="input-max-weight" class="input-text" placeholder="e.g. 185" value="185">
           </div>
 
           <div class="form-group" id="form-group-opt-max-ratio">
@@ -756,8 +759,11 @@
               <input type="number" id="input-vopt-max-cost" class="input-text" placeholder="e.g. 400">
             </div>
             <div class="form-group" style="margin-bottom: 0;">
-              <label class="form-label">Max Engine Weight (kg)</label>
-              <input type="number" id="input-vopt-max-weight" class="input-text" placeholder="e.g. 150">
+              <label class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Max Engine Weight (kg)</span>
+                <span id="hint-vopt-max-weight" style="font-size: 10px; color: var(--gc-text-gold); font-weight: normal;"></span>
+              </label>
+              <input type="number" id="input-vopt-max-weight" class="input-text" placeholder="e.g. 220">
             </div>
             <div class="form-group" style="margin-bottom: 0;" id="form-group-vopt-max-ratio">
               <label class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
@@ -962,8 +968,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="web/data.js?v=6.3"></script>
-  <script src="web/engine.js?v=6.3"></script>
-  <script src="web/app.js?v=6.3"></script>
+  <script src="web/data.js?v=6.4"></script>
+  <script src="web/engine.js?v=6.4"></script>
+  <script src="web/app.js?v=6.4"></script>
 </body>
 </html>

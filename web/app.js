@@ -93,6 +93,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const selectOptFuel = document.getElementById('select-opt-fuel');
   const btnAutoOptimize = document.getElementById('btn-auto-optimize');
   const optimizerStatus = document.getElementById('optimizer-status');
+  const btnApplyEraWeight = document.getElementById('btn-apply-era-weight');
+
+  function updateTab1EraWeightRecommendation() {
+    if (!btnApplyEraWeight) return;
+    const year = Number(inputYear ? inputYear.value : 1960) || 1960;
+    const benchmark = GearCityEngine.getEngineEraBenchmark('Midsize', year);
+    if (benchmark) {
+      btnApplyEraWeight.textContent = `💡 ${benchmark.decade} Rec: ~${benchmark.targetKg} kg`;
+      btnApplyEraWeight.title = `${benchmark.notes} (Range: ${benchmark.minKg}–${benchmark.maxKg} kg). Click to apply.`;
+      btnApplyEraWeight.dataset.targetWeight = benchmark.targetKg;
+    }
+  }
+
+  if (btnApplyEraWeight) {
+    btnApplyEraWeight.addEventListener('click', () => {
+      const target = btnApplyEraWeight.dataset.targetWeight;
+      if (target && inputMaxWeight) {
+        inputMaxWeight.value = target;
+        saveCachedState({ maxWeight: target });
+      }
+    });
+  }
 
   // DOM Elements - Component Filters Modal
   const filterModal = document.getElementById('filter-modal');
@@ -557,6 +579,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     populateComponentDropdowns();
     updateCalculations();
+    updateTab1EraWeightRecommendation();
   }
 
   // Function to set Design Skill
@@ -2308,6 +2331,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const hintVoptMaxRatio = document.getElementById('hint-vopt-max-ratio');
+    const hintVoptMaxWeight = document.getElementById('hint-vopt-max-weight');
+
+    function updateVoptWeightHint() {
+      if (!hintVoptMaxWeight) return;
+      const carType = selectVehicle ? selectVehicle.value : 'Sedan';
+      const year = Number(inputYear ? inputYear.value : 1960) || 1960;
+      const benchmark = GearCityEngine.getEngineEraBenchmark(carType, year);
+      if (benchmark) {
+        hintVoptMaxWeight.textContent = `${benchmark.decade} ${benchmark.archetype}: ${benchmark.minKg}–${benchmark.maxKg} kg (Target: ${benchmark.targetKg} kg)`;
+        hintVoptMaxWeight.title = `${benchmark.notes} (Recommended era target: ${benchmark.targetKg} kg)`;
+      } else {
+        hintVoptMaxWeight.textContent = '';
+      }
+    }
 
     function updateVoptRatioInputState() {
       if (!inputMaxRatio) return;
@@ -2327,13 +2364,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function populateConceptDefaults() {
+      const carType = selectVehicle ? selectVehicle.value : 'Sedan';
       const concept = selectConcept.value;
       const year = Number(inputYear.value) || 1960;
-      const constraints = GearCityEngine.getEngineDesignConstraints(concept, year);
+      const constraints = GearCityEngine.getEngineDesignConstraints(concept, year, undefined, carType);
       if (!constraints) return;
 
+      const benchmark = constraints.eraBenchmark || GearCityEngine.getEngineEraBenchmark(carType, year);
+      const defaultWeight = benchmark ? benchmark.targetKg : (constraints.maxWeight != null ? constraints.maxWeight : '');
+
       if (inputMaxCost) inputMaxCost.value = constraints.maxCost != null ? constraints.maxCost : '';
-      if (inputMaxWeight) inputMaxWeight.value = constraints.maxWeight != null ? constraints.maxWeight : '';
+      if (inputMaxWeight) inputMaxWeight.value = defaultWeight;
       if (inputMaxRatio) inputMaxRatio.value = constraints.maxHpTorqueRatio != null ? constraints.maxHpTorqueRatio : '';
       if (selectFocus) selectFocus.value = constraints.focus === 'HP' ? 'HP' : 'Torque';
       if (selectFuel) selectFuel.value = 'Any';
@@ -2347,6 +2388,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (sliderTechTechq) sliderTechTechq.value = constraints.techTechnique != null ? constraints.techTechnique : 0;
       syncSliders();
       updateVoptRatioInputState();
+      updateVoptWeightHint();
     }
 
     if (btnResetDefaults) {
@@ -2646,6 +2688,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initFiltersForYear(initialYear, true);
   populateComponentDropdowns();
   updateCalculations();
+  updateTab1EraWeightRecommendation();
   initDemographics();
   initVehicleAdvisor();
   initVehicleEngineOptimizer();

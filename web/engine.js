@@ -767,6 +767,41 @@ const GearCityEngine = (() => {
     };
   }
 
+  function getEngineEraBenchmark(carTypeOrArchetype, year, ver) {
+    const data = getActiveData(ver);
+    const yr = Math.max(1900, Math.min(2020, Number(year) || 1960));
+    const decadeNum = Math.floor(yr / 10) * 10;
+    const decadeKey = `${decadeNum}s`;
+    const decadeData = data.decadeEngineBenchmarks ? (data.decadeEngineBenchmarks[decadeKey] || data.decadeEngineBenchmarks['1960s']) : null;
+    if (!decadeData) return null;
+
+    // Resolve archetype from carType or concept/archetype name
+    let arch = 'Midsize';
+    if (data.vehicleArchetypeMapping && data.vehicleArchetypeMapping[carTypeOrArchetype]) {
+      arch = data.vehicleArchetypeMapping[carTypeOrArchetype];
+    } else if (decadeData[carTypeOrArchetype]) {
+      arch = carTypeOrArchetype;
+    } else {
+      const conceptLower = String(carTypeOrArchetype || '').toLowerCase();
+      if (conceptLower.includes('sport')) arch = 'Sports';
+      else if (conceptLower.includes('race')) arch = 'Race';
+      else if (conceptLower.includes('truck') || conceptLower.includes('luxtruck')) arch = 'Truck';
+      else if (conceptLower.includes('small') || conceptLower.includes('eco')) arch = 'Compact';
+      else if (conceptLower.includes('lux')) arch = 'Luxury';
+      else arch = 'Midsize';
+    }
+
+    const benchmark = decadeData[arch] || decadeData['Midsize'];
+    return {
+      decade: decadeKey,
+      archetype: arch,
+      minKg: benchmark.minKg,
+      targetKg: benchmark.targetKg,
+      maxKg: benchmark.maxKg,
+      notes: benchmark.notes,
+    };
+  }
+
   function generateChassisXml(config) {
     let dim = config.dimensions ? { ...config.dimensions } : { length: 50.0, width: 50.0, height: 50.0, weight: 50.0, engWidth: 50.0, engLength: 50.0 };
     const sus = config.suspensionTuning || { stability: 50.0, comfort: 50.0, performance: 50.0, braking: 50.0, durability: 50.0 };
@@ -1321,7 +1356,7 @@ const GearCityEngine = (() => {
   /**
    * Get optimizer-ready constraints from an Engine Design concept name.
    */
-  function getEngineDesignConstraints(conceptName, year, ver) {
+  function getEngineDesignConstraints(conceptName, year, ver, carType) {
     const data = getActiveData(ver);
     let ed = data.engineDesigns ? data.engineDesigns[conceptName] : null;
     if (!ed && typeof GEARCITY_DATA !== 'undefined') {
@@ -1347,9 +1382,17 @@ const GearCityEngine = (() => {
       maxHpTorqueRatio = Number((maxHpTorqueRatio + (eraDelta / 30.0) * 0.6).toFixed(2));
     }
 
+    // Dynamic historical engine weight benchmark based on vehicle archetype & decade
+    const eraBenchmark = getEngineEraBenchmark(carType || conceptName, year, ver);
+    let dynamicMaxWeight = ed.maxWeight;
+    if (eraBenchmark) {
+      dynamicMaxWeight = eraBenchmark.maxKg;
+    }
+
     return {
       maxCost: targetCost,
-      maxWeight: ed.maxWeight,
+      maxWeight: dynamicMaxWeight,
+      eraBenchmark,
       maxHpTorqueRatio,
       focus: ed.optimizeFocus === 'HP' ? 'HP' : 'Torque',
       designDependability: ed.designDependability,
@@ -1364,7 +1407,7 @@ const GearCityEngine = (() => {
    * Optimize engine based on vehicle class and design concept requirements
    */
   function optimizeEngineForVehicle(carType, concept, year, customConstraints = {}, ver) {
-    const defaultConstraints = getEngineDesignConstraints(concept, year, ver) || {};
+    const defaultConstraints = getEngineDesignConstraints(concept, year, ver, carType) || {};
 
     const constraints = {
       ...defaultConstraints,
@@ -1716,6 +1759,7 @@ const GearCityEngine = (() => {
     getVehicleDesignAdvice,
     getEngineDesignConstraints,
     getChassisEraBenchmark,
+    getEngineEraBenchmark,
     getChassisGearboxRecommendations: getVehicleDesignAdvice,
   };
 })();

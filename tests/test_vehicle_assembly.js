@@ -266,6 +266,58 @@ assert(
 );
 
 // -------------------------------------------------------------
+// TEST 8: Dynamic Historical Decade Engine Weight Benchmarks (1900s - 2020s)
+// -------------------------------------------------------------
+console.log('\n--- TEST 8: Dynamic Historical Decade Engine Weight Benchmarks ---');
+
+const bSports1904 = E.getEngineEraBenchmark('Sports', 1904);
+assert(
+  bSports1904 && bSports1904.decade === '1900s' && bSports1904.archetype === 'Sports' &&
+  bSports1904.minKg === 160 && bSports1904.targetKg === 220 && bSports1904.maxKg === 280,
+  '1904 Sports Engine Weight Benchmark accurately targets 220 kg (160-280 kg range)',
+  `Decade: ${bSports1904?.decade}, Archetype: ${bSports1904?.archetype}, Target: ${bSports1904?.targetKg} kg`
+);
+
+const bLimo1904 = E.getEngineEraBenchmark('Limousine', 1904);
+assert(
+  bLimo1904 && bLimo1904.decade === '1900s' && bLimo1904.archetype === 'Luxury' &&
+  bLimo1904.minKg === 240 && bLimo1904.targetKg === 330 && bLimo1904.maxKg === 420,
+  '1904 Limousine Engine Weight Benchmark accurately targets 330 kg (240-420 kg range)',
+  `Decade: ${bLimo1904?.decade}, Archetype: ${bLimo1904?.archetype}, Target: ${bLimo1904?.targetKg} kg`
+);
+
+const bMicro1904 = E.getEngineEraBenchmark('Microcar', 1904);
+assert(
+  bMicro1904 && bMicro1904.decade === '1900s' && bMicro1904.archetype === 'Micro' &&
+  bMicro1904.minKg === 50 && bMicro1904.targetKg === 75 && bMicro1904.maxKg === 110,
+  '1904 Microcar Engine Weight Benchmark bounds engine to lightweight 75 kg target (50-110 kg)',
+  `Decade: ${bMicro1904?.decade}, Archetype: ${bMicro1904?.archetype}, Target: ${bMicro1904?.targetKg} kg`
+);
+
+const bSedan1960 = E.getEngineEraBenchmark('Sedan', 1960);
+assert(
+  bSedan1960 && bSedan1960.decade === '1960s' && bSedan1960.archetype === 'Midsize' &&
+  bSedan1960.targetKg === 240 && bSedan1960.maxKg === 300,
+  '1960 Sedan Engine Weight Benchmark matches Small-Block V8 era target (240 kg)',
+  `Decade: ${bSedan1960?.decade}, Archetype: ${bSedan1960?.archetype}, Target: ${bSedan1960?.targetKg} kg`
+);
+
+const bCompact2010 = E.getEngineEraBenchmark('Compact Car', 2010);
+assert(
+  bCompact2010 && bCompact2010.decade === '2010s' && bCompact2010.archetype === 'Compact' &&
+  bCompact2010.targetKg === 100 && bCompact2010.maxKg === 135,
+  '2010 Compact Car Engine Weight Benchmark reflects modern turbo-downsizing (100 kg target)',
+  `Decade: ${bCompact2010?.decade}, Archetype: ${bCompact2010?.archetype}, Target: ${bCompact2010?.targetKg} kg`
+);
+
+const cSports1904 = E.getEngineDesignConstraints('Sport', 1904, undefined, 'Sports');
+assert(
+  cSports1904 && cSports1904.maxWeight === 280 && cSports1904.eraBenchmark && cSports1904.eraBenchmark.targetKg === 220,
+  'getEngineDesignConstraints dynamically provides era-scaled maxWeight for 1904 Sports (280 kg max, 220 kg target)',
+  `MaxWeight: ${cSports1904?.maxWeight} kg, Target: ${cSports1904?.eraBenchmark?.targetKg} kg`
+);
+
+// -------------------------------------------------------------
 // SUMMARY
 // -------------------------------------------------------------
 console.log('\n═══════════════════════════════════════════════════════════════');
