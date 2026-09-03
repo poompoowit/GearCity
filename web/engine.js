@@ -697,6 +697,13 @@ const GearCityEngine = (() => {
     const boreMm = limits.minBore + ((limits.maxBore - limits.minBore) * (sliders.boreSlide / 1000.0));
     const strokeMm = limits.minStroke + ((limits.maxStroke - limits.minStroke) * (sliders.strokeSlide / 1000.0));
 
+    let cylindersTag = comp.cylinders;
+    if (comp.layout === 'Single' || comp.cylinders === 'Cylinder') {
+      cylindersTag = 'Single-Cylinder';
+    } else if (comp.layout === 'Wankel' || comp.cylinders === 'Wankle') {
+      cylindersTag = 'Single-Rotor';
+    }
+
     return `<?xml version="1.0" encoding="utf-8"?>
 <Engine>
   <slider_stroke>${strokeMm.toFixed(2)}</slider_stroke>
@@ -716,11 +723,11 @@ const GearCityEngine = (() => {
   <slider_designdependability>${(sliders.designFocusDependability * 100.0).toFixed(1)}</slider_designdependability>
   <DesignPace>50.0</DesignPace>
   <lay_transverse>${config.transverse ? '1' : '0'}</lay_transverse>
-  <Cylinders>${comp.cylinders}</Cylinders>
+  <Cylinders>${cylindersTag}</Cylinders>
+  <Layout>${comp.layout}</Layout>
   <Fueltype>${comp.fuel}</Fueltype>
   <Induction>${comp.induction}</Induction>
   <Valve>${comp.valve}</Valve>
-  <Layout>${comp.layout}</Layout>
 </Engine>`;
   }
 

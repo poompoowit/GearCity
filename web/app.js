@@ -715,9 +715,11 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   btnDownloadXml.addEventListener('click', () => {
     const year = Number(inputYear.value);
-    const modelName = (inputModelName.value || `Engine_${year}`).replace(/\s+/g, '_');
+    const rawName = (inputModelName.value || `Model`).trim().replace(/^Engine_/i, '');
+    const safeModelName = rawName.replace(/[^a-zA-Z0-9_]/g, '_') || 'Custom';
+    const filename = `Engine_${safeModelName}_${year}.xml`;
 
-    trackUsageEvent('download_xml_base', `Download XML: ${modelName} (${year})`);
+    trackUsageEvent('download_xml_base', `Download XML: ${filename}`);
 
     const config = {
       components: {
@@ -753,7 +755,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Engine_${modelName}_${year}.xml`;
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -2073,19 +2075,32 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
             </div>
             ` : ''}
+            <div style="margin-top: 14px; padding: 10px 14px; background: rgba(212, 163, 89, 0.08); border-left: 3px solid var(--gc-text-gold); border-radius: 4px; font-size: 11px; color: var(--gc-text-muted); line-height: 1.5;">
+              <div style="color: var(--gc-text-gold); font-weight: 700; margin-bottom: 3px;">📂 How to Import XML into GearCity:</div>
+              <div>1. Place downloaded <code style="color: #fff; background: rgba(0,0,0,0.4); padding: 1px 4px; border-radius: 2px;">.xml</code> in your game's <strong style="color: #fff;">SavedSliders</strong> folder:</div>
+              <div style="padding-left: 10px; margin: 3px 0; color: #ccc; font-family: monospace; font-size: 10px;">
+                &bull; Windows: Steam/steamapps/common/GearCity/GearCity/SavedSliders/<br>
+                &bull; Mac: ~/Library/Application Support/GearCity/SavedSliders/<br>
+                &bull; Linux: ~/.local/share/GearCity/SavedSliders/
+              </div>
+              <div>2. In-game: Open <strong>R&amp;D &rarr; Design Engine</strong> &rarr; click <strong>Sliders Summary</strong> &rarr; click <strong>Load</strong>!</div>
+            </div>
           </div>
         `;
 
         const btnXml = document.getElementById('btn-vopt-download-xml');
         if (btnXml && result.config) {
           btnXml.addEventListener('click', () => {
-            trackUsageEvent('download_xml_vehicle', `Download Vehicle XML: ${selectVehicle.value}_${concept}_${year}`);
+            const cleanVehicle = selectVehicle.value.replace(/[^a-zA-Z0-9]/g, '_');
+            const cleanConcept = (concept.split('—')[0] || concept).trim().replace(/[^a-zA-Z0-9]/g, '_');
+            const filename = `Engine_${cleanVehicle}_${cleanConcept}_${year}.xml`;
+            trackUsageEvent('download_xml_vehicle', `Download Vehicle XML: ${filename}`);
             const xml = GearCityEngine.generateEngineXml(result.config);
-            const blob = new Blob([xml], { type: 'application/xml' });
+            const blob = new Blob([xml], { type: 'application/xml;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `${selectVehicle.value}_${concept}_${year}.xml`;
+            a.download = filename;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
