@@ -56,7 +56,7 @@
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="style.css?v=5.6">
+  <link rel="stylesheet" href="style.css?v=5.7">
   <style>
     .modal-overlay { display: none !important; }
   </style>
@@ -574,6 +574,40 @@
         </details>
       </div>
 
+      <!-- Vehicle Design Sliders & XML Blueprint Panel -->
+      <div class="card" id="vehicle-sliders-card" style="margin-top: 24px;">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <h2 class="card-title" style="margin-bottom: 0;">🚗 Vehicle Design Sliders &amp; XML Blueprint</h2>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" id="btn-copy-vehicle-sliders" class="btn-secondary" style="padding: 6px 12px; font-size: 12px; font-weight: 700; height: 34px;">
+              📋 Copy Sliders
+            </button>
+            <button type="button" id="btn-download-vehicle-xml" class="btn-primary" style="padding: 6px 14px; font-size: 12px; font-weight: 700; height: 34px;">
+              📥 Download Vehicle XML
+            </button>
+          </div>
+        </div>
+        <p style="font-size: 13px; color: var(--gc-text-muted); margin-bottom: 16px; line-height: 1.5;">
+          Goal-weighted slider configuration automatically calibrated to <strong id="lbl-vehicle-slider-target" style="color: var(--gc-text-gold);">Sedan</strong> market importance ratings and demographic targets. Load directly into GearCity's Vehicle Designer via <em>Summary &rarr; Load</em>.
+        </p>
+
+        <div id="vehicle-sliders-content" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;">
+          <!-- Injected dynamically via JS -->
+        </div>
+
+        <!-- Import Path Helper -->
+        <div style="margin-top: 14px; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--gc-border-brown); border-radius: 4px; font-size: 11px; color: var(--gc-text-muted); line-height: 1.6;">
+          <div style="font-weight: 700; color: var(--gc-text-ivory); margin-bottom: 4px;">📂 How to Use in GearCity:</div>
+          <div>1. Place downloaded <code style="color: #fff; background: rgba(0,0,0,0.4); padding: 1px 4px; border-radius: 2px;">.xml</code> in your game's <strong style="color: #fff;">SavedSliders</strong> folder:</div>
+          <div style="margin-left: 8px; font-family: var(--font-game-mono); font-size: 10.5px; color: var(--gc-text-amber);">
+            &bull; Windows: Steam/steamapps/common/GearCity/GearCity/SavedSliders/<br>
+            &bull; Mac: ~/Library/Application Support/GearCity/SavedSliders/<br>
+            &bull; Linux: ~/.local/share/GearCity/SavedSliders/
+          </div>
+          <div style="margin-top: 4px;">2. In GearCity's Vehicle Designer, click <strong style="color: #fff;">Summary</strong> (or Slider Summary) &rarr; <strong style="color: #fff;">Load</strong>, and pick the file!</div>
+        </div>
+      </div>
+
       <!-- Design Concepts Reference Tables (Chassis, Engine, Gearbox) -->
       <div class="card" style="margin-top: 24px;">
         <div class="card-header">
@@ -922,8 +956,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="data.js?v=5.6"></script>
-  <script src="engine.js?v=5.6"></script>
-  <script src="app.js?v=5.6"></script>
+  <script src="data.js?v=5.7"></script>
+  <script src="engine.js?v=5.7"></script>
+  <script src="app.js?v=5.7"></script>
 </body>
 </html>

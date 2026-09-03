@@ -113,6 +113,81 @@ for (const yr of [1900, 1920, 1940, 1960, 1980, 2000, 2020]) {
 }
 
 // -------------------------------------------------------------
+// Test 6: Vehicle Designer Sliders & XML Generation
+// -------------------------------------------------------------
+console.log('\n--- TEST 6: Vehicle Designer Sliders & XML Generation ---');
+
+// 1. Sedan Baseline
+const sedanSliders = E.calculateVehicleSliders('Sedan', 1960);
+assert(
+  sedanSliders && sedanSliders.designFocus && sedanSliders.interior && sedanSliders.materials && sedanSliders.testing,
+  'calculateVehicleSliders returns complete 4-category slider breakdown for Sedan',
+  `Demographics: ${sedanSliders.demographics.gender}, Wealth: ${sedanSliders.demographics.wealthLabel}`
+);
+
+// 2. Luxury Sedan vs Pickup Truck Goal-Weighted Contrast
+const luxSliders = E.calculateVehicleSliders('Luxury Sedan', 1960);
+const truckSliders = E.calculateVehicleSliders('Pickup Truck', 1960);
+const microSliders = E.calculateVehicleSliders('Microcar', 1960);
+
+assert(
+  luxSliders.designFocus.luxury >= 75.0 && luxSliders.interior.luxury >= 75.0,
+  'Luxury Sedan Design Focus & Interior Luxury are high (>= 75%)',
+  `Focus Luxury: ${luxSliders.designFocus.luxury}%, Interior Luxury: ${luxSliders.interior.luxury}%`
+);
+
+assert(
+  truckSliders.designFocus.cargo >= 80.0 && truckSliders.testing.utility >= 85.0 && truckSliders.designFocus.luxury <= 35.0,
+  'Pickup Truck Prioritizes Cargo & Utility Over Luxury',
+  `Cargo Focus: ${truckSliders.designFocus.cargo}%, Utility Test: ${truckSliders.testing.utility}%, Luxury Focus: ${truckSliders.designFocus.luxury}%`
+);
+
+assert(
+  microSliders.testing.fuelEconomy >= 75.0 && microSliders.testing.performance <= 30.0,
+  'Microcar Prioritizes Fuel Economy Testing Over Performance Testing',
+  `Fuel Test: ${microSliders.testing.fuelEconomy}%, Perf Test: ${microSliders.testing.performance}%`
+);
+
+// 3. XML Blueprint Export
+const sedanXml = E.generateVehicleXml(sedanSliders);
+assert(
+  sedanXml &&
+  sedanXml.includes('<?xml version="1.0" encoding="utf-8"?>') &&
+  sedanXml.includes('<Vehicle>') &&
+  sedanXml.includes('</Vehicle>') &&
+  sedanXml.includes('<Slider_Interior_Style>') &&
+  sedanXml.includes('<Slider_Materials_Paint>') &&
+  sedanXml.includes('<Slider_Design_Safety>') &&
+  sedanXml.includes('<Slider_Demographics_Wealth>') &&
+  sedanXml.includes('<Slider_Testing_Reliability>'),
+  'generateVehicleXml produces valid GearCity SavedSliders XML blueprint',
+  `XML length: ${sedanXml.length} chars, Root: <Vehicle>`
+);
+
+// 4. Test all 30 vehicle classes for valid slider ranges (0-100%) and valid XML
+let allVehiclesValid = true;
+const classes = DATA.vehicleClasses.map(v => v.carType);
+for (const vClass of classes) {
+  const vs = E.calculateVehicleSliders(vClass, 1960);
+  const xml = E.generateVehicleXml(vs);
+  if (!xml.includes('<Vehicle>') || !xml.includes('</Vehicle>')) {
+    allVehiclesValid = false;
+  }
+  for (const cat of ['designFocus', 'interior', 'materials', 'testing']) {
+    for (const [key, val] of Object.entries(vs[cat])) {
+      if (typeof val === 'number' && (val < 0 || val > 100)) {
+        allVehiclesValid = false;
+      }
+    }
+  }
+}
+assert(
+  allVehiclesValid,
+  'All 30 Vehicle Classes generate valid, bounded (0-100%) sliders and XML blueprints',
+  `Checked ${classes.length} classes`
+);
+
+// -------------------------------------------------------------
 // SUMMARY
 // -------------------------------------------------------------
 console.log('\n═══════════════════════════════════════════════════════════════');

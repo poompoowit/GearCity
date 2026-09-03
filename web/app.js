@@ -1306,6 +1306,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       renderAssemblyEvaluation(true);
+      renderVehicleSliders();
     }
 
     // Vehicle Assembly & Synergy Evaluation Logic
@@ -1463,6 +1464,199 @@ document.addEventListener('DOMContentLoaded', () => {
     if (selectAssemblyChassis) selectAssemblyChassis.addEventListener('change', () => renderAssemblyEvaluation(false));
     if (selectAssemblyEngine) selectAssemblyEngine.addEventListener('change', () => renderAssemblyEvaluation(false));
     if (selectAssemblyGearbox) selectAssemblyGearbox.addEventListener('change', () => renderAssemblyEvaluation(false));
+
+    // ============================================================
+    // Vehicle Design Sliders & XML Blueprint Logic
+    // ============================================================
+    const lblVehicleSliderTarget = document.getElementById('lbl-vehicle-slider-target');
+    const vehicleSlidersContent = document.getElementById('vehicle-sliders-content');
+    const btnDownloadVehicleXml = document.getElementById('btn-download-vehicle-xml');
+    const btnCopyVehicleSliders = document.getElementById('btn-copy-vehicle-sliders');
+    let currentVehicleSliders = null;
+
+    function renderVehicleSliders() {
+      if (!vehicleSlidersContent) return;
+      const carType = selectVehicle ? selectVehicle.value : 'Sedan';
+      const yr = parseInt(inputYearNum ? inputYearNum.value : 1960) || 1960;
+
+      if (lblVehicleSliderTarget) lblVehicleSliderTarget.textContent = carType;
+
+      const vSliders = GearCityEngine.calculateVehicleSliders(carType, yr);
+      currentVehicleSliders = vSliders;
+      if (!vSliders) return;
+
+      const df = vSliders.designFocus;
+      const it = vSliders.interior;
+      const mat = vSliders.materials;
+      const ts = vSliders.testing;
+      const dg = vSliders.demographics;
+
+      const sliderRow = (name, val, color = 'var(--gc-text-gold)') => `
+        <div style="margin-bottom: 6px;">
+          <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 2px;">
+            <span style="color: var(--gc-text-ivory);">${name}</span>
+            <span style="color: ${color}; font-weight: 700; font-family: var(--font-game-mono);">${val.toFixed(1)}%</span>
+          </div>
+          <div style="background: rgba(0,0,0,0.5); border-radius: 3px; height: 5px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05);">
+            <div style="width: ${Math.min(100, Math.max(0, val))}%; height: 100%; background: ${color}; border-radius: 3px; transition: width 0.3s ease;"></div>
+          </div>
+        </div>
+      `;
+
+      vehicleSlidersContent.innerHTML = `
+        <!-- Card 1: Design Focus -->
+        <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--gc-border-brown); border-radius: 4px; padding: 12px 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 6px;">
+            <span style="font-size: 12px; font-weight: 700; color: var(--gc-text-gold);">🎯 Design Focus</span>
+            <span style="font-size: 10px; color: var(--gc-text-muted);">Pace: ${df.designPace.toFixed(0)}%</span>
+          </div>
+          ${sliderRow('Style Focus', df.style, '#ef5350')}
+          ${sliderRow('Luxury Focus', df.luxury, '#ce93d8')}
+          ${sliderRow('Safety Focus', df.safety, '#81c784')}
+          ${sliderRow('Cargo Focus', df.cargo, '#ffb74d')}
+          ${sliderRow('Dependability Focus', df.dependability, '#64b5f6')}
+          <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed rgba(255,255,255,0.08); display: flex; justify-content: space-between; font-size: 10.5px; color: var(--gc-text-muted);">
+            <span>Target Wealth:</span>
+            <strong style="color: var(--gc-text-amber);">${dg.wealthLabel} (Tier ${dg.wealth})</strong>
+          </div>
+        </div>
+
+        <!-- Card 2: Interior Tuning -->
+        <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--gc-border-brown); border-radius: 4px; padding: 12px 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 6px;">
+            <span style="font-size: 12px; font-weight: 700; color: var(--gc-text-gold);">🛋️ Interior Tuning</span>
+            <span style="font-size: 10px; color: var(--gc-text-muted);">Cabin Specs</span>
+          </div>
+          ${sliderRow('Interior Style', it.style, '#ef5350')}
+          ${sliderRow('Interior Innovation', it.innovation, '#ff7043')}
+          ${sliderRow('Interior Luxury', it.luxury, '#ce93d8')}
+          ${sliderRow('Interior Comfort', it.comfort, '#4fc3f7')}
+          ${sliderRow('Interior Safety', it.safety, '#81c784')}
+          ${sliderRow('Interior Technology', it.technology, '#ba68c8')}
+        </div>
+
+        <!-- Card 3: Materials & Quality -->
+        <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--gc-border-brown); border-radius: 4px; padding: 12px 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 6px;">
+            <span style="font-size: 12px; font-weight: 700; color: var(--gc-text-gold);">✨ Materials & Build</span>
+            <span style="font-size: 10px; color: var(--gc-text-muted);">Manufacturing</span>
+          </div>
+          ${sliderRow('Material Quality', mat.materialQuality, '#81c784')}
+          ${sliderRow('Interior Quality', mat.interiorQuality, '#ce93d8')}
+          ${sliderRow('Paint Quality', mat.paintQuality, '#ffb74d')}
+          ${sliderRow('Manufacturing Tech', mat.techniques, '#4fc3f7')}
+          <div style="margin-top: 10px; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 3px; font-size: 10.5px; color: var(--gc-text-muted); line-height: 1.4;">
+            <span style="color: var(--gc-text-ivory); font-weight: 600;">Buyer Targeting:</span>
+            ${dg.gender} &bull; ${dg.age}
+          </div>
+        </div>
+
+        <!-- Card 4: Testing Allocation -->
+        <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--gc-border-brown); border-radius: 4px; padding: 12px 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 6px;">
+            <span style="font-size: 12px; font-weight: 700; color: var(--gc-text-gold);">🧪 Testing Allocation</span>
+            <span style="font-size: 10px; color: var(--gc-text-muted);">Prototypes</span>
+          </div>
+          ${sliderRow('Demographics Test', ts.demographics, '#ffb74d')}
+          ${sliderRow('Performance Test', ts.performance, '#ef5350')}
+          ${sliderRow('Fuel Economy Test', ts.fuelEconomy, '#81c784')}
+          ${sliderRow('Comfortability Test', ts.comfort, '#4fc3f7')}
+          ${sliderRow('Utility Test', ts.utility, '#ff7043')}
+          ${sliderRow('Reliability Test', ts.reliability, '#ba68c8')}
+        </div>
+      `;
+    }
+
+    if (btnDownloadVehicleXml) {
+      btnDownloadVehicleXml.addEventListener('click', () => {
+        if (!currentVehicleSliders) return;
+        const carType = currentVehicleSliders.carType;
+        const yr = currentVehicleSliders.year;
+        const xml = GearCityEngine.generateVehicleXml(currentVehicleSliders);
+        const cleanVehicle = carType.replace(/[^a-zA-Z0-9]/g, '');
+        const filename = `Vehicle_${cleanVehicle}_${yr}.xml`;
+
+        const blob = new Blob([xml], { type: 'application/xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    }
+
+    if (btnCopyVehicleSliders) {
+      btnCopyVehicleSliders.addEventListener('click', () => {
+        if (!currentVehicleSliders) return;
+        const s = currentVehicleSliders;
+        const df = s.designFocus;
+        const it = s.interior;
+        const mat = s.materials;
+        const ts = s.testing;
+        const dg = s.demographics;
+
+        const text = [
+          `GearCity Vehicle Blueprint - ${s.carType} (${s.year})`,
+          `Demographics: ${dg.gender} | ${dg.age} | Wealth: ${dg.wealthLabel} (Tier ${dg.wealth})`,
+          `----------------------------------------`,
+          `[🎯 Design Focus]`,
+          `• Style Focus: ${df.style.toFixed(1)}%`,
+          `• Luxury Focus: ${df.luxury.toFixed(1)}%`,
+          `• Safety Focus: ${df.safety.toFixed(1)}%`,
+          `• Cargo Focus: ${df.cargo.toFixed(1)}%`,
+          `• Dependability Focus: ${df.dependability.toFixed(1)}%`,
+          `• Design Pace: ${df.designPace.toFixed(1)}%`,
+          `----------------------------------------`,
+          `[🛋️ Interior Tuning]`,
+          `• Style: ${it.style.toFixed(1)}%`,
+          `• Innovation: ${it.innovation.toFixed(1)}%`,
+          `• Luxury: ${it.luxury.toFixed(1)}%`,
+          `• Comfort: ${it.comfort.toFixed(1)}%`,
+          `• Safety: ${it.safety.toFixed(1)}%`,
+          `• Technology: ${it.technology.toFixed(1)}%`,
+          `----------------------------------------`,
+          `[✨ Materials & Build]`,
+          `• Material Quality: ${mat.materialQuality.toFixed(1)}%`,
+          `• Interior Quality: ${mat.interiorQuality.toFixed(1)}%`,
+          `• Paint Quality: ${mat.paintQuality.toFixed(1)}%`,
+          `• Manufacturing Tech: ${mat.techniques.toFixed(1)}%`,
+          `----------------------------------------`,
+          `[🧪 Testing Allocation]`,
+          `• Demographics: ${ts.demographics.toFixed(1)}%`,
+          `• Performance: ${ts.performance.toFixed(1)}%`,
+          `• Fuel Economy: ${ts.fuelEconomy.toFixed(1)}%`,
+          `• Comfort: ${ts.comfort.toFixed(1)}%`,
+          `• Utility: ${ts.utility.toFixed(1)}%`,
+          `• Reliability: ${ts.reliability.toFixed(1)}%`,
+        ].join('\n');
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => {
+            const old = btnCopyVehicleSliders.textContent;
+            btnCopyVehicleSliders.textContent = '✅ Copied!';
+            btnCopyVehicleSliders.style.background = '#2e7d32';
+            setTimeout(() => {
+              btnCopyVehicleSliders.textContent = old;
+              btnCopyVehicleSliders.style.background = '';
+            }, 2000);
+          }).catch(() => {
+            btnCopyVehicleSliders.textContent = '❌ Failed';
+          });
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          btnCopyVehicleSliders.textContent = '✅ Copied!';
+          setTimeout(() => { btnCopyVehicleSliders.textContent = '📋 Copy Sliders'; }, 2000);
+        }
+      });
+    }
 
     // Concept Reference Tables Rendering
     function renderRefTables() {

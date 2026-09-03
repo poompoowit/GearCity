@@ -148,6 +148,54 @@ class XMLExporter:
             return reparsed.toprettyxml(indent="  ")
         return raw_xml.decode("utf-8")
 
+    def generate_vehicle_xml_string(self, config: dict, pretty: bool = True) -> str:
+        """Convert Vehicle configuration dictionary to a GearCity XML blueprint string."""
+        root = ET.Element("Vehicle")
+        it = config.get("interior", {})
+        mat = config.get("materials", {})
+        df = config.get("designFocus", {})
+        dg = config.get("demographics", {})
+        ts = config.get("testing", {})
+
+        def v(val, def_val=50.0):
+            return str(round(float(val if val is not None else def_val), 1))
+
+        ET.SubElement(root, "Slider_Interior_Style").text = v(it.get("style"))
+        ET.SubElement(root, "Slider_Interior_Innovation").text = v(it.get("innovation"))
+        ET.SubElement(root, "Slider_Interior_Luxury").text = v(it.get("luxury"))
+        ET.SubElement(root, "Slider_Interior_Comfort").text = v(it.get("comfort"))
+        ET.SubElement(root, "Slider_Interior_Safety").text = v(it.get("safety"))
+        ET.SubElement(root, "Slider_Interior_Technology").text = v(it.get("technology"))
+
+        ET.SubElement(root, "Slider_Materials_MaterialQuality").text = v(mat.get("materialQuality"))
+        ET.SubElement(root, "Slider_Materials_Interior").text = v(mat.get("interiorQuality"))
+        ET.SubElement(root, "Slider_Materials_Paint").text = v(mat.get("paintQuality"))
+        ET.SubElement(root, "Slider_Materials_Techniques").text = v(mat.get("techniques"))
+
+        ET.SubElement(root, "Slider_Design_Style").text = v(df.get("style"))
+        ET.SubElement(root, "Slider_Design_Luxury").text = v(df.get("luxury"))
+        ET.SubElement(root, "Slider_Design_Safety").text = v(df.get("safety"))
+        ET.SubElement(root, "Slider_Design_Cargo").text = v(df.get("cargo"))
+        ET.SubElement(root, "Slider_Design_Dependability").text = v(df.get("dependability"))
+        ET.SubElement(root, "Slider_Design_DesignPace").text = v(df.get("designPace"))
+
+        ET.SubElement(root, "Slider_Demographics_Gender").text = str(dg.get("gender", "Neutral"))
+        ET.SubElement(root, "Slider_Demographics_Wealth").text = str(dg.get("wealth", "3"))
+        ET.SubElement(root, "Slider_Demographics_Age").text = str(dg.get("age", "Middle Aged"))
+
+        ET.SubElement(root, "Slider_Testing_Demographics").text = v(ts.get("demographics"))
+        ET.SubElement(root, "Slider_Testing_Performance").text = v(ts.get("performance"))
+        ET.SubElement(root, "Slider_Testing_FuelEconomy").text = v(ts.get("fuelEconomy"))
+        ET.SubElement(root, "Slider_Testing_Comfort").text = v(ts.get("comfort"))
+        ET.SubElement(root, "Slider_Testing_Utility").text = v(ts.get("utility"))
+        ET.SubElement(root, "Slider_Testing_Reliability").text = v(ts.get("reliability"))
+
+        raw_xml = ET.tostring(root, encoding="utf-8")
+        if pretty:
+            reparsed = minidom.parseString(raw_xml)
+            return reparsed.toprettyxml(indent="  ")
+        return raw_xml.decode("utf-8")
+
     def export_to_file(self, config: Union[EngineConfiguration, dict], output_path: Union[str, Path], comp_type: str = "engine") -> Path:
         """Write blueprint XML to a file."""
         target_path = Path(output_path)
@@ -156,6 +204,8 @@ class XMLExporter:
             xml_content = self.generate_chassis_xml_string(config)
         elif comp_type == "gearbox":
             xml_content = self.generate_gearbox_xml_string(config)
+        elif comp_type == "vehicle":
+            xml_content = self.generate_vehicle_xml_string(config)
         else:
             xml_content = self.generate_xml_string(config)
         with open(target_path, "w", encoding="utf-8") as f:

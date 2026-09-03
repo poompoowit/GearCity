@@ -839,6 +839,137 @@ const GearCityEngine = (() => {
 </Gearbox>`;
   }
 
+  const WEALTH_LEVELS = {
+    'Lower': 1,
+    'Working': 1,
+    'Lower-Middle': 2,
+    'Middle': 3,
+    'Upper-Middle': 4,
+    'Wealthy': 5,
+    'Upper Class': 6,
+    'Elite': 7,
+  };
+
+  /**
+   * Automatically calculate optimal in-game Vehicle Designer sliders for a given vehicle class.
+   * Uses a goal-weighted algorithm scaling Design Focus, Interior, Materials, and Testing sliders
+   * to match the vehicle's demographic importance ratings and target wealth bracket.
+   */
+  function calculateVehicleSliders(carType, year = 1960, overrides = {}) {
+    const data = getActiveData();
+    const yr = Math.max(1900, Math.min(2020, Number(year) || 1960));
+    const p = (GEARCITY_DATA.vehicleProfiles && GEARCITY_DATA.vehicleProfiles[carType]) || {
+      Performance: 0.5, Driveability: 0.5, Luxury: 0.5, Safety: 0.5, Fuel: 0.5, Power: 0.5, Cargo: 0.5, Dependability: 0.5
+    };
+    const vc = (data.vehicleClasses && data.vehicleClasses.find(v => v.carType === carType)) ||
+               (GEARCITY_DATA.vehicleClasses && GEARCITY_DATA.vehicleClasses.find(v => v.carType === carType)) || {};
+
+    const demo = evaluateDemographics(carType) || { bestGender: 'Neutral', bestAge: '25-35' };
+    const wealthStr = vc.wealth || 'Middle';
+    const wealthLevel = WEALTH_LEVELS[wealthStr] || 3;
+    const wFactor = (wealthLevel - 1) / 6.0; // 0.0 to 1.0
+
+    const clamp = (val, min = 0.0, max = 100.0) => Math.round(Math.max(min, Math.min(max, val)) * 10) / 10;
+
+    // 1. Design Focus Sliders (0 - 100%)
+    const designFocus = {
+      style: clamp(overrides.designStyle ?? (25.0 + (p.Performance * 40.0) + (p.Luxury * 25.0)), 20.0, 90.0),
+      luxury: clamp(overrides.designLuxury ?? (15.0 + (p.Luxury * 75.0)), 15.0, 95.0),
+      safety: clamp(overrides.designSafety ?? (20.0 + (p.Safety * 70.0)), 20.0, 90.0),
+      cargo: clamp(overrides.designCargo ?? (10.0 + (p.Cargo * 80.0)), 10.0, 95.0),
+      dependability: clamp(overrides.designDependability ?? (25.0 + (p.Dependability * 65.0)), 25.0, 90.0),
+      designPace: clamp(overrides.designPace ?? 50.0, 20.0, 100.0),
+    };
+
+    // 2. Interior Sliders (0 - 100%)
+    const interior = {
+      style: clamp(overrides.interiorStyle ?? (25.0 + (p.Performance * 30.0) + (wFactor * 35.0)), 20.0, 90.0),
+      innovation: clamp(overrides.interiorInnovation ?? (20.0 + (wFactor * 45.0) + (Math.max(0, yr - 1930) / 90.0 * 25.0)), 20.0, 90.0),
+      luxury: clamp(overrides.interiorLuxury ?? (15.0 + (p.Luxury * 50.0) + (wFactor * 30.0)), 15.0, 95.0),
+      comfort: clamp(overrides.interiorComfort ?? (20.0 + (p.Driveability * 40.0) + (p.Luxury * 35.0)), 20.0, 95.0),
+      safety: clamp(overrides.interiorSafety ?? (20.0 + (p.Safety * 55.0) + (wFactor * 20.0)), 20.0, 90.0),
+      technology: clamp(overrides.interiorTechnology ?? (20.0 + (wFactor * 45.0) + (Math.max(0, yr - 1940) / 80.0 * 25.0)), 20.0, 90.0),
+    };
+
+    // 3. Materials Sliders (0 - 100%)
+    const materials = {
+      materialQuality: clamp(overrides.materialQuality ?? (20.0 + (wFactor * 65.0) + (p.Dependability * 10.0)), 20.0, 95.0),
+      interiorQuality: clamp(overrides.interiorQuality ?? (20.0 + (wFactor * 55.0) + (p.Luxury * 20.0)), 20.0, 95.0),
+      paintQuality: clamp(overrides.paintQuality ?? (20.0 + (wFactor * 55.0) + (p.Luxury * 15.0)), 20.0, 90.0),
+      techniques: clamp(overrides.techniques ?? (25.0 + (wFactor * 50.0) + (p.Dependability * 20.0)), 25.0, 95.0),
+    };
+
+    // 4. Demographics
+    const demographics = {
+      gender: overrides.gender || demo.bestGender || 'Neutral',
+      wealth: overrides.wealth || String(wealthLevel),
+      wealthLabel: wealthStr,
+      age: overrides.age || demo.bestAge || 'Middle Aged',
+    };
+
+    // 5. Testing Sliders (0 - 100%)
+    const testing = {
+      demographics: clamp(overrides.testDemographics ?? (35.0 + (wFactor * 25.0) + (vc.civFleet ? 15.0 : 0.0)), 35.0, 80.0),
+      performance: clamp(overrides.testPerformance ?? (20.0 + (p.Performance * 70.0)), 20.0, 95.0),
+      fuelEconomy: clamp(overrides.testFuelEconomy ?? (15.0 + (p.Fuel * 75.0)), 15.0, 95.0),
+      comfort: clamp(overrides.testComfort ?? (20.0 + (p.Driveability * 40.0) + (p.Luxury * 35.0)), 20.0, 95.0),
+      utility: clamp(overrides.testUtility ?? (15.0 + (p.Cargo * 70.0) + (p.Power * 15.0)), 15.0, 95.0),
+      reliability: clamp(overrides.testReliability ?? (30.0 + (p.Dependability * 60.0)), 30.0, 95.0),
+    };
+
+    return {
+      carType,
+      year: yr,
+      demographics,
+      designFocus,
+      interior,
+      materials,
+      testing,
+    };
+  }
+
+  /**
+   * Convert Vehicle configuration dictionary to GearCity SavedSliders XML blueprint string.
+   */
+  function generateVehicleXml(config) {
+    const it = config.interior || {};
+    const mat = config.materials || {};
+    const df = config.designFocus || {};
+    const dg = config.demographics || {};
+    const ts = config.testing || {};
+
+    const v = (val, def = 50.0) => (val != null ? Number(val) : def).toFixed(1);
+
+    return `<?xml version="1.0" encoding="utf-8"?>
+<Vehicle>
+\t<Slider_Interior_Style>${v(it.style)}</Slider_Interior_Style>
+\t<Slider_Interior_Innovation>${v(it.innovation)}</Slider_Interior_Innovation>
+\t<Slider_Interior_Luxury>${v(it.luxury)}</Slider_Interior_Luxury>
+\t<Slider_Interior_Comfort>${v(it.comfort)}</Slider_Interior_Comfort>
+\t<Slider_Interior_Safety>${v(it.safety)}</Slider_Interior_Safety>
+\t<Slider_Interior_Technology>${v(it.technology)}</Slider_Interior_Technology>
+\t<Slider_Materials_MaterialQuality>${v(mat.materialQuality)}</Slider_Materials_MaterialQuality>
+\t<Slider_Materials_Interior>${v(mat.interiorQuality)}</Slider_Materials_Interior>
+\t<Slider_Materials_Paint>${v(mat.paintQuality)}</Slider_Materials_Paint>
+\t<Slider_Materials_Techniques>${v(mat.techniques)}</Slider_Materials_Techniques>
+\t<Slider_Design_Style>${v(df.style)}</Slider_Design_Style>
+\t<Slider_Design_Luxury>${v(df.luxury)}</Slider_Design_Luxury>
+\t<Slider_Design_Safety>${v(df.safety)}</Slider_Design_Safety>
+\t<Slider_Design_Cargo>${v(df.cargo)}</Slider_Design_Cargo>
+\t<Slider_Design_Dependability>${v(df.dependability)}</Slider_Design_Dependability>
+\t<Slider_Design_DesignPace>${v(df.designPace)}</Slider_Design_DesignPace>
+\t<Slider_Demographics_Gender>${dg.gender || 'Neutral'}</Slider_Demographics_Gender>
+\t<Slider_Demographics_Wealth>${dg.wealth != null ? dg.wealth : '3'}</Slider_Demographics_Wealth>
+\t<Slider_Demographics_Age>${dg.age || 'Middle Aged'}</Slider_Demographics_Age>
+\t<Slider_Testing_Demographics>${v(ts.demographics)}</Slider_Testing_Demographics>
+\t<Slider_Testing_Performance>${v(ts.performance)}</Slider_Testing_Performance>
+\t<Slider_Testing_FuelEconomy>${v(ts.fuelEconomy)}</Slider_Testing_FuelEconomy>
+\t<Slider_Testing_Comfort>${v(ts.comfort)}</Slider_Testing_Comfort>
+\t<Slider_Testing_Utility>${v(ts.utility)}</Slider_Testing_Utility>
+\t<Slider_Testing_Reliability>${v(ts.reliability)}</Slider_Testing_Reliability>
+</Vehicle>`;
+  }
+
   function evaluateDemographics(vehicleType) {
     const profiles = GEARCITY_DATA.vehicleProfiles;
     const gMods = GEARCITY_DATA.genderModifiers;
@@ -1373,6 +1504,8 @@ const GearCityEngine = (() => {
     generateEngineXml,
     generateChassisXml,
     generateGearboxXml,
+    generateVehicleXml,
+    calculateVehicleSliders,
     evaluateDemographics,
     getVehicleDesignAdvice,
     getEngineDesignConstraints,
