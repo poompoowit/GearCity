@@ -213,11 +213,11 @@ const luxDemo = E.evaluateDemographics('Luxury Sedan');
 assert(
   luxDemo &&
   luxDemo.bestAge === 'Greater Than 55' &&
-  luxDemo.wealthTier === 5 &&
+  luxDemo.wealthTier === 6 &&
   luxDemo.bonuses.some(b => b.stat === 'Luxury') &&
   luxDemo.bonuses.some(b => b.stat === 'Quality') &&
   luxDemo.recommendedTesting >= 90.0,
-  'Luxury Sedan Demographic targets Greater Than 55 and Wealth 5 with active Luxury & Quality bonuses',
+  'Luxury Sedan Demographic targets Greater Than 55 and Wealth 6 (Wealthy) with active Luxury & Quality bonuses',
   `Age: ${luxDemo.bestAge}, Wealth: ${luxDemo.wealthLabel} (Tier ${luxDemo.wealthTier}), Rec Test: ${luxDemo.recommendedTesting}%`
 );
 
@@ -226,19 +226,43 @@ assert(
   superDemo &&
   superDemo.bestAge === '35-55' &&
   superDemo.bestGender === 'Male' &&
+  superDemo.wealthTier === 7 &&
   superDemo.bonuses.some(b => b.stat === 'Performance') &&
   superDemo.bonuses.some(b => b.stat === 'Power'),
-  'Supercar Demographic targets Male 35-55 with active Performance & Power bonuses',
-  `Gender: ${superDemo.bestGender}, Age: ${superDemo.bestAge}, Wealth: ${superDemo.wealthLabel}`
+  'Supercar Demographic targets Male 35-55 and Wealth 7 (Ultra-Wealthy) with active Performance & Power bonuses',
+  `Gender: ${superDemo.bestGender}, Age: ${superDemo.bestAge}, Wealth: ${superDemo.wealthLabel} (Tier ${superDemo.wealthTier})`
 );
 
-const luxXml = E.generateVehicleXml(luxSliders);
+const limoDemo = E.evaluateDemographics('Limousine');
+assert(
+  limoDemo &&
+  limoDemo.bestAge === 'Greater Than 55' &&
+  limoDemo.bestGender === 'Female' &&
+  limoDemo.wealthTier === 7 &&
+  limoDemo.wealthLabel === 'Ultra-Wealthy',
+  'Limousine Demographic targets Female Greater Than 55 and Wealth 7 (Ultra-Wealthy)',
+  `Gender: ${limoDemo.bestGender}, Age: ${limoDemo.bestAge}, Wealth: ${limoDemo.wealthLabel} (Tier ${limoDemo.wealthTier})`
+);
+
+const luxSlidersNew = E.calculateVehicleSliders('Luxury Sedan', 1960);
+const luxXml = E.generateVehicleXml(luxSlidersNew);
 assert(
   luxXml.includes('<DemoAge>3</DemoAge>') &&
-  luxXml.includes('<DemoWealth>5</DemoWealth>') &&
-  luxXml.includes('<Scroll_TestDemo>93.3</Scroll_TestDemo>'),
-  'Luxury Sedan XML blueprint contains canonical DemoAge 3 (Greater Than 55), DemoWealth 5, and 93.3% testing slider',
+  luxXml.includes('<DemoWealth>6</DemoWealth>') &&
+  luxXml.includes('<Scroll_TestDemo>94.7</Scroll_TestDemo>'),
+  'Luxury Sedan XML blueprint contains canonical DemoAge 3 (Greater Than 55), DemoWealth 6, and 94.7% testing slider',
   'XML demographic tags match canonical in-game targeting enums'
+);
+
+const limoSlidersNew = E.calculateVehicleSliders('Limousine', 1960);
+const limoXml = E.generateVehicleXml(limoSlidersNew);
+assert(
+  limoXml.includes('<DemoAge>3</DemoAge>') &&
+  limoXml.includes('<DemoGender>1</DemoGender>') &&
+  limoXml.includes('<DemoWealth>7</DemoWealth>') &&
+  limoXml.includes('<Scroll_TestDemo>96.0</Scroll_TestDemo>'),
+  'Limousine XML blueprint exports canonical DemoGender 1 (Female), DemoAge 3 (>55), DemoWealth 7 (Ultra-Wealthy), and 96.0% testing slider',
+  'Limo XML accurately targets Ultra-Wealthy demographic tier'
 );
 
 // -------------------------------------------------------------

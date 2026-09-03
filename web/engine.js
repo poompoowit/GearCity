@@ -840,14 +840,19 @@ const GearCityEngine = (() => {
   }
 
   const WEALTH_LEVELS = {
+    'Low': 1,
     'Lower': 1,
+    'Ultra-Low': 1,
     'Working': 1,
     'Lower-Middle': 2,
     'Middle': 3,
     'Upper-Middle': 4,
-    'Wealthy': 5,
-    'Upper Class': 6,
+    'Upper': 5,
+    'Upper Class': 5,
+    'Wealthy': 6,
+    'Ultra-Wealthy': 7,
     'Elite': 7,
+    'Super Rich': 7,
   };
 
   /**
@@ -856,7 +861,8 @@ const GearCityEngine = (() => {
    * Dependability, Cargo, Performance, Drivability, and Overall Market Match.
    */
   function simulateWikiVehicleRatings(carType, year = 1960, sliders = {}, components = {}) {
-    const p = (GEARCITY_DATA.vehicleProfiles && GEARCITY_DATA.vehicleProfiles[carType]) || {
+    const normCarType = carType === 'Compact SUV' ? 'Compact Sport Utility' : (carType === 'SUV' ? 'Sport Utility Vehicle' : carType);
+    const p = (GEARCITY_DATA.vehicleProfiles && (GEARCITY_DATA.vehicleProfiles[carType] || GEARCITY_DATA.vehicleProfiles[normCarType])) || {
       Performance: 0.5, Driveability: 0.5, Luxury: 0.5, Safety: 0.5, Fuel: 0.5, Power: 0.5, Cargo: 0.5, Dependability: 0.5
     };
     const data = getActiveData();
@@ -994,7 +1000,8 @@ const GearCityEngine = (() => {
   function calculateVehicleSliders(carType, year = 1960, overrides = {}) {
     const data = getActiveData();
     const yr = Math.max(1900, Math.min(2020, Number(year) || 1960));
-    const p = (GEARCITY_DATA.vehicleProfiles && GEARCITY_DATA.vehicleProfiles[carType]) || {
+    const normCarType = carType === 'Compact SUV' ? 'Compact Sport Utility' : (carType === 'SUV' ? 'Sport Utility Vehicle' : carType);
+    const p = (GEARCITY_DATA.vehicleProfiles && (GEARCITY_DATA.vehicleProfiles[carType] || GEARCITY_DATA.vehicleProfiles[normCarType])) || {
       Performance: 0.5, Driveability: 0.5, Luxury: 0.5, Safety: 0.5, Fuel: 0.5, Power: 0.5, Cargo: 0.5, Dependability: 0.5
     };
     const vc = (data.vehicleClasses && data.vehicleClasses.find(v => v.carType === carType)) ||
@@ -1147,7 +1154,8 @@ const GearCityEngine = (() => {
     const wealthLevel = WEALTH_LEVELS[wealthStr] || 3;
     const wFactor = (wealthLevel - 1) / 6.0;
 
-    const baseAttr = profiles[vehicleType];
+    const normVehicleType = vehicleType === 'Compact SUV' ? 'Compact Sport Utility' : (vehicleType === 'SUV' ? 'Sport Utility Vehicle' : vehicleType);
+    const baseAttr = profiles[vehicleType] || profiles[normVehicleType];
     if (!baseAttr) return null;
     const attr = { ...baseAttr };
     // Quality importance in GearCity scales with buyer wealth tier

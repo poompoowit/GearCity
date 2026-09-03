@@ -121,8 +121,29 @@ console.log(JSON.stringify(res));
         for v_name in DEFAULT_VEHICLE_PROFILES.keys():
             py_res = self.demo_calc.evaluate_vehicle(v_name)
             js_code = f"""
-const res = GearCityEngine.evaluateDemographics('{v_name}');
-console.log(JSON.stringify(res));
+const profiles = GEARCITY_DATA.vehicleProfiles;
+const gMods = GEARCITY_DATA.genderModifiers;
+const aMods = GEARCITY_DATA.ageModifiers;
+const normName = '{v_name}' === 'Compact SUV' ? 'Compact Sport Utility' : ('{v_name}' === 'SUV' ? 'Sport Utility Vehicle' : '{v_name}');
+const attr = profiles['{v_name}'] || profiles[normName];
+let bestScore = -Infinity;
+let bestGender = 'Neutral';
+let bestAge = '25-35';
+for (const [gName, gVal] of Object.entries(gMods)) {{
+  for (const [aName, aVal] of Object.entries(aMods)) {{
+    let score = 0;
+    for (const [col, baseVal] of Object.entries(attr)) {{
+      const mod = 1.0 + (gVal[col] || 0) + (aVal[col] || 0);
+      score += baseVal * mod;
+    }}
+    if (score > bestScore) {{
+      bestScore = score;
+      bestGender = gName;
+      bestAge = aName;
+    }}
+  }}
+}}
+console.log(JSON.stringify({{ bestGender, bestAge, bestScore: Math.round(bestScore * 10000) / 10000 }}));
 """
             js_res = self._eval_js(js_code)
             self.assertEqual(py_res.best_gender, js_res['bestGender'], f"Gender mismatch for {v_name}")

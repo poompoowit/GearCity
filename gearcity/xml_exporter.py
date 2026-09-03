@@ -148,9 +148,8 @@ class XMLExporter:
             return reparsed.toprettyxml(indent="  ")
         return raw_xml.decode("utf-8")
 
-    def generate_vehicle_xml_string(self, config: dict, pretty: bool = True) -> str:
-        """Convert Vehicle configuration dictionary to a GearCity XML blueprint string."""
-        root = ET.Element("Vehicle")
+    def generate_vehicle_xml_string(self, config: dict, pretty: bool = False) -> str:
+        """Convert Vehicle configuration dictionary to GearCity SavedSliders Car XML blueprint string."""
         it = config.get("interior", {})
         mat = config.get("materials", {})
         df = config.get("designFocus", {})
@@ -158,43 +157,54 @@ class XMLExporter:
         ts = config.get("testing", {})
 
         def v(val, def_val=50.0):
-            return str(round(float(val if val is not None else def_val), 1))
+            return f"{float(val if val is not None else def_val):.1f}"
 
-        ET.SubElement(root, "Slider_Interior_Style").text = v(it.get("style"))
-        ET.SubElement(root, "Slider_Interior_Innovation").text = v(it.get("innovation"))
-        ET.SubElement(root, "Slider_Interior_Luxury").text = v(it.get("luxury"))
-        ET.SubElement(root, "Slider_Interior_Comfort").text = v(it.get("comfort"))
-        ET.SubElement(root, "Slider_Interior_Safety").text = v(it.get("safety"))
-        ET.SubElement(root, "Slider_Interior_Technology").text = v(it.get("technology"))
+        # Gender enum: 0 = Male, 1 = Female, 2 = Neutral
+        gender_map = {"Male": 0, "Female": 1, "Neutral": 2}
+        demo_gender = gender_map.get(dg.get("gender"), 2)
 
-        ET.SubElement(root, "Slider_Materials_MaterialQuality").text = v(mat.get("materialQuality"))
-        ET.SubElement(root, "Slider_Materials_Interior").text = v(mat.get("interiorQuality"))
-        ET.SubElement(root, "Slider_Materials_Paint").text = v(mat.get("paintQuality"))
-        ET.SubElement(root, "Slider_Materials_Techniques").text = v(mat.get("techniques"))
+        # Age enum: 0 = Less Than 25, 1 = 25-35, 2 = 35-55, 3 = Greater Than 55
+        age_map = {"Less Than 25": 0, "<25": 0, "25-35": 1, "35-55": 2, "Greater Than 55": 3, ">55": 3}
+        demo_age = age_map.get(dg.get("age"), 2)
 
-        ET.SubElement(root, "Slider_Design_Style").text = v(df.get("style"))
-        ET.SubElement(root, "Slider_Design_Luxury").text = v(df.get("luxury"))
-        ET.SubElement(root, "Slider_Design_Safety").text = v(df.get("safety"))
-        ET.SubElement(root, "Slider_Design_Cargo").text = v(df.get("cargo"))
-        ET.SubElement(root, "Slider_Design_Dependability").text = v(df.get("dependability"))
-        ET.SubElement(root, "Slider_Design_DesignPace").text = v(df.get("designPace"))
+        # Wealth tier: integer 1 to 7 (default 4)
+        wealth_raw = dg.get("wealth", 4)
+        try:
+            demo_wealth = int(wealth_raw)
+            if demo_wealth < 1 or demo_wealth > 7:
+                demo_wealth = 4
+        except (ValueError, TypeError):
+            demo_wealth = 4
 
-        ET.SubElement(root, "Slider_Demographics_Gender").text = str(dg.get("gender", "Neutral"))
-        ET.SubElement(root, "Slider_Demographics_Wealth").text = str(dg.get("wealth", "3"))
-        ET.SubElement(root, "Slider_Demographics_Age").text = str(dg.get("age", "Middle Aged"))
-
-        ET.SubElement(root, "Slider_Testing_Demographics").text = v(ts.get("demographics"))
-        ET.SubElement(root, "Slider_Testing_Performance").text = v(ts.get("performance"))
-        ET.SubElement(root, "Slider_Testing_FuelEconomy").text = v(ts.get("fuelEconomy"))
-        ET.SubElement(root, "Slider_Testing_Comfort").text = v(ts.get("comfort"))
-        ET.SubElement(root, "Slider_Testing_Utility").text = v(ts.get("utility"))
-        ET.SubElement(root, "Slider_Testing_Reliability").text = v(ts.get("reliability"))
-
-        raw_xml = ET.tostring(root, encoding="utf-8")
-        if pretty:
-            reparsed = minidom.parseString(raw_xml)
-            return reparsed.toprettyxml(indent="  ")
-        return raw_xml.decode("utf-8")
+        return (
+            f"\t<Car>\n"
+            f"\t<Scroll_InteriorStyle>{v(it.get('style'))}</Scroll_InteriorStyle>\n"
+            f"\t<Scroll_InteriorInno>{v(it.get('innovation'))}</Scroll_InteriorInno>\n"
+            f"\t<Scroll_InteriorLux>{v(it.get('luxury'))}</Scroll_InteriorLux>\n"
+            f"\t<Scroll_InteriorComf>{v(it.get('comfort'))}</Scroll_InteriorComf>\n"
+            f"\t<Scroll_InteriorSafe>{v(it.get('safety'))}</Scroll_InteriorSafe>\n"
+            f"\t<Scroll_InteriorTech>{v(it.get('technology'))}</Scroll_InteriorTech>\n"
+            f"\t<Scroll_MatMatQual>{v(mat.get('materialQuality'))}</Scroll_MatMatQual>\n"
+            f"\t<Scroll_MatMatInterQual >{v(mat.get('interiorQuality'))}</Scroll_MatMatInterQual>\n"
+            f"\t<Scroll_MatPaintQual>{v(mat.get('paintQuality'))}</Scroll_MatPaintQual>\n"
+            f"\t<Scroll_MatManuTech>{v(mat.get('techniques'))}</Scroll_MatManuTech>\n"
+            f"\t<Scroll_DesignStyle>{v(df.get('style'))}</Scroll_DesignStyle>\n"
+            f"\t<Scroll_DesignLux>{v(df.get('luxury'))}</Scroll_DesignLux>\n"
+            f"\t<Scroll_DesignSafety>{v(df.get('safety'))}</Scroll_DesignSafety>\n"
+            f"\t<Scroll_DesignCargo>{v(df.get('cargo'))}</Scroll_DesignCargo>\n"
+            f"\t<Scroll_DesignDepend>{v(df.get('dependability'))}</Scroll_DesignDepend>\n"
+            f"\t<Scroll_TestDemo>{v(ts.get('demographics'))}</Scroll_TestDemo>\n"
+            f"\t<Scroll_TestPerform>{v(ts.get('performance'))}</Scroll_TestPerform>\n"
+            f"\t<Scroll_TestFuel>{v(ts.get('fuelEconomy'))}</Scroll_TestFuel>\n"
+            f"\t<Scroll_TestComf>{v(ts.get('comfort'))}</Scroll_TestComf>\n"
+            f"\t<Scroll_TestUtil>{v(ts.get('utility'))}</Scroll_TestUtil>\n"
+            f"\t<Scroll_TestReli>{v(ts.get('reliability'))}</Scroll_TestReli>\n"
+            f"\t<DesignPace>{v(df.get('designPace', 50.0))}</DesignPace>\n"
+            f"\t<DemoGender>{demo_gender}</DemoGender>\n"
+            f"\t<DemoAge>{demo_age}</DemoAge>\n"
+            f"\t<DemoWealth>{demo_wealth}</DemoWealth>\n"
+            f"\t</Car>\n"
+        )
 
     def export_to_file(self, config: Union[EngineConfiguration, dict], output_path: Union[str, Path], comp_type: str = "engine") -> Path:
         """Write blueprint XML to a file."""
