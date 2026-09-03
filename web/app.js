@@ -2075,6 +2075,22 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
             </div>
             ` : ''}
+            ${result.config && result.config.sliders ? `
+            <div style="margin-top: 14px; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(212, 163, 89, 0.25); border-radius: 5px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-weight: 700; font-size: 11px; color: var(--gc-text-gold);">🎛️ Exact In-Game Sliders to Set (0–100)</span>
+                <span style="font-size: 10px; color: var(--gc-text-muted);">Matches In-Game Designer</span>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(125px, 1fr)); gap: 6px; font-size: 11px;">
+                <div style="background: rgba(255,255,255,0.04); padding: 5px 8px; border-radius: 3px;">Bore Slider: <strong style="color: #fff;">${Math.round(result.config.sliders.boreSlide / 10)}</strong></div>
+                <div style="background: rgba(255,255,255,0.04); padding: 5px 8px; border-radius: 3px;">Stroke Slider: <strong style="color: #fff;">${Math.round(result.config.sliders.strokeSlide / 10)}</strong></div>
+                <div style="background: rgba(255,255,255,0.04); padding: 5px 8px; border-radius: 3px;">Revolutions (RPM): <strong style="color: #81c784;">${Math.round(result.config.sliders.performanceRevolutions * 100)}</strong></div>
+                <div style="background: rgba(255,255,255,0.04); padding: 5px 8px; border-radius: 3px;">Torque Slider: <strong style="color: var(--gc-text-gold);">${Math.round(result.config.sliders.performanceTorque * 100)}</strong></div>
+                <div style="background: rgba(255,255,255,0.04); padding: 5px 8px; border-radius: 3px;">Materials: <strong style="color: #64b5f6;">${Math.round(result.config.sliders.technologyMaterials * 100)}</strong></div>
+                <div style="background: rgba(255,255,255,0.04); padding: 5px 8px; border-radius: 3px;">Layout Weight: <strong style="color: #ffb74d;">${Math.round(result.config.sliders.layoutWeight * 100)}</strong></div>
+              </div>
+            </div>
+            ` : ''}
             <div style="margin-top: 14px; padding: 10px 14px; background: rgba(212, 163, 89, 0.08); border-left: 3px solid var(--gc-text-gold); border-radius: 4px; font-size: 11px; color: var(--gc-text-muted); line-height: 1.5;">
               <div style="color: var(--gc-text-gold); font-weight: 700; margin-bottom: 3px;">📂 How to Import XML into GearCity:</div>
               <div>1. Place downloaded <code style="color: #fff; background: rgba(0,0,0,0.4); padding: 1px 4px; border-radius: 2px;">.xml</code> in your game's <strong style="color: #fff;">SavedSliders</strong> folder:</div>
