@@ -56,7 +56,7 @@
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="web/style.css?v=5.7">
+  <link rel="stylesheet" href="web/style.css?v=6.6">
   <style>
     .modal-overlay { display: none !important; }
   </style>
@@ -97,6 +97,7 @@
         <button class="nav-tab" data-tab="tab-chassis">🛠️ Vehicle Advisor</button>
         <button class="nav-tab" data-tab="tab-vehicle-engine">🏭 Vehicle Engine</button>
         <button class="nav-tab" data-tab="tab-guide">📖 XML Import Guide</button>
+        <button class="nav-tab" data-tab="tab-motorsport">🏁 Motorsport</button>
       </nav>
     </div>
   </header>
@@ -915,6 +916,112 @@
       </div>
     </section>
 
+    <!-- ==================== TAB 6: MOTORSPORT WORKSHOP & RACE ENGINES ==================== -->
+    <section id="tab-motorsport" class="tab-content">
+      <div class="motorsport-grid">
+        <!-- Controls Card -->
+        <div class="motorsport-controls-card">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <h2 style="font-size: 22px; font-weight: 800; font-family: var(--font-game-ui); color: #fff; margin: 0;">
+                  🏁 Motorsport Workshop & Competition Stable
+                </h2>
+                <span class="badge" style="background: rgba(255, 69, 0, 0.2); border: 1px solid #ff5722; color: #ff8a65; font-weight: 800; padding: 3px 8px; border-radius: 4px; font-size: 11px;">NO COST LIMIT</span>
+              </div>
+              <p style="color: var(--text-secondary); font-size: 13.5px; margin-top: 6px; margin-bottom: 0;">
+                Engineer race-winning powertrains strictly clamped within displacement class regulations (4,000 / 5,000 / 6,000 / 10,000 cc). Generates 4 specialized engine variants side-by-side and assembles a universal competition race car.
+              </p>
+            </div>
+            <button type="button" id="btn-run-motorsport" class="btn-motorsport-run">
+              <span>⚡</span> Engineer Motorsport Stable
+            </button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; background: rgba(0, 0, 0, 0.35); padding: 18px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08);">
+            
+            <!-- Game Year -->
+            <div class="control-group">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label for="input-ms-year" class="control-label">📅 Competition Year</label>
+                <span id="ms-year-display" style="font-size: 16px; font-weight: 800; color: #ffb74d;">1960</span>
+              </div>
+              <input type="range" id="input-ms-year" min="1900" max="2020" value="1960" step="1" class="slider-control" style="width: 100%;">
+              <div style="display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap;">
+                <button type="button" class="btn-secondary btn-ms-quick-year" data-year="1904" style="padding: 3px 8px; font-size: 11px;">1904</button>
+                <button type="button" class="btn-secondary btn-ms-quick-year" data-year="1925" style="padding: 3px 8px; font-size: 11px;">1925</button>
+                <button type="button" class="btn-secondary btn-ms-quick-year" data-year="1960" style="padding: 3px 8px; font-size: 11px;">1960</button>
+                <button type="button" class="btn-secondary btn-ms-quick-year" data-year="1985" style="padding: 3px 8px; font-size: 11px;">1985</button>
+                <button type="button" class="btn-secondary btn-ms-quick-year" data-year="2010" style="padding: 3px 8px; font-size: 11px;">2010</button>
+              </div>
+            </div>
+
+            <!-- Displacement Regulations (CC Tier) -->
+            <div class="control-group">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label for="input-ms-cc" class="control-label">🏆 Displacement Class (Cap)</label>
+                <span id="ms-cc-display" style="font-size: 16px; font-weight: 800; color: #81c784;">≤ 5,000 cc</span>
+              </div>
+              <input type="range" id="input-ms-cc" min="1000" max="16000" value="5000" step="1000" class="slider-control" style="width: 100%;">
+              <div class="motorsport-tiers-group">
+                <button type="button" class="btn-cc-tier" data-cc="4000">4,000 cc</button>
+                <button type="button" class="btn-cc-tier active" data-cc="5000">5,000 cc</button>
+                <button type="button" class="btn-cc-tier" data-cc="6000">6,000 cc</button>
+                <button type="button" class="btn-cc-tier" data-cc="10000">10,000 cc</button>
+              </div>
+            </div>
+
+            <!-- Race Car Base Chassis -->
+            <div class="control-group">
+              <label for="select-ms-platform" class="control-label">🏎️ Competition Platform Base</label>
+              <select id="select-ms-platform" class="select-control" style="width: 100%;">
+                <option value="Sports" selected>Sports (Eligible 1900–2020: Grand Prix / GT / Touring)</option>
+                <option value="Supercar">Supercar (Prototypes & Elite Endurance: 1960+)</option>
+              </select>
+              <div id="ms-platform-hint" style="margin-top: 6px; font-size: 11px; color: var(--text-muted);">
+                💡 Era-adaptive chassis tuning: lightweight high-downforce platform paired with the General race engine.
+              </div>
+            </div>
+
+            <!-- Race Fuel Preference -->
+            <div class="control-group">
+              <label for="select-ms-fuel" class="control-label">⛽ Racing Fuel Formulation</label>
+              <select id="select-ms-fuel" class="select-control" style="width: 100%;">
+                <option value="Any" selected>Highest Octane Available (Era Optimum)</option>
+                <option value="Gasoline">Standard High-Grade Gasoline</option>
+              </select>
+              <div style="margin-top: 6px; font-size: 11px; color: var(--text-muted);">
+                Unlimited testing & exotic metallurgy applied automatically.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Section 1: 4-Variant Competition Engines Side-by-Side -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <h3 style="font-size: 18px; font-weight: 800; color: #fff; margin: 0; display: flex; align-items: center; gap: 8px;">
+              <span>🏁</span> 4-Discipline Competition Engine Stable
+            </h3>
+            <span id="ms-stable-badge" class="badge" style="background: rgba(240, 160, 75, 0.2); border: 1px solid #f0a04b; color: #ffb74d; font-weight: 700; font-size: 11.5px;">
+              Displacement Class: ≤ 5,000 cc @ 1960
+            </span>
+          </div>
+
+          <div id="ms-engine-cards-container" class="motorsport-variants-grid">
+            <!-- 4 Engine Cards rendered dynamically by app.js -->
+          </div>
+        </div>
+
+        <!-- Section 2: Universal Race Car Championship Assembly -->
+        <div id="ms-car-assembly-container">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+
+      </div>
+    </section>
+
   </main>
 
   <!-- Component Filter Modal -->
@@ -968,8 +1075,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="web/data.js?v=6.5"></script>
-  <script src="web/engine.js?v=6.5"></script>
-  <script src="web/app.js?v=6.5"></script>
+  <script src="web/data.js?v=6.6"></script>
+  <script src="web/engine.js?v=6.6"></script>
+  <script src="web/app.js?v=6.6"></script>
 </body>
 </html>

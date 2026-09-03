@@ -1009,4 +1009,176 @@ select option:hover, select option:focus, select option:checked,
   font-weight: 700;
 }
 
+/* ==========================================================================
+   TAB 6: MOTORSPORT WORKSHOP & RACE ENGINES
+   ========================================================================== */
+.motorsport-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.motorsport-controls-card {
+  background: linear-gradient(135deg, rgba(26, 21, 16, 0.95) 0%, rgba(18, 14, 11, 0.95) 100%);
+  border: 1px solid rgba(240, 160, 75, 0.35);
+  border-radius: 12px;
+  padding: 22px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.motorsport-controls-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #ff4500, #f0a04b, #ffcc00, #ff4500);
+  background-size: 200% auto;
+  animation: raceStrip 4s linear infinite;
+}
+
+@keyframes raceStrip {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.motorsport-tiers-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.btn-cc-tier {
+  background: rgba(0, 0, 0, 0.5);
+  color: #e6c8a8;
+  border: 1px solid rgba(240, 160, 75, 0.3);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-family: var(--font-game-ui);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cc-tier:hover {
+  background: rgba(240, 160, 75, 0.2);
+  color: #fff;
+  border-color: #f0a04b;
+  transform: translateY(-1px);
+}
+
+.btn-cc-tier.active {
+  background: linear-gradient(180deg, #e65100 0%, #b71c1c 100%);
+  color: #ffffff;
+  border-color: #ff8a65;
+  box-shadow: 0 4px 14px rgba(230, 81, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.btn-motorsport-run {
+  background: linear-gradient(180deg, #ff6b35 0%, #d84315 100%);
+  color: #ffffff;
+  border: 1px solid #ffab91;
+  border-radius: 8px;
+  font-family: var(--font-game-ui);
+  font-size: 15px;
+  font-weight: 800;
+  padding: 14px 28px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(216, 67, 21, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-motorsport-run:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(216, 67, 21, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  filter: brightness(1.1);
+}
+
+.motorsport-variants-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.motorsport-engine-card {
+  background: rgba(22, 18, 14, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 18px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.motorsport-engine-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(240, 160, 75, 0.5);
+}
+
+.motorsport-engine-card.card-general {
+  border: 1.5px solid #f0a04b;
+  background: linear-gradient(145deg, rgba(35, 26, 17, 0.95) 0%, rgba(20, 15, 11, 0.95) 100%);
+  box-shadow: 0 6px 24px rgba(240, 160, 75, 0.2);
+}
+
+.motorsport-engine-card.card-gp {
+  border-top: 3px solid #ff5252;
+}
+
+.motorsport-engine-card.card-endurance {
+  border-top: 3px solid #4caf50;
+}
+
+.motorsport-engine-card.card-touring {
+  border-top: 3px solid #42a5f5;
+}
+
+.motorsport-engine-card.card-general {
+  border-top: 3px solid #ffa726;
+}
+
+.motorsport-car-card {
+  background: linear-gradient(135deg, rgba(28, 20, 14, 0.98) 0%, rgba(16, 12, 9, 0.98) 100%);
+  border: 2px solid #f0a04b;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.7), 0 0 20px rgba(240, 160, 75, 0.15);
+}
+
+.race-metric-tile {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+
+.race-metric-val {
+  font-size: 20px;
+  font-weight: 800;
+  font-family: var(--font-game-ui);
+  color: #ffb74d;
+}
+
+.race-metric-lbl {
+  font-size: 11px;
+  color: #a89482;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+
 

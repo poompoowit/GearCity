@@ -871,6 +871,11 @@ const GearCityEngine = (() => {
     const pace = config.designPace || 50.0;
     const gbType = config.gearboxType || 'Manual';
 
+    const dePerf = de.performance != null ? Number(de.performance) : 50.0;
+    const deFuel = de.fuel != null ? Number(de.fuel) : 50.0;
+    const deDepend = de.dependability != null ? Number(de.dependability) : (de.reliability != null ? Number(de.reliability) : 50.0);
+    const deComfort = de.comfort != null ? Number(de.comfort) : 50.0;
+
     return `<?xml version="1.0" encoding="utf-8"?>
 <Gearbox>
 \t<LoRatio>${gr.loRatio.toFixed(1)}</LoRatio>
@@ -881,10 +886,10 @@ const GearCityEngine = (() => {
 \t<Tech_Parts>${(tech.components != null ? tech.components : 30.0).toFixed(1)}</Tech_Parts>
 \t<Tech_Techniques>${(tech.techniques != null ? tech.techniques : 30.0).toFixed(1)}</Tech_Techniques>
 \t<Tech_Tech>${(tech.technology != null ? tech.technology : 30.0).toFixed(1)}</Tech_Tech>
-\t<de_performance>${de.performance.toFixed(1)}</de_performance>
-\t<de_fuel>${de.fuel.toFixed(1)}</de_fuel>
-\t<de_depend>${de.dependability.toFixed(1)}</de_depend>
-\t<de_comfort>${de.comfort.toFixed(1)}</de_comfort>
+\t<de_performance>${dePerf.toFixed(1)}</de_performance>
+\t<de_fuel>${deFuel.toFixed(1)}</de_fuel>
+\t<de_depend>${deDepend.toFixed(1)}</de_depend>
+\t<de_comfort>${deComfort.toFixed(1)}</de_comfort>
 \t<DesignPace>${pace.toFixed(1)}</DesignPace>
 \t<Gears>${feat.gears || 4}</Gears>
 \t<GearboxType>${gbType}</GearboxType>
@@ -1518,6 +1523,464 @@ const GearCityEngine = (() => {
   }
 
   /**
+   * Optimize Competition Race Engines across 4 disciplines (Grand Prix, Endurance, Touring, General)
+   * under strict displacement regulation limits (e.g. 4000, 5000, 6000, 10000 cc) without cost constraints.
+   */
+  function optimizeMotorsportEngines(year = 1960, maxCc = 5000, customOptions = {}, ver) {
+    const yr = Math.max(1900, Math.min(2020, parseInt(year, 10) || 1960));
+    const capCc = Math.max(1000, Math.min(16000, parseFloat(maxCc) || 5000));
+
+    const allLayouts = GEARCITY_DATA.layouts || [];
+    const allCylinders = GEARCITY_DATA.cylinders || [];
+    const allInductions = GEARCITY_DATA.induction || [];
+    const allValves = GEARCITY_DATA.valvetrain || [];
+    const allFuels = GEARCITY_DATA.fuel || [];
+
+    const validLayouts = allLayouts.filter((l) => Number(l.Year) <= yr && l.Name !== 'Single');
+    const validCylinders = allCylinders.filter((c) => Number(c.Year) <= yr && c.Name !== 'Cylinder');
+    const validInductions = allInductions.filter((i) => Number(i.Year) <= yr);
+    const validValves = allValves.filter((v) => Number(v.Year) <= yr);
+    const validFuels = allFuels.filter((f) => Number(f.Year) <= yr);
+
+    // Default to highest octane / race-suitable fuel unless specified
+    let selectedFuel = validFuels.sort((a, b) => Number(b.Octane || 0) - Number(a.Octane || 0))[0];
+    if (customOptions.preferredFuel && customOptions.preferredFuel !== 'Any' && customOptions.preferredFuel !== 'Any Available Fuel') {
+      const matched = validFuels.find((f) => f.Name === customOptions.preferredFuel);
+      if (matched) selectedFuel = matched;
+    }
+
+    const disciplines = [
+      {
+        key: 'grandPrix',
+        name: 'Grand Prix',
+        badge: '🏆 Peak HP & High RPM',
+        desc: 'Oversquare bore, short stroke, maximum RPM redline, peak HP, and power-to-weight ratio.',
+        rTarget: 1.25,
+        sliders: {
+          performanceTorque: 0.85,
+          performanceRevolutions: 1.0,
+          performanceFuelEconomy: 0.0,
+          designFocusPerformance: 1.0,
+          designFocusFuelEconomy: 0.0,
+          designFocusDependability: 0.35,
+          layoutLength: 0.25,
+          layoutWidth: 0.25,
+          layoutWeight: 0.0,
+          technologyMaterials: 1.0,
+          technologyComponents: 1.0,
+          technologyTechnologies: 1.0,
+          technologyTechniques: 1.0,
+        },
+        evalFn: (p) => p.horsepower + (p.horsepower / (p.weightKg || 100)) * 40,
+      },
+      {
+        key: 'endurance',
+        name: 'Endurance (24h)',
+        badge: '⏱️ High Dependability & Sustained Torque',
+        desc: 'Near-square bore/stroke, >=80% dependability, high sustained torque, optimal thermal/fuel efficiency.',
+        rTarget: 1.00,
+        sliders: {
+          performanceTorque: 0.90,
+          performanceRevolutions: 0.80,
+          performanceFuelEconomy: 0.40,
+          designFocusPerformance: 0.65,
+          designFocusFuelEconomy: 0.35,
+          designFocusDependability: 1.0,
+          layoutLength: 0.25,
+          layoutWidth: 0.25,
+          layoutWeight: 0.40,
+          technologyMaterials: 1.0,
+          technologyComponents: 1.0,
+          technologyTechnologies: 0.85,
+          technologyTechniques: 1.0,
+        },
+        evalFn: (p) => p.horsepower * 0.35 + p.torqueNm * 0.25 + (p.ratings ? p.ratings.dependability * 2.5 : 150),
+      },
+      {
+        key: 'touring',
+        name: 'Touring Car',
+        badge: '🏁 Mid-Range Torque & Responsive Throttle',
+        desc: 'Balanced stroke, broad torque band, high drivability, and smooth throttle response.',
+        rTarget: 1.10,
+        sliders: {
+          performanceTorque: 0.95,
+          performanceRevolutions: 0.90,
+          performanceFuelEconomy: 0.15,
+          designFocusPerformance: 0.80,
+          designFocusFuelEconomy: 0.15,
+          designFocusDependability: 0.75,
+          layoutLength: 0.25,
+          layoutWidth: 0.25,
+          layoutWeight: 0.20,
+          technologyMaterials: 0.95,
+          technologyComponents: 0.90,
+          technologyTechnologies: 0.85,
+          technologyTechniques: 0.90,
+        },
+        evalFn: (p) => p.torqueNm * 0.45 + p.horsepower * 0.40 + (p.ratings ? p.ratings.smoothness * 1.5 : 100),
+      },
+      {
+        key: 'general',
+        name: 'General Race',
+        badge: '🌟 Universal Multi-Discipline Champion',
+        desc: 'Balanced competition all-rounder used as the primary engine for the universal race car model.',
+        rTarget: 1.18,
+        sliders: {
+          performanceTorque: 0.90,
+          performanceRevolutions: 0.95,
+          performanceFuelEconomy: 0.15,
+          designFocusPerformance: 0.85,
+          designFocusFuelEconomy: 0.15,
+          designFocusDependability: 0.80,
+          layoutLength: 0.25,
+          layoutWidth: 0.25,
+          layoutWeight: 0.15,
+          technologyMaterials: 1.0,
+          technologyComponents: 0.95,
+          technologyTechnologies: 0.95,
+          technologyTechniques: 1.0,
+        },
+        evalFn: (p) => p.horsepower * 0.45 + p.torqueNm * 0.35 + (p.ratings ? p.ratings.dependability * 1.5 : 100),
+      },
+    ];
+
+    const engineVariants = {};
+
+    for (const disc of disciplines) {
+      let bestCandidate = null;
+      let bestScore = -Infinity;
+
+      for (const l of validLayouts) {
+        if (customOptions.allowedLayouts && customOptions.allowedLayouts.length > 0 && !customOptions.allowedLayouts.includes(l.Name)) {
+          continue;
+        }
+
+        const allowedCyl = typeof l.Cylinders === 'string' ? JSON.parse(l.Cylinders) : l.Cylinders;
+        const allowedFuel = typeof l['Fuel Types'] === 'string' ? JSON.parse(l['Fuel Types']) : l['Fuel Types'];
+        const allowedInd = typeof l.Inductions === 'string' ? JSON.parse(l.Inductions) : l.Inductions;
+        const validVNames = getValidValvetrains(l, yr);
+
+        const candidateFuels = validFuels.filter((f) => allowedFuel.includes(f.Name));
+        const fuel = candidateFuels.find((f) => f.Name === selectedFuel.Name) || candidateFuels[candidateFuels.length - 1];
+        if (!fuel) continue;
+
+        let candidateCyls = validCylinders.filter((c) => allowedCyl.includes(c.Name));
+        if (customOptions.allowedCylinders && customOptions.allowedCylinders.length > 0) {
+          candidateCyls = candidateCyls.filter((c) => customOptions.allowedCylinders.includes(c.Name));
+        }
+
+        let candidateInds = validInductions.filter((i) => allowedInd.includes(i.Name));
+        if (customOptions.allowedInductions && customOptions.allowedInductions.length > 0) {
+          candidateInds = candidateInds.filter((i) => customOptions.allowedInductions.includes(i.Name));
+        }
+
+        const candidateValves = validValves.filter((v) => validVNames.includes(v.Name));
+
+        for (const c of candidateCyls) {
+          const numCyl = parseInt(c.Name.match(/\d+/)?.[0] || '4', 10);
+          const limits = getBoreStrokeLimits(l.Name, yr);
+
+          const targetCc = capCc * 0.995;
+          const R = disc.rTarget;
+          const sTarget = Math.cbrt((targetCc * 4000) / (numCyl * Math.PI * R * R));
+          const bTarget = sTarget * R;
+
+          let boreMm = Math.max(limits.minBore, Math.min(limits.maxBore, bTarget));
+          let strokeMm = Math.max(limits.minStroke, Math.min(limits.maxStroke, sTarget));
+
+          // Strict cap enforcement: ensure displacement never exceeds capCc
+          let dispCc = numCyl * (Math.PI / 4) * Math.pow(boreMm, 2) * strokeMm / 1000;
+          if (dispCc > capCc) {
+            strokeMm = (capCc * 1000) / (numCyl * (Math.PI / 4) * Math.pow(boreMm, 2)) * 0.998;
+            dispCc = numCyl * (Math.PI / 4) * Math.pow(boreMm, 2) * strokeMm / 1000;
+          }
+
+          const boreSlide = Math.round(((boreMm - limits.minBore) / (limits.maxBore - limits.minBore)) * 1000);
+          const strokeSlide = Math.round(((strokeMm - limits.minStroke) / (limits.maxStroke - limits.minStroke)) * 1000);
+
+          for (const ind of candidateInds) {
+            for (const v of candidateValves) {
+              const config = {
+                components: {
+                  layout: l.Name,
+                  cylinders: c.Name,
+                  fuel: fuel.Name,
+                  induction: ind.Name,
+                  valve: v.Name,
+                },
+                sliders: {
+                  boreSlide,
+                  strokeSlide,
+                  ...disc.sliders,
+                },
+                techSliders: {
+                  materials: 100.0,
+                  components: disc.sliders.technologyComponents * 100.0,
+                  technology: disc.sliders.technologyTechnologies * 100.0,
+                  techniques: disc.sliders.technologyTechniques * 100.0,
+                },
+                year: yr,
+                designSkill: 100,
+                name: `Race_${disc.name.replace(/[^A-Za-z0-9]/g, '')}_${capCc}cc_${yr}`,
+              };
+
+              try {
+                const perf = calculatePerformance(config);
+                if (perf.displacementCc <= capCc) {
+                  const score = disc.evalFn(perf);
+                  if (score > bestScore) {
+                    bestScore = score;
+                    bestCandidate = {
+                      disciplineKey: disc.key,
+                      disciplineName: disc.name,
+                      badge: disc.badge,
+                      desc: disc.desc,
+                      config,
+                      performance: perf,
+                      score,
+                      boreMm: Number(perf.boreMm.toFixed(1)),
+                      strokeMm: Number(perf.strokeMm.toFixed(1)),
+                      boreStrokeRatio: Number((perf.boreMm / (perf.strokeMm || 1)).toFixed(2)),
+                      geometry: {
+                        boreMm: Number(perf.boreMm.toFixed(1)),
+                        strokeMm: Number(perf.strokeMm.toFixed(1)),
+                        ratio: Number((perf.boreMm / (perf.strokeMm || 1)).toFixed(2)),
+                      },
+                      components: {
+                        layout: config.components.layout,
+                        cylinders: config.components.cylinders,
+                        valvetrain: config.components.valvetrain || config.components.valve,
+                        fuel: config.components.fuel,
+                        induction: config.components.induction,
+                      },
+                      ccUtilization: Number((perf.displacementCc / capCc * 100).toFixed(1)),
+                      xml: generateEngineXml(config),
+                    };
+                  }
+                }
+              } catch (err) {
+                // Ignore invalid geometry edge cases
+              }
+            }
+          }
+        }
+      }
+
+      engineVariants[disc.key] = bestCandidate;
+    }
+
+    return {
+      year: yr,
+      maxCc: capCc,
+      variants: engineVariants,
+    };
+  }
+
+  /**
+   * Assemble the Universal Race Car Model using the General Race Engine
+   */
+  function assembleMotorsportVehicle(year = 1960, maxCc = 5000, generalVariant, carType = 'Sports', ver) {
+    const yr = Math.max(1900, Math.min(2020, parseInt(year, 10) || 1960));
+    let effectiveCarType = carType;
+    if (effectiveCarType === 'Supercar' && yr < 1960) {
+      effectiveCarType = 'Sports';
+    }
+
+    const gen = generalVariant || {};
+    const genPerf = gen.performance || {
+      horsepower: 200,
+      torqueNm: 250,
+      weightKg: 200,
+      displacementCc: maxCc,
+      rpm: 6000,
+      ratings: { dependability: 80, power: 80, smoothness: 70 },
+    };
+
+    // Lightweight competition frame & racing suspension
+    let frameType = 'Ladder';
+    if (yr >= 1970) frameType = 'Monocoque';
+    else if (yr >= 1950) frameType = 'Superleggera';
+    else if (yr >= 1930) frameType = 'Perimeter';
+
+    let frSusp = 'Swing Axle';
+    let rrSusp = 'Swing Axle';
+    if (yr >= 1960) {
+      frSusp = 'Double Wishbone';
+      rrSusp = 'Multi-Link';
+    } else if (yr >= 1930) {
+      frSusp = 'Double Wishbone';
+      rrSusp = 'Double Wishbone';
+    }
+
+    const drivetrain = yr >= 1960 ? 'RMR' : 'FR';
+    const numGears = yr >= 1980 ? 6 : (yr >= 1950 ? 5 : 4);
+
+    const chassisConfig = {
+      name: `Chassis_Race_${maxCc}cc_${yr}`,
+      frameType,
+      drivetrain,
+      frSuspension: frSusp,
+      rrSuspension: rrSusp,
+      dimensions: {
+        length: 44.0,
+        width: 50.0,
+        height: 34.0,
+        weight: 30.0,
+        engWidth: 55.0,
+        engLength: 55.0,
+      },
+      suspensionTuning: {
+        stability: 85.0,
+        comfort: 15.0,
+        performance: 95.0,
+        braking: 90.0,
+        durability: 85.0,
+      },
+      designFocus: {
+        performance: 95.0,
+        control: 95.0,
+        strength: 75.0,
+        dependability: 85.0,
+      },
+      techSliders: {
+        materials: 100.0,
+        components: 95.0,
+        techniques: 100.0,
+        technology: 95.0,
+      },
+    };
+
+    const gearboxConfig = {
+      name: `Gearbox_Race_${maxCc}cc_${yr}`,
+      gearboxType: yr >= 2000 ? 'Dual-Clutch' : (yr >= 1990 ? 'Sequential' : 'Manual'),
+      features: {
+        gears: numGears,
+        reverse: 1,
+        overdrive: yr >= 1970 ? 1 : 0,
+        limited: yr >= 1960 ? 1 : 0,
+        transaxle: yr >= 1960 ? 1 : 0,
+      },
+      gearing: {
+        loRatio: 65.0,
+        hiRatio: 85.0,
+        torqueInputRatio: 80.0,
+        maxTorqueInput: Math.max(300.0, (genPerf.torqueNm || 200) * 1.3),
+      },
+      designFocus: {
+        performance: 95.0,
+        fuel: 10.0,
+        dependability: 85.0,
+        comfort: 15.0,
+      },
+      techSliders: {
+        materials: 100.0,
+        components: 95.0,
+        techniques: 100.0,
+        technology: 95.0,
+      },
+    };
+
+    // Calculate vehicle dynamics based on authentic formulas
+    const baseChassisKg = yr < 1930 ? 280 : (yr < 1970 ? 210 : (yr < 2000 ? 260 : 300));
+    const curbWeightKg = Math.round(baseChassisKg + (genPerf.weightKg * 0.4536) + (numGears * 15 + 40) + 380);
+    const hpPerTon = Number(((genPerf.horsepower / curbWeightKg) * 1000).toFixed(1));
+    const torqueAdequacy = checkTorqueToWeightAdequacy(genPerf.torqueNm, curbWeightKg, effectiveCarType);
+
+    const est0to60Sec = Number(Math.max(1.9, Math.min(14.0, 3100 / (hpPerTon + 20))).toFixed(1));
+    const estTopSpeedKmh = Math.round(Math.pow((genPerf.horsepower * 32000) / 0.33, 1 / 3) * 0.82);
+    const estTopSpeedMph = Math.round(estTopSpeedKmh * 0.621371);
+    const estLateralG = Number((0.92 + (yr >= 1960 ? 0.25 : 0.10) + (effectiveCarType === 'Supercar' ? 0.10 : 0.0)).toFixed(2));
+
+    const vehicleConfig = {
+      carType: effectiveCarType,
+      year: yr,
+      demographics: {
+        gender: 'Neutral',
+        age: '25-35',
+        wealth: 7, // Ultra-Wealthy motorsport program
+      },
+      designFocus: {
+        style: 95.0,
+        luxury: 20.0,
+        quality: 90.0,
+        safety: 80.0,
+        fuel: 10.0,
+        performance: 100.0,
+        cargo: 5.0,
+      },
+      interior: {
+        style: 90.0,
+        innovation: 90.0,
+        luxury: 25.0,
+        comfort: 20.0,
+        safety: 80.0,
+        technology: 95.0,
+      },
+      materials: {
+        materialQuality: 95.0,
+        interiorQuality: 80.0,
+        paintQuality: 95.0,
+        techniques: 95.0,
+      },
+      testing: {
+        fuelEconomy: 20.0,
+        performance: 98.0,
+        quality: 90.0,
+        safety: 85.0,
+        utility: 10.0,
+      },
+    };
+
+    const carXml = generateVehicleXml(vehicleConfig);
+    const chassisXml = generateChassisXml(chassisConfig);
+    const gearboxXml = generateGearboxXml(gearboxConfig);
+
+    return {
+      name: `Car_Race_${effectiveCarType}_${maxCc}cc_${yr}`,
+      carType: effectiveCarType,
+      year: yr,
+      maxCc,
+      generalEngine: gen,
+      chassisConfig,
+      gearboxConfig,
+      vehicleConfig,
+      components: {
+        chassis: {
+          type: effectiveCarType,
+          frame: chassisConfig.frameType,
+          frontSuspension: chassisConfig.frSuspension,
+          rearSuspension: chassisConfig.rrSuspension,
+          drive: chassisConfig.drivetrain,
+        },
+        gearbox: {
+          type: gearboxConfig.gearboxType,
+          gears: gearboxConfig.features.gears,
+          maxTorqueInput: gearboxConfig.gearing.maxTorqueInput,
+        },
+      },
+      dynamics: {
+        curbWeightKg,
+        hpPerTon,
+        est0to60Sec,
+        estTopSpeedKmh,
+        estTopSpeedMph,
+        estLateralG,
+        torqueAdequacy: {
+          ratio: torqueAdequacy.actualRatio !== undefined ? Number(torqueAdequacy.actualRatio.toFixed(3)) : 0,
+          status: torqueAdequacy.isAdequate ? 'Pass' : 'Warn',
+          ...torqueAdequacy,
+        },
+      },
+      blueprints: {
+        carXml,
+        chassisXml,
+        gearboxXml,
+        engineXml: gen.xml,
+      },
+    };
+  }
+
+  /**
    * Approximate finished-vehicle ratings from Chassis, Engine, and Gearbox stats
    */
   function assembleVehicleRatings(components) {
@@ -1782,6 +2245,8 @@ const GearCityEngine = (() => {
     getChassisEraBenchmark,
     getEngineEraBenchmark,
     checkTorqueToWeightAdequacy,
+    optimizeMotorsportEngines,
+    assembleMotorsportVehicle,
     getChassisGearboxRecommendations: getVehicleDesignAdvice,
   };
 })();

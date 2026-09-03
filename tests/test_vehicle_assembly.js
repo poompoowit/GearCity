@@ -318,6 +318,70 @@ assert(
 );
 
 // -------------------------------------------------------------
+// TEST 9: Motorsport Workshop & CC Class Regulation Enforcement
+// -------------------------------------------------------------
+console.log('\n--- TEST 9: Motorsport Workshop & CC Class Regulations ---');
+
+const m4k = E.optimizeMotorsportEngines(1960, 4000);
+assert(
+  m4k && m4k.variants && m4k.variants.grandPrix && m4k.variants.endurance && m4k.variants.touring && m4k.variants.general,
+  'optimizeMotorsportEngines generates all 4 racing variants (Grand Prix, Endurance, Touring, General)',
+  `Generated keys: ${Object.keys(m4k?.variants || {}).join(', ')}`
+);
+
+const v4k = m4k.variants;
+assert(
+  v4k.grandPrix.performance.displacementCc <= 4000 &&
+  v4k.endurance.performance.displacementCc <= 4000 &&
+  v4k.touring.performance.displacementCc <= 4000 &&
+  v4k.general.performance.displacementCc <= 4000,
+  '4,000 cc regulation limit strictly respected: displacement <= 4,000 cc across all 4 variants',
+  `GP: ${v4k.grandPrix.performance.displacementCc.toFixed(1)} cc, End: ${v4k.endurance.performance.displacementCc.toFixed(1)} cc, Tour: ${v4k.touring.performance.displacementCc.toFixed(1)} cc, Gen: ${v4k.general.performance.displacementCc.toFixed(1)} cc`
+);
+
+assert(
+  v4k.grandPrix.performance.rpm > v4k.endurance.performance.rpm,
+  'Grand Prix engine achieves higher RPM redline than Endurance engine',
+  `Grand Prix RPM: ${v4k.grandPrix.performance.rpm.toFixed(0)} vs Endurance RPM: ${v4k.endurance.performance.rpm.toFixed(0)}`
+);
+
+assert(
+  v4k.endurance.performance.ratings.dependability >= 80,
+  'Endurance engine achieves >=80% dependability for 24h racing thermal endurance',
+  `Endurance Dependability: ${v4k.endurance.performance.ratings.dependability}%`
+);
+
+const m5k = E.optimizeMotorsportEngines(1960, 5000);
+const v5k = m5k.variants;
+assert(
+  v5k.general.performance.displacementCc <= 5000 && v5k.general.performance.displacementCc >= 4800,
+  '5,000 cc regulation tier maintains high displacement utilization (>=96%) without exceeding cap',
+  `Displacement: ${v5k.general.performance.displacementCc.toFixed(1)} cc (${v5k.general.ccUtilization}%)`
+);
+
+const m6k = E.optimizeMotorsportEngines(1960, 6000);
+assert(
+  m6k.variants.general.performance.displacementCc <= 6000,
+  '6,000 cc regulation tier displacement <= 6,000 cc',
+  `Displacement: ${m6k.variants.general.performance.displacementCc.toFixed(1)} cc`
+);
+
+const m10k = E.optimizeMotorsportEngines(1985, 10000);
+assert(
+  m10k.variants.grandPrix.performance.displacementCc <= 10000 && m10k.variants.grandPrix.performance.horsepower > 1500,
+  '10,000 cc monster tier engine displacement <= 10,000 cc with extreme competition output (>1,500 HP)',
+  `Displacement: ${m10k.variants.grandPrix.performance.displacementCc.toFixed(1)} cc, HP: ${m10k.variants.grandPrix.performance.horsepower.toFixed(1)} HP`
+);
+
+const raceVeh = E.assembleMotorsportVehicle(1960, 5000, v5k.general, 'Sports');
+assert(
+  raceVeh && raceVeh.dynamics && raceVeh.dynamics.curbWeightKg > 0 && raceVeh.dynamics.hpPerTon > 0 &&
+  raceVeh.blueprints.carXml && raceVeh.blueprints.carXml.includes('<Car>') && raceVeh.blueprints.carXml.includes('Scroll_TestPerform'),
+  'assembleMotorsportVehicle produces valid dynamics and canonical <Car> XML blueprint',
+  `Curb Weight: ${raceVeh?.dynamics?.curbWeightKg} kg, HP/ton: ${raceVeh?.dynamics?.hpPerTon}, 0-60: ${raceVeh?.dynamics?.est0to60Sec}s`
+);
+
+// -------------------------------------------------------------
 // SUMMARY
 // -------------------------------------------------------------
 console.log('\n═══════════════════════════════════════════════════════════════');

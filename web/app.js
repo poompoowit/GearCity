@@ -2685,6 +2685,378 @@ document.addEventListener('DOMContentLoaded', () => {
     if (cached.engineSliders.weight && sliderWeight) sliderWeight.value = cached.engineSliders.weight;
   }
 
+  /* ==========================================================================
+     TAB 6: MOTORSPORT WORKSHOP & RACE ENGINES
+     ========================================================================== */
+  function initMotorsportWorkshop() {
+    const inputYear = document.getElementById('input-ms-year');
+    const displayYear = document.getElementById('ms-year-display');
+    const quickYearBtns = document.querySelectorAll('.btn-ms-quick-year');
+    const inputCc = document.getElementById('input-ms-cc');
+    const displayCc = document.getElementById('ms-cc-display');
+    const tierBtns = document.querySelectorAll('.btn-cc-tier');
+    const selectPlatform = document.getElementById('select-ms-platform');
+    const selectFuel = document.getElementById('select-ms-fuel');
+    const btnRun = document.getElementById('btn-run-motorsport');
+    const badgeStable = document.getElementById('ms-stable-badge');
+    const cardsContainer = document.getElementById('ms-engine-cards-container');
+    const assemblyContainer = document.getElementById('ms-car-assembly-container');
+
+    if (!inputYear || !inputCc || !cardsContainer || !btnRun) return;
+
+    function downloadFile(content, filename) {
+      const blob = new Blob([content], { type: 'application/xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function syncPlatformOptions(yr) {
+      if (!selectPlatform) return;
+      const optSupercar = selectPlatform.querySelector('option[value="Supercar"]');
+      if (optSupercar) {
+        if (yr < 1960) {
+          optSupercar.disabled = true;
+          optSupercar.text = 'Supercar (Era locked: unlocks 1960+)';
+          if (selectPlatform.value === 'Supercar') {
+            selectPlatform.value = 'Sports';
+          }
+        } else {
+          optSupercar.disabled = false;
+          optSupercar.text = 'Supercar (Prototypes & Elite Endurance: 1960+)';
+        }
+      }
+    }
+
+    function syncYear(yr) {
+      inputYear.value = yr;
+      if (displayYear) displayYear.textContent = yr;
+      syncPlatformOptions(yr);
+    }
+
+    function syncCc(cc) {
+      inputCc.value = cc;
+      if (displayCc) displayCc.textContent = `≤ ${Number(cc).toLocaleString()} cc`;
+      tierBtns.forEach((btn) => {
+        if (Number(btn.dataset.cc) === Number(cc)) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    }
+
+    inputYear.addEventListener('input', (e) => {
+      syncYear(parseInt(e.target.value, 10));
+    });
+
+    inputYear.addEventListener('change', () => {
+      runMotorsportOptimization();
+    });
+
+    quickYearBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const y = parseInt(btn.dataset.year, 10);
+        syncYear(y);
+        runMotorsportOptimization();
+      });
+    });
+
+    inputCc.addEventListener('input', (e) => {
+      syncCc(parseInt(e.target.value, 10));
+    });
+
+    inputCc.addEventListener('change', () => {
+      runMotorsportOptimization();
+    });
+
+    tierBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const targetCc = parseInt(btn.dataset.cc, 10);
+        syncCc(targetCc);
+        runMotorsportOptimization();
+      });
+    });
+
+    if (selectPlatform) {
+      selectPlatform.addEventListener('change', () => {
+        runMotorsportOptimization();
+      });
+    }
+
+    if (selectFuel) {
+      selectFuel.addEventListener('change', () => {
+        runMotorsportOptimization();
+      });
+    }
+
+    btnRun.addEventListener('click', () => {
+      runMotorsportOptimization();
+    });
+
+    function runMotorsportOptimization() {
+      const yr = parseInt(inputYear.value, 10) || 1960;
+      const cc = parseInt(inputCc.value, 10) || 5000;
+      const platform = selectPlatform ? selectPlatform.value : 'Sports';
+      const fuelPref = selectFuel ? selectFuel.value : 'Any';
+
+      if (badgeStable) {
+        badgeStable.textContent = `Displacement Class: ≤ ${cc.toLocaleString()} cc @ ${yr}`;
+      }
+
+      if (typeof GearCityEngine.optimizeMotorsportEngines !== 'function') return;
+
+      const engineResults = GearCityEngine.optimizeMotorsportEngines(yr, cc, { preferredFuel: fuelPref });
+      if (!engineResults || !engineResults.variants) return;
+
+      const v = engineResults.variants;
+      const raceVehicle = GearCityEngine.assembleMotorsportVehicle(yr, cc, v.general, platform);
+
+      // Render 4 Engine Variant Cards Side-by-Side
+      const variantConfig = [
+        {
+          key: 'grandPrix',
+          data: v.grandPrix,
+          title: '🏆 Grand Prix / Sprint',
+          badge: 'Sprint Champion',
+          cardClass: 'card-gp',
+          accentColor: '#ff5252',
+          desc: 'Oversquare short-stroke geometry optimized for high-RPM redline, peak race horsepower, and qualifying sprints.',
+        },
+        {
+          key: 'endurance',
+          data: v.endurance,
+          title: '⏱️ Endurance (24 Hours)',
+          badge: '24h Durability',
+          cardClass: 'card-endurance',
+          accentColor: '#4caf50',
+          desc: 'Square bore/stroke geometry with hardened metallurgy engineered for continuous thermal endurance and ≥80% dependability.',
+        },
+        {
+          key: 'touring',
+          data: v.touring,
+          title: '🏁 Touring Car',
+          badge: 'Mid-Range Agility',
+          cardClass: 'card-touring',
+          accentColor: '#42a5f5',
+          desc: 'Balanced stroke configuration delivering broad mid-range torque curve and instantaneous corner-exit acceleration.',
+        },
+        {
+          key: 'general',
+          data: v.general,
+          title: '🌟 General Race Baseline',
+          badge: 'Universal Stable Leader',
+          cardClass: 'card-general',
+          accentColor: '#ffa726',
+          desc: 'Universal multi-discipline benchmark powertrain powering the complete championship race car assembly across all series.',
+        },
+      ];
+
+      cardsContainer.innerHTML = variantConfig
+        .map((cfg) => {
+          const eng = cfg.data;
+          const p = eng.performance;
+          const g = eng.geometry;
+          const c = eng.components;
+          const r = p.ratings;
+
+          return `
+            <div class="motorsport-engine-card ${cfg.cardClass}">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 10px;">
+                  <div>
+                    <h4 style="font-size: 16px; font-weight: 800; color: #fff; margin: 0; font-family: var(--font-game-ui);">
+                      ${cfg.title}
+                    </h4>
+                    <span style="font-size: 11px; color: ${cfg.accentColor}; font-weight: 700;">${cfg.badge}</span>
+                  </div>
+                  <span class="badge" style="background: rgba(255,255,255,0.08); color: #fff; font-size: 11px; padding: 2px 6px;">
+                    ${p.displacementCc.toFixed(0)} cc
+                  </span>
+                </div>
+
+                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.4;">
+                  ${cfg.desc}
+                </p>
+
+                <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px; margin-bottom: 14px;">
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="font-size: 12px; color: var(--text-muted);">Output:</span>
+                    <strong style="font-size: 13.5px; color: #ffb74d;">${p.horsepower.toFixed(1)} HP @ ${p.rpm.toFixed(0)} RPM</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="font-size: 12px; color: var(--text-muted);">Torque:</span>
+                    <strong style="font-size: 13px; color: #e0e0e0;">${p.torqueNm.toFixed(1)} Nm (${p.torqueFtLb.toFixed(1)} lb-ft)</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="font-size: 12px; color: var(--text-muted);">Bore × Stroke:</span>
+                    <span style="font-size: 12px; color: #fff; font-weight: 600;">${g.boreMm.toFixed(1)} × ${g.strokeMm.toFixed(1)} mm (B/S: ${g.ratio.toFixed(2)})</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="font-size: 12px; color: var(--text-muted);">Weight & Dep:</span>
+                    <span style="font-size: 12px; color: #a5d6a7; font-weight: 600;">${p.weightKg.toFixed(1)} kg • ${r.dependability}% Dep</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between;">
+                    <span style="font-size: 12px; color: var(--text-muted);">CC Cap Usage:</span>
+                    <span style="font-size: 12px; color: #81c784; font-weight: 700;">${eng.ccUtilization}% of ${cc.toLocaleString()} cc</span>
+                  </div>
+                </div>
+
+                <div style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 16px; padding: 6px 8px; background: rgba(255,255,255,0.03); border-radius: 6px;">
+                  🔧 <strong>Architecture:</strong> ${c.cylinders} ${c.layout} • ${c.valvetrain} • ${c.fuel}
+                </div>
+              </div>
+
+              <button type="button" class="btn-secondary btn-ms-download-engine" data-variant="${cfg.key}" style="width: 100%; padding: 8px 12px; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid ${cfg.accentColor}; color: #fff; background: rgba(0,0,0,0.5);">
+                <span>💾</span> Download Engine XML (${cfg.key})
+              </button>
+            </div>
+          `;
+        })
+        .join('');
+
+      // Wire individual engine download buttons
+      cardsContainer.querySelectorAll('.btn-ms-download-engine').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const varKey = btn.dataset.variant;
+          const eng = v[varKey];
+          if (eng && eng.xml) {
+            const filename = `Engine_Race_${varKey}_${cc}cc_${yr}.xml`;
+            downloadFile(eng.xml, filename);
+            trackUsageEvent('download_motorsport_engine', `Download Race Engine XML: ${filename}`);
+          }
+        });
+      });
+
+      // Render Universal Race Car Assembly Card
+      if (raceVehicle && raceVehicle.dynamics) {
+        const d = raceVehicle.dynamics;
+        const c = raceVehicle.components;
+
+        assemblyContainer.innerHTML = `
+          <div class="motorsport-car-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <h3 style="font-size: 20px; font-weight: 800; color: #fff; margin: 0; font-family: var(--font-game-ui);">
+                    🏎️ Universal Competition Race Car (${raceVehicle.name})
+                  </h3>
+                  <span class="badge" style="background: rgba(240, 160, 75, 0.25); border: 1px solid #f0a04b; color: #ffb74d; font-weight: 800;">
+                    CHAMPIONSHIP SPEC
+                  </span>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 13.5px; margin-top: 6px; margin-bottom: 0;">
+                  Complete vehicle assembled using the <strong>General Race</strong> engine baseline. Universally tuned with optimal suspension geometry, competition gearing, and race telemetry for endurance, GP, and touring events.
+                </p>
+              </div>
+
+              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button type="button" id="btn-ms-download-car" class="btn-motorsport-run" style="padding: 10px 18px; font-size: 13px;">
+                  <span>📦</span> Download Complete Race Car (Car_*.xml)
+                </button>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px;">
+              <div class="race-metric-tile">
+                <div class="race-metric-val">${d.curbWeightKg} <span style="font-size: 13px;">kg</span></div>
+                <div class="race-metric-lbl">Curb Weight</div>
+              </div>
+              <div class="race-metric-tile">
+                <div class="race-metric-val" style="color: #ff7043;">${d.hpPerTon}</div>
+                <div class="race-metric-lbl">HP / Ton (Metric)</div>
+              </div>
+              <div class="race-metric-tile">
+                <div class="race-metric-val" style="color: #81c784;">${d.est0to60Sec}s</div>
+                <div class="race-metric-lbl">0–60 mph</div>
+              </div>
+              <div class="race-metric-tile">
+                <div class="race-metric-val">${d.estTopSpeedKmh} <span style="font-size: 13px;">km/h</span></div>
+                <div class="race-metric-lbl">Top Speed (${d.estTopSpeedMph} mph)</div>
+              </div>
+              <div class="race-metric-tile">
+                <div class="race-metric-val" style="color: #64b5f6;">${d.estLateralG} G</div>
+                <div class="race-metric-lbl">Lateral Grip</div>
+              </div>
+              <div class="race-metric-tile">
+                <div class="race-metric-val" style="color: ${d.torqueAdequacy.status === 'Pass' ? '#81c784' : '#ffb74d'};">
+                  ${d.torqueAdequacy.ratio} <span style="font-size: 11px;">Nm/kg</span>
+                </div>
+                <div class="race-metric-lbl">Torque-to-Weight (≥0.12 min)</div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+              <div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">CHASSIS PLATFORM</div>
+                <div style="font-size: 13px; color: #fff; font-weight: 700;">${c.chassis.type} (${c.chassis.frame})</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
+                  Suspension: ${c.chassis.frontSuspension} / ${c.chassis.rearSuspension} • Drive: ${c.chassis.drive}
+                </div>
+              </div>
+              <div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">COMPETITION GEARBOX</div>
+                <div style="font-size: 13px; color: #fff; font-weight: 700;">${c.gearbox.type} (${c.gearbox.gears}-Speed Close-Ratio)</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
+                  Max Input: ${c.gearbox.maxTorqueInput.toFixed(0)} Nm • Limited-Slip Diff & Transaxle
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button type="button" id="btn-ms-download-chassis" class="btn-secondary" style="padding: 8px 14px; font-size: 12px; border-color: rgba(255,255,255,0.2);">
+                🛠️ Download Racing Chassis XML
+              </button>
+              <button type="button" id="btn-ms-download-gearbox" class="btn-secondary" style="padding: 8px 14px; font-size: 12px; border-color: rgba(255,255,255,0.2);">
+                ⚙️ Download Racing Gearbox XML
+              </button>
+            </div>
+          </div>
+        `;
+
+        const btnCar = document.getElementById('btn-ms-download-car');
+        if (btnCar) {
+          btnCar.addEventListener('click', () => {
+            const filename = `Car_Race_${cc}cc_${yr}.xml`;
+            downloadFile(raceVehicle.blueprints.carXml, filename);
+            trackUsageEvent('download_motorsport_car', `Download Race Car XML: ${filename}`);
+          });
+        }
+
+        const btnChassis = document.getElementById('btn-ms-download-chassis');
+        if (btnChassis) {
+          btnChassis.addEventListener('click', () => {
+            const filename = `Chassis_Race_${cc}cc_${yr}.xml`;
+            downloadFile(raceVehicle.blueprints.chassisXml, filename);
+            trackUsageEvent('download_motorsport_chassis', `Download Race Chassis XML: ${filename}`);
+          });
+        }
+
+        const btnGearbox = document.getElementById('btn-ms-download-gearbox');
+        if (btnGearbox) {
+          btnGearbox.addEventListener('click', () => {
+            const filename = `Gearbox_Race_${cc}cc_${yr}.xml`;
+            downloadFile(raceVehicle.blueprints.gearboxXml, filename);
+            trackUsageEvent('download_motorsport_gearbox', `Download Race Gearbox XML: ${filename}`);
+          });
+        }
+      }
+    }
+
+    // Initial run
+    syncYear(1960);
+    syncCc(5000);
+    runMotorsportOptimization();
+
+    // Export for external refresh
+    window.refreshMotorsportWorkshop = runMotorsportOptimization;
+  }
+
   initFiltersForYear(initialYear, true);
   populateComponentDropdowns();
   updateCalculations();
@@ -2692,11 +3064,15 @@ document.addEventListener('DOMContentLoaded', () => {
   initDemographics();
   initVehicleAdvisor();
   initVehicleEngineOptimizer();
+  initMotorsportWorkshop();
 
   // Global version refresh hook
   window.refreshAllVersionedViews = function() {
     initVehicleAdvisor();
     initVehicleEngineOptimizer();
+    if (typeof window.refreshMotorsportWorkshop === 'function') {
+      window.refreshMotorsportWorkshop();
+    }
   };
 
   // Restore Active Tab
