@@ -454,27 +454,31 @@
 
       <!-- Vehicle Class Reference Table -->
       <div class="card">
-        <div class="card-header">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
           <h2 class="card-title">🚗 Vehicle Class Reference</h2>
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <input type="text" id="input-vehicle-table-filter" placeholder="🔍 Filter table (e.g. Balance, Sport, Lux)..." style="padding: 6px 12px; font-size: 12px; background: rgba(0,0,0,0.4); border: 1px solid #444; border-radius: 4px; color: #fff; width: 230px;">
+            <button type="button" id="btn-reset-vehicle-table" class="btn-secondary" style="padding: 6px 12px; font-size: 11px; height: 32px;" title="Reset sort and filter">↺ Reset</button>
+          </div>
         </div>
         <p style="font-size: 13px; color: var(--gc-text-muted); margin-bottom: 16px; line-height: 1.5;">
-          All 30 vehicle types from GearCity with their recommended Chassis, Engine, and Gearbox design concepts. Click any row to see detailed design recommendations below.
+          All 30 vehicle types from GearCity with their recommended Chassis, Engine, and Gearbox design concepts. Click any column header to sort (e.g. sort by <strong>Engine</strong> to group all <em>Balance</em> engines), or click any row to inspect design recommendations below.
         </p>
 
         <div class="table-container" style="max-height: 460px; overflow-y: auto;">
           <table class="data-table" id="table-vehicle-classes">
             <thead style="position: sticky; top: 0; z-index: 2;">
               <tr>
-                <th>Car Type</th>
-                <th>Chassis</th>
-                <th>Engine</th>
-                <th>Gearbox</th>
-                <th style="text-align: center;">Mil.</th>
-                <th style="text-align: center;">Civ.</th>
-                <th style="text-align: center;">Low $</th>
-                <th style="text-align: center;">High $</th>
-                <th>Body Focus</th>
-                <th>Wealth</th>
+                <th class="sortable" data-sort="carType" title="Click to sort by Car Type">Car Type <span class="sort-icon">⇅</span></th>
+                <th class="sortable" data-sort="chassis" title="Click to sort by Chassis concept">Chassis <span class="sort-icon">⇅</span></th>
+                <th class="sortable" data-sort="engineType" title="Click to sort by Engine concept">Engine <span class="sort-icon">⇅</span></th>
+                <th class="sortable" data-sort="gear" title="Click to sort by Gearbox concept">Gearbox <span class="sort-icon">⇅</span></th>
+                <th class="sortable" data-sort="milFleet" style="text-align: center;" title="Click to sort by Military Fleet eligibility">Mil. <span class="sort-icon">⇅</span></th>
+                <th class="sortable" data-sort="civFleet" style="text-align: center;" title="Click to sort by Civilian Fleet eligibility">Civ. <span class="sort-icon">⇅</span></th>
+                <th class="sortable" data-sort="lowFunding" style="text-align: center;" title="Click to sort by Budget suitability">Low $ <span class="sort-icon">⇅</span></th>
+                <th class="sortable" data-sort="highFunding" style="text-align: center;" title="Click to sort by Premium suitability">High $ <span class="sort-icon">⇅</span></th>
+                <th class="sortable" data-sort="bodyFocus" title="Click to sort by Body Focus">Body Focus <span class="sort-icon">⇅</span></th>
+                <th class="sortable" data-sort="wealth" title="Click to sort by Wealth Tier">Wealth <span class="sort-icon">⇅</span></th>
               </tr>
             </thead>
             <tbody id="table-vehicle-classes-body">
@@ -958,8 +962,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="data.js?v=6.1"></script>
-  <script src="engine.js?v=6.1"></script>
-  <script src="app.js?v=6.1"></script>
+  <script src="data.js?v=6.2"></script>
+  <script src="engine.js?v=6.2"></script>
+  <script src="app.js?v=6.2"></script>
 </body>
 </html>

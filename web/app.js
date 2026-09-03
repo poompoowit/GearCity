@@ -927,11 +927,118 @@ document.addEventListener('DOMContentLoaded', () => {
       }).join('');
     }
 
-    // Populate vehicle class reference table
+    // Sorting & filtering state for vehicle class reference table
+    let vehicleTableSortCol = null;
+    let vehicleTableSortDir = 'asc';
+    let vehicleTableFilter = '';
+
+    const WEALTH_SORT_RANK = {
+      'Low': 1, 'Lower': 1, 'Ultra-Low': 1, 'Working': 1,
+      'Lower-Middle': 2,
+      'Middle': 3,
+      'Upper-Middle': 4,
+      'Upper': 5, 'Upper Class': 5,
+      'Wealthy': 6,
+      'Ultra-Wealthy': 7, 'Elite': 7,
+    };
+
+    function getVehicleSortValue(v, col) {
+      if (col === 'wealth') {
+        return WEALTH_SORT_RANK[v.wealth] || 3;
+      }
+      if (['milFleet', 'civFleet', 'lowFunding', 'highFunding'].includes(col)) {
+        return v[col] ? 1 : 0;
+      }
+      const val = v[col];
+      if (typeof val === 'string') {
+        return val.toLowerCase();
+      }
+      return val != null ? val : '';
+    }
+
+    function highlightSelectedRow() {
+      if (!selectVehicle) return;
+      const activeVt = selectVehicle.value;
+      tableBody.querySelectorAll('.vehicle-class-row').forEach(r => {
+        if (r.dataset.vehicle === activeVt) {
+          r.classList.add('active-vehicle-row');
+        } else {
+          r.classList.remove('active-vehicle-row');
+        }
+      });
+    }
+
+    // Populate vehicle class reference table with sorting and filtering
     function renderTable() {
       const data = GearCityEngine.getActiveData();
-      const vc = data.vehicleClasses;
+      let vc = [...data.vehicleClasses];
       const isV2 = GearCityEngine.getVersion() === 'v2';
+
+      // 1. Filter
+      if (vehicleTableFilter.trim()) {
+        const q = vehicleTableFilter.trim().toLowerCase();
+        vc = vc.filter(v => {
+          return (
+            (v.carType && v.carType.toLowerCase().includes(q)) ||
+            (v.chassis && v.chassis.toLowerCase().includes(q)) ||
+            (v.engineType && v.engineType.toLowerCase().includes(q)) ||
+            (v.gear && v.gear.toLowerCase().includes(q)) ||
+            (v.bodyFocus && v.bodyFocus.toLowerCase().includes(q)) ||
+            (v.wealth && v.wealth.toLowerCase().includes(q)) ||
+            (v.costTarget && v.costTarget.toLowerCase().includes(q))
+          );
+        });
+      }
+
+      // 2. Sort
+      if (vehicleTableSortCol) {
+        vc.sort((a, b) => {
+          const valA = getVehicleSortValue(a, vehicleTableSortCol);
+          const valB = getVehicleSortValue(b, vehicleTableSortCol);
+          let cmp = 0;
+          if (typeof valA === 'number' && typeof valB === 'number') {
+            cmp = valA - valB;
+          } else {
+            cmp = String(valA).localeCompare(String(valB));
+          }
+          if (cmp === 0 && vehicleTableSortCol !== 'carType') {
+            cmp = String(a.carType).localeCompare(String(b.carType));
+          }
+          return vehicleTableSortDir === 'desc' ? -cmp : cmp;
+        });
+      }
+
+      // 3. Update header indicators
+      const table = document.getElementById('table-vehicle-classes');
+      if (table) {
+        table.querySelectorAll('th.sortable').forEach(th => {
+          const col = th.dataset.sort;
+          const icon = th.querySelector('.sort-icon');
+          th.classList.remove('sort-asc', 'sort-desc');
+          if (col === vehicleTableSortCol) {
+            th.classList.add(vehicleTableSortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+            if (icon) icon.textContent = vehicleTableSortDir === 'asc' ? '▲' : '▼';
+          } else {
+            if (icon) icon.textContent = '⇅';
+          }
+        });
+      }
+
+      const activeCarType = selectVehicle ? selectVehicle.value : 'Sedan';
+
+      if (vc.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: var(--gc-text-muted); padding: 24px;">No vehicle classes match "${vehicleTableFilter}". <button type="button" class="btn-secondary" style="padding: 2px 8px; font-size: 11px; margin-left: 8px;" id="btn-clear-table-filter">Clear filter</button></td></tr>`;
+        const clearBtn = document.getElementById('btn-clear-table-filter');
+        if (clearBtn) {
+          clearBtn.addEventListener('click', () => {
+            const input = document.getElementById('input-vehicle-table-filter');
+            if (input) input.value = '';
+            vehicleTableFilter = '';
+            renderTable();
+          });
+        }
+        return;
+      }
 
       tableBody.innerHTML = vc.map(v => {
         const tierBadge = v.tier
@@ -940,9 +1047,11 @@ document.addEventListener('DOMContentLoaded', () => {
               : '<span class="badge-budget" style="margin-left: 6px;">💰 Budget</span>')
           : '';
         const costStr = v.costTarget ? `<span style="font-size: 10px; color: var(--gc-text-muted); display: block;">${v.costTarget}</span>` : '';
+        const isActive = v.carType === activeCarType;
+        const activeClass = isActive ? ' active-vehicle-row' : '';
 
         return `
-        <tr data-vehicle="${v.carType}" style="cursor: pointer;" class="vehicle-class-row">
+        <tr data-vehicle="${v.carType}" style="cursor: pointer;" class="vehicle-class-row${activeClass}">
           <td style="font-weight: 700; color: var(--gc-text-gold);">${v.carType}${tierBadge}${costStr}</td>
           <td><span style="color: var(--gc-text-amber); font-weight: 600;">${v.chassis}</span></td>
           <td><span style="color: var(--gc-text-green); font-weight: 600;">${v.engineType}</span></td>
@@ -963,10 +1072,47 @@ document.addEventListener('DOMContentLoaded', () => {
           const vt = row.dataset.vehicle;
           selectVehicle.value = vt;
           selectVehicle.dispatchEvent(new Event('change'));
-          // Highlight row
-          tableBody.querySelectorAll('.vehicle-class-row').forEach(r => r.style.background = '');
-          row.style.background = 'rgba(176, 111, 64, 0.15)';
+          highlightSelectedRow();
         });
+      });
+    }
+
+    // Set up table header sort listeners
+    const tableEl = document.getElementById('table-vehicle-classes');
+    if (tableEl) {
+      tableEl.querySelectorAll('th.sortable').forEach(th => {
+        th.addEventListener('click', () => {
+          const col = th.dataset.sort;
+          if (!col) return;
+          if (vehicleTableSortCol === col) {
+            vehicleTableSortDir = vehicleTableSortDir === 'asc' ? 'desc' : 'asc';
+          } else {
+            vehicleTableSortCol = col;
+            vehicleTableSortDir = 'asc';
+          }
+          renderTable();
+        });
+      });
+    }
+
+    // Set up table search/filter input listener
+    const filterInput = document.getElementById('input-vehicle-table-filter');
+    if (filterInput) {
+      filterInput.addEventListener('input', (e) => {
+        vehicleTableFilter = e.target.value;
+        renderTable();
+      });
+    }
+
+    // Set up table reset button
+    const resetTableBtn = document.getElementById('btn-reset-vehicle-table');
+    if (resetTableBtn) {
+      resetTableBtn.addEventListener('click', () => {
+        vehicleTableSortCol = null;
+        vehicleTableSortDir = 'asc';
+        vehicleTableFilter = '';
+        if (filterInput) filterInput.value = '';
+        renderTable();
       });
     }
 
@@ -1992,6 +2138,7 @@ document.addEventListener('DOMContentLoaded', () => {
       saveCachedState({ advisorVehicle: selectVehicle.value });
       trackUsageEvent('advisor_select_' + selectVehicle.value, 'Advisor Model: ' + selectVehicle.value);
       updateDetail();
+      highlightSelectedRow();
     });
     inputYear.addEventListener('input', () => setAdvisorYear(inputYear.value));
     if (inputYearNum) {
