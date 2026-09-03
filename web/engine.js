@@ -465,7 +465,7 @@ const GearCityEngine = (() => {
     const maxLength = constraints.maxLength != null && !isNaN(constraints.maxLength) ? Number(constraints.maxLength) : null;
     const maxWidth = constraints.maxWidth != null && !isNaN(constraints.maxWidth) ? Number(constraints.maxWidth) : null;
     const focus = constraints.focus || 'HP';
-    const effectiveMaxRatio = (focus === 'Torque' && constraints.maxHpTorqueRatio != null && !isNaN(constraints.maxHpTorqueRatio)) ? Number(constraints.maxHpTorqueRatio) : null;
+    const effectiveMaxRatio = (constraints.maxHpTorqueRatio != null && !isNaN(constraints.maxHpTorqueRatio)) ? Number(constraints.maxHpTorqueRatio) : null;
     const allowedLayouts = constraints.allowedLayouts && constraints.allowedLayouts.length > 0 ? constraints.allowedLayouts : null;
     const allowedCylinders = constraints.allowedCylinders && constraints.allowedCylinders.length > 0 ? constraints.allowedCylinders : null;
     const allowedFuels = constraints.allowedFuels && constraints.allowedFuels.length > 0 ? constraints.allowedFuels : null;

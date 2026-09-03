@@ -2311,16 +2311,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateVoptRatioInputState() {
       if (!inputMaxRatio) return;
+      inputMaxRatio.disabled = false;
+      inputMaxRatio.style.opacity = '1';
       if (selectFocus && selectFocus.value === 'HP') {
-        inputMaxRatio.disabled = true;
-        inputMaxRatio.style.opacity = '0.5';
-        inputMaxRatio.placeholder = 'Disabled for Max HP';
-        if (hintVoptMaxRatio) hintVoptMaxRatio.textContent = '(Disabled for Max HP)';
+        inputMaxRatio.placeholder = 'Optional (blank = max HP)';
+        if (hintVoptMaxRatio) hintVoptMaxRatio.textContent = '(Optional ratio ceiling)';
       } else {
-        inputMaxRatio.disabled = false;
-        inputMaxRatio.style.opacity = '1';
-        inputMaxRatio.placeholder = 'e.g. 1.6 (blank = no limit)';
-        if (hintVoptMaxRatio) hintVoptMaxRatio.textContent = '(Torque mode only)';
+        inputMaxRatio.placeholder = 'e.g. 1.6 (blank = default)';
+        if (hintVoptMaxRatio) hintVoptMaxRatio.textContent = '(Class recommendation)';
       }
     }
 
@@ -2374,11 +2372,10 @@ document.addEventListener('DOMContentLoaded', () => {
       trackUsageEvent('optimize_vehicle_engine', `Optimize Vehicle Engine: ${carType}_${concept}_${year}`);
 
       try {
-        const isTorqueFocus = selectFocus.value === 'Torque';
         const customConstraints = {
           maxCost: inputMaxCost.value !== '' ? Number(inputMaxCost.value) : null,
           maxWeight: inputMaxWeight.value !== '' ? Number(inputMaxWeight.value) : null,
-          maxHpTorqueRatio: isTorqueFocus && inputMaxRatio.value !== '' ? Number(inputMaxRatio.value) : null,
+          maxHpTorqueRatio: inputMaxRatio.value !== '' ? Number(inputMaxRatio.value) : null,
           focus: selectFocus.value,
           preferredFuel: selectFuel.value,
           engineBayWidth: inputMaxWid.value !== '' ? Number(inputMaxWid.value) : null,
@@ -2448,7 +2445,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <div style="text-align: center;">
                 <div style="color: var(--gc-text-muted); font-size: 10px;">TORQUE</div>
                 <div style="color: var(--gc-text-gold); font-size: 18px; font-weight: 800;">${perf.torqueNm?.toFixed(1) || '—'}</div>
-                <div style="color: var(--gc-text-muted); font-size: 10px;">Nm</div>
+                <div style="color: var(--gc-text-muted); font-size: 10px;">Nm <span style="opacity: 0.85;">(${perf.torqueFtLb?.toFixed(1) || '—'} lb-ft)</span></div>
               </div>
               <div style="text-align: center;">
                 <div style="color: var(--gc-text-muted); font-size: 10px;">POWER</div>
@@ -2458,7 +2455,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <div style="text-align: center;">
                 <div style="color: var(--gc-text-muted); font-size: 10px;">T:HP RATIO</div>
                 <div style="color: #64b5f6; font-size: 18px; font-weight: 800;">${perf.horsepower > 0 ? (perf.torqueNm / perf.horsepower).toFixed(2) : '—'}</div>
-                <div style="color: var(--gc-text-muted); font-size: 10px;">Torque / HP</div>
+                <div style="color: var(--gc-text-muted); font-size: 10px;" title="Metric: Nm/HP | Imperial: lb-ft/HP">Nm/HP <span style="opacity: 0.85;">(${perf.horsepower > 0 ? (perf.torqueFtLb / perf.horsepower).toFixed(2) : '—'} lb-ft/HP)</span></div>
               </div>
               <div style="text-align: center;">
                 <div style="color: var(--gc-text-muted); font-size: 10px;">WEIGHT</div>
