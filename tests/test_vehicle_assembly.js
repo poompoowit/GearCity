@@ -131,21 +131,39 @@ const truckSliders = E.calculateVehicleSliders('Pickup Truck', 1960);
 const microSliders = E.calculateVehicleSliders('Microcar', 1960);
 
 assert(
-  luxSliders.designFocus.luxury >= 75.0 && luxSliders.interior.luxury >= 75.0,
-  'Luxury Sedan Design Focus & Interior Luxury are high (>= 75%)',
-  `Focus Luxury: ${luxSliders.designFocus.luxury}%, Interior Luxury: ${luxSliders.interior.luxury}%`
+  luxSliders.designFocus.luxury >= 90.0 &&
+  luxSliders.interior.luxury >= 92.0 &&
+  luxSliders.materials.interiorQuality >= 90.0 &&
+  luxSliders.materials.paintQuality >= 90.0,
+  'Luxury Sedan Design Focus, Interior Luxury, and Materials are premium grade (>= 90%)',
+  `Focus Lux: ${luxSliders.designFocus.luxury}%, Int Lux: ${luxSliders.interior.luxury}%, Int Qual: ${luxSliders.materials.interiorQuality}%, Paint: ${luxSliders.materials.paintQuality}%`
 );
 
 assert(
-  truckSliders.designFocus.cargo >= 80.0 && truckSliders.testing.utility >= 85.0 && truckSliders.designFocus.luxury <= 35.0,
-  'Pickup Truck Prioritizes Cargo & Utility Over Luxury',
-  `Cargo Focus: ${truckSliders.designFocus.cargo}%, Utility Test: ${truckSliders.testing.utility}%, Luxury Focus: ${truckSliders.designFocus.luxury}%`
+  luxSliders.predictedRatings &&
+  luxSliders.predictedRatings.luxury >= 95.0 &&
+  luxSliders.predictedRatings.quality >= 90.0 &&
+  luxSliders.predictedRatings.safety >= 85.0 &&
+  luxSliders.predictedRatings.hyperIndex === 'Premium Prestige',
+  'Luxury Sedan predicted in-game ratings achieve elite tier (Lux >= 95%, Qual >= 90%, Safe >= 85%)',
+  `Predicted Lux: ${luxSliders.predictedRatings.luxury}%, Qual: ${luxSliders.predictedRatings.quality}%, Safe: ${luxSliders.predictedRatings.safety}%, Tier: ${luxSliders.predictedRatings.hyperIndex}`
 );
 
 assert(
-  microSliders.testing.fuelEconomy >= 75.0 && microSliders.testing.performance <= 30.0,
-  'Microcar Prioritizes Fuel Economy Testing Over Performance Testing',
-  `Fuel Test: ${microSliders.testing.fuelEconomy}%, Perf Test: ${microSliders.testing.performance}%`
+  truckSliders.designFocus.cargo >= 80.0 &&
+  truckSliders.testing.utility >= 85.0 &&
+  truckSliders.designFocus.luxury <= 35.0 &&
+  truckSliders.predictedRatings.hyperIndex === 'Cost Optimized',
+  'Pickup Truck Prioritizes Cargo & Utility Over Luxury with Cost-Optimized hyperIndex',
+  `Cargo Focus: ${truckSliders.designFocus.cargo}%, Utility Test: ${truckSliders.testing.utility}%, Tier: ${truckSliders.predictedRatings.hyperIndex}`
+);
+
+assert(
+  microSliders.testing.fuelEconomy >= 75.0 &&
+  microSliders.testing.performance <= 30.0 &&
+  microSliders.predictedRatings.hyperIndex === 'Cost Optimized',
+  'Microcar Prioritizes Fuel Economy Testing with Cost-Optimized hyperIndex',
+  `Fuel Test: ${microSliders.testing.fuelEconomy}%, Perf Test: ${microSliders.testing.performance}%, Tier: ${microSliders.predictedRatings.hyperIndex}`
 );
 
 // 3. XML Blueprint Export

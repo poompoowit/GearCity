@@ -1490,6 +1490,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const mat = vSliders.materials;
       const ts = vSliders.testing;
       const dg = vSliders.demographics;
+      const pr = vSliders.predictedRatings || {};
 
       const sliderRow = (name, val, color = 'var(--gc-text-gold)') => `
         <div style="margin-bottom: 6px;">
@@ -1504,6 +1505,46 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
 
       vehicleSlidersContent.innerHTML = `
+        <!-- Forecast Hero Banner -->
+        <div style="grid-column: 1 / -1; background: linear-gradient(135deg, rgba(35, 22, 12, 0.8), rgba(18, 12, 6, 0.95)); border: 1px solid var(--gc-border-brown); border-radius: 6px; padding: 12px 16px; margin-bottom: 4px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 12.5px; font-weight: 800; color: var(--gc-text-gold); text-transform: uppercase; letter-spacing: 0.5px;">
+                📈 Wiki In-Game Rating Forecast
+              </span>
+              <span class="badge" style="font-size: 11px; font-weight: 700; background: ${pr.hyperIndex === 'Premium Prestige' ? 'rgba(156, 39, 176, 0.25)' : (pr.hyperIndex === 'Balanced' ? 'rgba(33, 150, 243, 0.25)' : 'rgba(76, 175, 80, 0.25)')}; color: ${pr.hyperIndex === 'Premium Prestige' ? '#ce93d8' : (pr.hyperIndex === 'Balanced' ? '#90caf9' : '#a5d6a7')}; border: 1px solid rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px;">
+                ${pr.hyperIndex || 'Optimized'} (Avg Slider: ${pr.avgSlider || 50}%)
+              </span>
+            </div>
+            <div style="font-size: 11px; color: var(--gc-text-muted);">
+              Solved via canonical <code style="color: var(--gc-text-gold); font-family: var(--font-game-mono);">gamemanual:gm_vehicles_design</code> formulas
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
+            <div style="background: rgba(0,0,0,0.35); border-radius: 4px; padding: 8px 10px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+              <div style="font-size: 10px; color: var(--gc-text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 2px;">⭐ Luxury</div>
+              <div style="font-size: 16px; font-weight: 800; color: #ce93d8; font-family: var(--font-game-mono);">${(pr.luxury != null ? pr.luxury : 50).toFixed(1)}%</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.35); border-radius: 4px; padding: 8px 10px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+              <div style="font-size: 10px; color: var(--gc-text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 2px;">💎 Quality</div>
+              <div style="font-size: 16px; font-weight: 800; color: #81c784; font-family: var(--font-game-mono);">${(pr.quality != null ? pr.quality : 50).toFixed(1)}%</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.35); border-radius: 4px; padding: 8px 10px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+              <div style="font-size: 10px; color: var(--gc-text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 2px;">🛡️ Safety</div>
+              <div style="font-size: 16px; font-weight: 800; color: #64b5f6; font-family: var(--font-game-mono);">${(pr.safety != null ? pr.safety : 50).toFixed(1)}%</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.35); border-radius: 4px; padding: 8px 10px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+              <div style="font-size: 10px; color: var(--gc-text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 2px;">🔧 Dependability</div>
+              <div style="font-size: 16px; font-weight: 800; color: #ffb74d; font-family: var(--font-game-mono);">${(pr.dependability != null ? pr.dependability : 50).toFixed(1)}%</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.35); border-radius: 4px; padding: 8px 10px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+              <div style="font-size: 10px; color: var(--gc-text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 2px;">🎯 Market Fit</div>
+              <div style="font-size: 16px; font-weight: 800; color: var(--gc-text-gold); font-family: var(--font-game-mono);">${(pr.carTypeMatch != null ? pr.carTypeMatch : 75).toFixed(1)}%</div>
+            </div>
+          </div>
+        </div>
+
         <!-- Card 1: Design Focus -->
         <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--gc-border-brown); border-radius: 4px; padding: 12px 14px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 6px;">
@@ -1597,10 +1638,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const mat = s.materials;
         const ts = s.testing;
         const dg = s.demographics;
+        const pr = s.predictedRatings || {};
 
         const text = [
           `GearCity Vehicle Blueprint - ${s.carType} (${s.year})`,
           `Demographics: ${dg.gender} | ${dg.age} | Wealth: ${dg.wealthLabel} (Tier ${dg.wealth})`,
+          `Forecast Ratings (Wiki): Luxury ${pr.luxury != null ? pr.luxury.toFixed(1) : '--'}% | Quality ${pr.quality != null ? pr.quality.toFixed(1) : '--'}% | Safety ${pr.safety != null ? pr.safety.toFixed(1) : '--'}% | Market Fit ${pr.carTypeMatch != null ? pr.carTypeMatch.toFixed(1) : '--'}%`,
           `----------------------------------------`,
           `[🎯 Design Focus]`,
           `• Style Focus: ${df.style.toFixed(1)}%`,

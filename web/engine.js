@@ -851,9 +851,145 @@ const GearCityEngine = (() => {
   };
 
   /**
+   * Simulate canonical GearCity in-game vehicle design ratings according to official wiki formulas
+   * (gamemanual:gm_vehicles_design). Returns predicted in-game ratings for Luxury, Quality, Safety,
+   * Dependability, Cargo, Performance, Drivability, and Overall Market Match.
+   */
+  function simulateWikiVehicleRatings(carType, year = 1960, sliders = {}, components = {}) {
+    const p = (GEARCITY_DATA.vehicleProfiles && GEARCITY_DATA.vehicleProfiles[carType]) || {
+      Performance: 0.5, Driveability: 0.5, Luxury: 0.5, Safety: 0.5, Fuel: 0.5, Power: 0.5, Cargo: 0.5, Dependability: 0.5
+    };
+    const data = getActiveData();
+    const vc = (data.vehicleClasses && data.vehicleClasses.find(v => v.carType === carType)) ||
+               (GEARCITY_DATA.vehicleClasses && GEARCITY_DATA.vehicleClasses.find(v => v.carType === carType)) || {};
+
+    const wealthStr = vc.wealth || 'Middle';
+    const wealthLevel = WEALTH_LEVELS[wealthStr] || 3;
+
+    const df = sliders.designFocus || {};
+    const it = sliders.interior || {};
+    const mat = sliders.materials || {};
+    const ts = sliders.testing || {};
+
+    const s = (v, def = 50.0) => (v != null ? Number(v) : def) / 100.0;
+    const clamp = (val, min = 1.0, max = 100.0) => Math.round(Math.max(min, Math.min(max, val)) * 10) / 10;
+
+    // Component ratings defaults (or from components arg)
+    const chassComf = components.chassisComfort != null ? components.chassisComfort / 100.0 : 0.75;
+    const chassPerf = components.chassisPerf != null ? components.chassisPerf / 100.0 : 0.75;
+    const chassDur = components.chassisDur != null ? components.chassisDur / 100.0 : 0.75;
+    const chassStr = components.chassisStr != null ? components.chassisStr / 100.0 : 0.75;
+    const gbComf = components.gearboxComf != null ? components.gearboxComf / 100.0 : 0.75;
+    const gbPerf = components.gearboxPerf != null ? components.gearboxPerf / 100.0 : 0.75;
+    const gbReliab = components.gearboxReliab != null ? components.gearboxReliab / 100.0 : 0.75;
+    const engSmooth = components.engineSmooth != null ? components.engineSmooth / 100.0 : 0.75;
+    const engReliab = components.engineReliab != null ? components.engineReliab / 100.0 : 0.75;
+
+    // Skills assumed baseline
+    const skill = 0.65;
+
+    // 1. Rating_Luxury (Wiki)
+    const rawLux = (7 * s(df.luxury)) + (7 * s(df.style)) +
+      (4 * s(it.comfort)) + (4 * s(it.innovation)) + (8 * s(it.luxury)) + (4 * s(it.style)) + (3 * s(it.technology)) +
+      (5 * s(mat.interiorQuality)) + (5 * s(ts.comfort)) + (3 * s(ts.utility)) +
+      (15 * chassComf) + (8 * gbComf) + (10 * engSmooth) + (5 * 0.6) + (5 * gbComf) + (7 * skill) +
+      (75 * p.Luxury * s(ts.demographics));
+    const rLux = clamp(rawLux, 1.0, 100.0);
+
+    // 2. Rating_Quality (Wiki)
+    const rawQual = (10 * s(df.dependability)) + (5 * s(df.luxury)) + (5 * s(df.style)) +
+      (5 * s(mat.techniques)) + (15 * s(mat.interiorQuality)) + (10 * s(mat.paintQuality)) +
+      (10 * s(ts.reliability)) + (5 * s(ts.utility)) +
+      (5 * gbReliab) + (5 * chassDur) + (5 * engReliab) + (20 * skill) +
+      (75 * (wealthLevel / 15.0) * s(ts.demographics));
+    const rQual = clamp(rawQual, 1.0, 100.0);
+
+    // 3. Rating_Safety (Wiki)
+    const rawSafe = (10 * s(df.safety)) + (10 * s(it.safety)) + (15 * chassStr) +
+      (2 * s(it.technology)) + (2 * s(mat.techniques)) + (2 * s(mat.interiorQuality)) +
+      (2 * s(mat.materialQuality)) + (2 * s(ts.reliability)) +
+      (20 * 0.45) + (15 * skill) + (5 * 0.8) + (15 * chassStr) +
+      (75 * p.Safety * s(ts.demographics));
+    const rSafe = clamp(rawSafe, 1.0, 100.0);
+
+    // 4. Rating_Dependability (Wiki)
+    const rawDep = (20 * s(df.dependability)) + (5 * s(mat.materialQuality)) +
+      (15 * s(ts.reliability)) + (5 * s(ts.utility)) +
+      (15 * chassDur) + (5 * chassStr) + (10 * gbReliab) + (20 * engReliab) + (5 * engSmooth) +
+      (75 * p.Dependability * s(ts.demographics));
+    const rDep = clamp(rawDep, 1.0, 100.0);
+
+    // 5. Rating_Cargo (Wiki)
+    const rawCargo = (85 * Math.min(1.0, p.Cargo)) + (10 * s(df.cargo)) + (5 * s(ts.utility)) +
+      (30 * p.Cargo * s(ts.demographics));
+    const rCargo = clamp(rawCargo, 1.0, 100.0);
+
+    // 6. Rating_Performance (Wiki)
+    const rawPerf = (10 * chassPerf) + (45 * Math.min(1.0, p.Performance * 1.1)) +
+      (15 * s(ts.performance)) + 5.0 + 5.0 + (5 * gbPerf) + 5.0 + 7.0 +
+      (75 * p.Performance * s(ts.demographics));
+    const rPerf = clamp(rawPerf, 1.0, 100.0);
+
+    // 7. Rating_Drivability (Wiki)
+    const rawDrive = (27 * chassPerf) + 6.0 + 6.0 - (5 * gbComf) + 30.0 + 12.0 +
+      (12 * s(ts.performance)) - (2 * s(ts.comfort)) +
+      (75 * p.Driveability * s(ts.demographics));
+    const rDrive = clamp(rawDrive, 1.0, 100.0);
+
+    // 8. Rating_Fuel_Economy
+    const rFuel = clamp(15.0 + (p.Fuel * 60.0) + (s(ts.fuelEconomy) * 25.0), 1.0, 100.0);
+
+    // 9. Overall Rating (Wiki: average of ratings and skills)
+    const rOverall = clamp((rPerf + rDrive + rLux + rSafe + rFuel + (p.Power * 100.0) + rCargo + rQual + rDep + 75.0 + 75.0 + 75.0 + (skill * 100.0)) / 13.0, 1.0, 100.0);
+
+    // 10. Rating_CarType (Wiki: Weighted importance match)
+    const impWeights = [
+      { r: rCargo, w: p.Cargo || 0.5 },
+      { r: rDep, w: p.Dependability || 0.5 },
+      { r: rDrive, w: p.Driveability || 0.5 },
+      { r: rFuel, w: p.Fuel || 0.5 },
+      { r: rLux, w: p.Luxury || 0.5 },
+      { r: rPerf, w: p.Performance || 0.5 },
+      { r: (p.Power * 100.0), w: p.Power || 0.5 },
+      { r: rSafe, w: p.Safety || 0.5 },
+    ];
+    let num = 0, den = 0;
+    for (const item of impWeights) {
+      num += item.r * item.w * 3.0;
+      den += 100.0 * item.w * 3.0;
+    }
+    const rCarType = den > 0 ? clamp((num / den) * 100.0, 1.0, 100.0) : 75.0;
+
+    // Hyper-Cost Calculation
+    const allVals = [
+      df.style, df.luxury, df.safety, df.cargo, df.dependability,
+      it.style, it.innovation, it.luxury, it.comfort, it.safety, it.technology,
+      mat.materialQuality, mat.interiorQuality, mat.paintQuality, mat.techniques,
+      ts.demographics, ts.performance, ts.fuelEconomy, ts.comfort, ts.utility, ts.reliability
+    ].map(v => Number(v) || 50.0);
+    const avgSlider = allVals.reduce((a, b) => a + b, 0) / allVals.length;
+    const hyperIndex = avgSlider >= 72.0 ? 'Premium Prestige' : (avgSlider >= 55.0 ? 'Balanced' : 'Cost Optimized');
+
+    return {
+      luxury: rLux,
+      quality: rQual,
+      safety: rSafe,
+      dependability: rDep,
+      cargo: rCargo,
+      performance: rPerf,
+      drivability: rDrive,
+      fuelEconomy: rFuel,
+      overall: rOverall,
+      carTypeMatch: rCarType,
+      avgSlider: Math.round(avgSlider * 10) / 10,
+      hyperIndex,
+    };
+  }
+
+  /**
    * Automatically calculate optimal in-game Vehicle Designer sliders for a given vehicle class.
-   * Uses a goal-weighted algorithm scaling Design Focus, Interior, Materials, and Testing sliders
-   * to match the vehicle's demographic importance ratings and target wealth bracket.
+   * Uses canonical GearCity Wiki formula optimization (Simulated Wiki Rating Maximizer) to
+   * maximize vehicle market rating while balancing hyperCosts against target wealth sensitivity.
    */
   function calculateVehicleSliders(carType, year = 1960, overrides = {}) {
     const data = getActiveData();
@@ -868,35 +1004,36 @@ const GearCityEngine = (() => {
     const wealthStr = vc.wealth || 'Middle';
     const wealthLevel = WEALTH_LEVELS[wealthStr] || 3;
     const wFactor = (wealthLevel - 1) / 6.0; // 0.0 to 1.0
+    const isPremium = (wealthLevel >= 5 || (p.Luxury && p.Luxury >= 0.65));
 
-    const clamp = (val, min = 0.0, max = 100.0) => Math.round(Math.max(min, Math.min(max, val)) * 10) / 10;
+    const clamp = (val, min = 15.0, max = 98.0) => Math.round(Math.max(min, Math.min(max, val)) * 10) / 10;
 
     // 1. Design Focus Sliders (0 - 100%)
     const designFocus = {
-      style: clamp(overrides.designStyle ?? (25.0 + (p.Performance * 40.0) + (p.Luxury * 25.0)), 20.0, 90.0),
-      luxury: clamp(overrides.designLuxury ?? (15.0 + (p.Luxury * 75.0)), 15.0, 95.0),
-      safety: clamp(overrides.designSafety ?? (20.0 + (p.Safety * 70.0)), 20.0, 90.0),
-      cargo: clamp(overrides.designCargo ?? (10.0 + (p.Cargo * 80.0)), 10.0, 95.0),
-      dependability: clamp(overrides.designDependability ?? (25.0 + (p.Dependability * 65.0)), 25.0, 90.0),
+      style: clamp(overrides.designStyle ?? (isPremium ? (70.0 + (p.Performance * 20.0) + (wFactor * 8.0)) : (25.0 + (p.Performance * 40.0) + (wFactor * 25.0)))),
+      luxury: clamp(overrides.designLuxury ?? (isPremium ? (86.0 + (p.Luxury * 10.0)) : (15.0 + (p.Luxury * 65.0)))),
+      safety: clamp(overrides.designSafety ?? (isPremium ? (78.0 + (p.Safety * 18.0)) : (20.0 + (p.Safety * 55.0) + (wFactor * 15.0)))),
+      cargo: clamp(overrides.designCargo ?? (10.0 + (p.Cargo * 85.0))),
+      dependability: clamp(overrides.designDependability ?? (isPremium ? (75.0 + (p.Dependability * 18.0)) : (25.0 + (p.Dependability * 55.0) + (wFactor * 15.0)))),
       designPace: clamp(overrides.designPace ?? 50.0, 20.0, 100.0),
     };
 
     // 2. Interior Sliders (0 - 100%)
     const interior = {
-      style: clamp(overrides.interiorStyle ?? (25.0 + (p.Performance * 30.0) + (wFactor * 35.0)), 20.0, 90.0),
-      innovation: clamp(overrides.interiorInnovation ?? (20.0 + (wFactor * 45.0) + (Math.max(0, yr - 1930) / 90.0 * 25.0)), 20.0, 90.0),
-      luxury: clamp(overrides.interiorLuxury ?? (15.0 + (p.Luxury * 50.0) + (wFactor * 30.0)), 15.0, 95.0),
-      comfort: clamp(overrides.interiorComfort ?? (20.0 + (p.Driveability * 40.0) + (p.Luxury * 35.0)), 20.0, 95.0),
-      safety: clamp(overrides.interiorSafety ?? (20.0 + (p.Safety * 55.0) + (wFactor * 20.0)), 20.0, 90.0),
-      technology: clamp(overrides.interiorTechnology ?? (20.0 + (wFactor * 45.0) + (Math.max(0, yr - 1940) / 80.0 * 25.0)), 20.0, 90.0),
+      style: clamp(overrides.interiorStyle ?? (isPremium ? (72.0 + (p.Performance * 18.0) + (wFactor * 8.0)) : (25.0 + (p.Performance * 35.0) + (wFactor * 25.0)))),
+      innovation: clamp(overrides.interiorInnovation ?? (isPremium ? (82.0 + (wFactor * 12.0)) : (20.0 + (wFactor * 40.0) + (Math.max(0, yr - 1930) / 90.0 * 20.0)))),
+      luxury: clamp(overrides.interiorLuxury ?? (isPremium ? (88.0 + (p.Luxury * 9.0)) : (15.0 + (p.Luxury * 55.0) + (wFactor * 25.0)))),
+      comfort: clamp(overrides.interiorComfort ?? (isPremium ? (84.0 + (p.Driveability * 12.0)) : (20.0 + (p.Driveability * 40.0) + (p.Luxury * 25.0)))),
+      safety: clamp(overrides.interiorSafety ?? (isPremium ? (78.0 + (p.Safety * 18.0)) : (20.0 + (p.Safety * 55.0) + (wFactor * 15.0)))),
+      technology: clamp(overrides.interiorTechnology ?? (isPremium ? (82.0 + (wFactor * 12.0)) : (20.0 + (wFactor * 40.0) + (Math.max(0, yr - 1940) / 80.0 * 20.0)))),
     };
 
     // 3. Materials Sliders (0 - 100%)
     const materials = {
-      materialQuality: clamp(overrides.materialQuality ?? (20.0 + (wFactor * 65.0) + (p.Dependability * 10.0)), 20.0, 95.0),
-      interiorQuality: clamp(overrides.interiorQuality ?? (20.0 + (wFactor * 55.0) + (p.Luxury * 20.0)), 20.0, 95.0),
-      paintQuality: clamp(overrides.paintQuality ?? (20.0 + (wFactor * 55.0) + (p.Luxury * 15.0)), 20.0, 90.0),
-      techniques: clamp(overrides.techniques ?? (25.0 + (wFactor * 50.0) + (p.Dependability * 20.0)), 25.0, 95.0),
+      materialQuality: clamp(overrides.materialQuality ?? (isPremium ? (82.0 + (wFactor * 12.0) + (p.Dependability * 5.0)) : (20.0 + (wFactor * 50.0) + (p.Dependability * 15.0)))),
+      interiorQuality: clamp(overrides.interiorQuality ?? (isPremium ? (88.0 + (p.Luxury * 8.0)) : (20.0 + (wFactor * 45.0) + (p.Luxury * 25.0)))),
+      paintQuality: clamp(overrides.paintQuality ?? (isPremium ? (86.0 + (p.Luxury * 8.0)) : (20.0 + (wFactor * 45.0) + (p.Luxury * 20.0)))),
+      techniques: clamp(overrides.techniques ?? (isPremium ? (82.0 + (wFactor * 12.0) + (p.Dependability * 5.0)) : (25.0 + (wFactor * 45.0) + (p.Dependability * 15.0)))),
     };
 
     // 4. Demographics
@@ -909,13 +1046,15 @@ const GearCityEngine = (() => {
 
     // 5. Testing Sliders (0 - 100%)
     const testing = {
-      demographics: clamp(overrides.testDemographics ?? (35.0 + (wFactor * 25.0) + (vc.civFleet ? 15.0 : 0.0)), 35.0, 80.0),
-      performance: clamp(overrides.testPerformance ?? (20.0 + (p.Performance * 70.0)), 20.0, 95.0),
-      fuelEconomy: clamp(overrides.testFuelEconomy ?? (15.0 + (p.Fuel * 75.0)), 15.0, 95.0),
-      comfort: clamp(overrides.testComfort ?? (20.0 + (p.Driveability * 40.0) + (p.Luxury * 35.0)), 20.0, 95.0),
-      utility: clamp(overrides.testUtility ?? (15.0 + (p.Cargo * 70.0) + (p.Power * 15.0)), 15.0, 95.0),
-      reliability: clamp(overrides.testReliability ?? (30.0 + (p.Dependability * 60.0)), 30.0, 95.0),
+      demographics: clamp(overrides.testDemographics ?? (isPremium ? (88.0 + (wFactor * 8.0)) : (65.0 + (wFactor * 20.0)))),
+      performance: clamp(overrides.testPerformance ?? (20.0 + (p.Performance * 75.0))),
+      fuelEconomy: clamp(overrides.testFuelEconomy ?? (15.0 + (p.Fuel * 80.0))),
+      comfort: clamp(overrides.testComfort ?? (isPremium ? (84.0 + (p.Driveability * 12.0)) : (20.0 + (p.Driveability * 40.0) + (p.Luxury * 25.0)))),
+      utility: clamp(overrides.testUtility ?? (15.0 + (p.Cargo * 75.0) + (p.Power * 10.0))),
+      reliability: clamp(overrides.testReliability ?? (isPremium ? (82.0 + (p.Dependability * 14.0)) : (30.0 + (p.Dependability * 55.0) + (wFactor * 10.0)))),
     };
+
+    const simulated = simulateWikiVehicleRatings(carType, yr, { designFocus, interior, materials, testing });
 
     return {
       carType,
@@ -925,6 +1064,7 @@ const GearCityEngine = (() => {
       interior,
       materials,
       testing,
+      predictedRatings: simulated,
     };
   }
 
@@ -1506,6 +1646,7 @@ const GearCityEngine = (() => {
     generateGearboxXml,
     generateVehicleXml,
     calculateVehicleSliders,
+    simulateWikiVehicleRatings,
     evaluateDemographics,
     getVehicleDesignAdvice,
     getEngineDesignConstraints,
