@@ -1,0 +1,27 @@
+	<Car>
+	<Scroll_InteriorStyle>40.0</Scroll_InteriorStyle>
+	<Scroll_InteriorInno>40.0</Scroll_InteriorInno> 
+	<Scroll_InteriorLux>40.0</Scroll_InteriorLux>
+	<Scroll_InteriorComf>40.0</Scroll_InteriorComf>
+	<Scroll_InteriorSafe>40.0</Scroll_InteriorSafe>
+ 	<Scroll_InteriorTech>40.0</Scroll_InteriorTech>
+ 	<Scroll_MatMatQual>40.0</Scroll_MatMatQual>
+ 	<Scroll_MatMatInterQual >40.0</Scroll_MatMatInterQual>
+	<Scroll_MatPaintQual>40.0</Scroll_MatPaintQual>
+	<Scroll_MatManuTech>40.0</Scroll_MatManuTech>
+ 	<Scroll_DesignStyle>40.0</Scroll_DesignStyle> 
+	<Scroll_DesignLux>40.0</Scroll_DesignLux>
+	<Scroll_DesignSafety>40.0</Scroll_DesignSafety>
+	<Scroll_DesignCargo>40.0</Scroll_DesignCargo>
+	<Scroll_DesignDepend>40.0</Scroll_DesignDepend>
+	<Scroll_TestDemo>40.0</Scroll_TestDemo>
+	<Scroll_TestPerform>40.0</Scroll_TestPerform> 
+	<Scroll_TestFuel>40.0</Scroll_TestFuel>
+	<Scroll_TestComf>40.0</Scroll_TestComf>
+	<Scroll_TestUtil>40.0</Scroll_TestUtil>
+	<Scroll_TestReli>40.0</Scroll_TestReli>
+	<DesignPace>50.0</DesignPace>
+	<DemoGender>2</DemoGender>
+	<DemoAge>2</DemoAge>
+	<DemoWealth>4</DemoWealth>
+	</Car>

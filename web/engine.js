@@ -1070,6 +1070,7 @@ const GearCityEngine = (() => {
 
   /**
    * Convert Vehicle configuration dictionary to GearCity SavedSliders XML blueprint string.
+   * Matches exact in-game SavedSliders tag names and formatting as verified in archive/Car_sample.xml.
    */
   function generateVehicleXml(config) {
     const it = config.interior || {};
@@ -1080,34 +1081,56 @@ const GearCityEngine = (() => {
 
     const v = (val, def = 50.0) => (val != null ? Number(val) : def).toFixed(1);
 
-    return `<?xml version="1.0" encoding="utf-8"?>
-<Car>
-\t<Slider_Interior_Style>${v(it.style)}</Slider_Interior_Style>
-\t<Slider_Interior_Innovation>${v(it.innovation)}</Slider_Interior_Innovation>
-\t<Slider_Interior_Luxury>${v(it.luxury)}</Slider_Interior_Luxury>
-\t<Slider_Interior_Comfort>${v(it.comfort)}</Slider_Interior_Comfort>
-\t<Slider_Interior_Safety>${v(it.safety)}</Slider_Interior_Safety>
-\t<Slider_Interior_Technology>${v(it.technology)}</Slider_Interior_Technology>
-\t<Slider_Materials_MaterialQuality>${v(mat.materialQuality)}</Slider_Materials_MaterialQuality>
-\t<Slider_Materials_Interior>${v(mat.interiorQuality)}</Slider_Materials_Interior>
-\t<Slider_Materials_Paint>${v(mat.paintQuality)}</Slider_Materials_Paint>
-\t<Slider_Materials_Techniques>${v(mat.techniques)}</Slider_Materials_Techniques>
-\t<Slider_Design_Style>${v(df.style)}</Slider_Design_Style>
-\t<Slider_Design_Luxury>${v(df.luxury)}</Slider_Design_Luxury>
-\t<Slider_Design_Safety>${v(df.safety)}</Slider_Design_Safety>
-\t<Slider_Design_Cargo>${v(df.cargo)}</Slider_Design_Cargo>
-\t<Slider_Design_Dependability>${v(df.dependability)}</Slider_Design_Dependability>
-\t<Slider_Design_DesignPace>${v(df.designPace)}</Slider_Design_DesignPace>
-\t<Slider_Demographics_Gender>${dg.gender || 'Neutral'}</Slider_Demographics_Gender>
-\t<Slider_Demographics_Wealth>${dg.wealth != null ? dg.wealth : '3'}</Slider_Demographics_Wealth>
-\t<Slider_Demographics_Age>${dg.age || '35-55'}</Slider_Demographics_Age>
-\t<Slider_Testing_Demographics>${v(ts.demographics)}</Slider_Testing_Demographics>
-\t<Slider_Testing_Performance>${v(ts.performance)}</Slider_Testing_Performance>
-\t<Slider_Testing_FuelEconomy>${v(ts.fuelEconomy)}</Slider_Testing_FuelEconomy>
-\t<Slider_Testing_Comfort>${v(ts.comfort)}</Slider_Testing_Comfort>
-\t<Slider_Testing_Utility>${v(ts.utility)}</Slider_Testing_Utility>
-\t<Slider_Testing_Reliability>${v(ts.reliability)}</Slider_Testing_Reliability>
-</Car>`;
+    // Gender enum: 0 = Male, 1 = Female, 2 = Neutral
+    let genderEnum = 2;
+    if (dg.gender === 'Male' || dg.gender === 0 || dg.gender === '0') genderEnum = 0;
+    else if (dg.gender === 'Female' || dg.gender === 1 || dg.gender === '1') genderEnum = 1;
+    else if (dg.gender === 'Neutral' || dg.gender === 2 || dg.gender === '2') genderEnum = 2;
+
+    // Age enum: 0 = Less Than 25, 1 = 25-35, 2 = 35-55, 3 = Greater Than 55
+    let ageEnum = 2;
+    if (dg.age === 'Less Than 25' || dg.age === 0 || dg.age === '<25' || dg.age === '0') ageEnum = 0;
+    else if (dg.age === '25-35' || dg.age === 1 || dg.age === '1') ageEnum = 1;
+    else if (dg.age === '35-55' || dg.age === 2 || dg.age === '2') ageEnum = 2;
+    else if (dg.age === 'Greater Than 55' || dg.age === 3 || dg.age === '>55' || dg.age === '3') ageEnum = 3;
+
+    // Wealth tier: integer 1 to 7 (default 4)
+    let wealthVal = 4;
+    if (dg.wealth != null) {
+      const parsed = parseInt(dg.wealth, 10);
+      if (!isNaN(parsed) && parsed >= 1 && parsed <= 7) {
+        wealthVal = parsed;
+      }
+    }
+
+    return `\t<Car>
+\t<Scroll_InteriorStyle>${v(it.style)}</Scroll_InteriorStyle>
+\t<Scroll_InteriorInno>${v(it.innovation)}</Scroll_InteriorInno>
+\t<Scroll_InteriorLux>${v(it.luxury)}</Scroll_InteriorLux>
+\t<Scroll_InteriorComf>${v(it.comfort)}</Scroll_InteriorComf>
+\t<Scroll_InteriorSafe>${v(it.safety)}</Scroll_InteriorSafe>
+\t<Scroll_InteriorTech>${v(it.technology)}</Scroll_InteriorTech>
+\t<Scroll_MatMatQual>${v(mat.materialQuality)}</Scroll_MatMatQual>
+\t<Scroll_MatMatInterQual >${v(mat.interiorQuality)}</Scroll_MatMatInterQual>
+\t<Scroll_MatPaintQual>${v(mat.paintQuality)}</Scroll_MatPaintQual>
+\t<Scroll_MatManuTech>${v(mat.techniques)}</Scroll_MatManuTech>
+\t<Scroll_DesignStyle>${v(df.style)}</Scroll_DesignStyle>
+\t<Scroll_DesignLux>${v(df.luxury)}</Scroll_DesignLux>
+\t<Scroll_DesignSafety>${v(df.safety)}</Scroll_DesignSafety>
+\t<Scroll_DesignCargo>${v(df.cargo)}</Scroll_DesignCargo>
+\t<Scroll_DesignDepend>${v(df.dependability)}</Scroll_DesignDepend>
+\t<Scroll_TestDemo>${v(ts.demographics)}</Scroll_TestDemo>
+\t<Scroll_TestPerform>${v(ts.performance)}</Scroll_TestPerform>
+\t<Scroll_TestFuel>${v(ts.fuelEconomy)}</Scroll_TestFuel>
+\t<Scroll_TestComf>${v(ts.comfort)}</Scroll_TestComf>
+\t<Scroll_TestUtil>${v(ts.utility)}</Scroll_TestUtil>
+\t<Scroll_TestReli>${v(ts.reliability)}</Scroll_TestReli>
+\t<DesignPace>${v(df.designPace, 50.0)}</DesignPace>
+\t<DemoGender>${genderEnum}</DemoGender>
+\t<DemoAge>${ageEnum}</DemoAge>
+\t<DemoWealth>${wealthVal}</DemoWealth>
+\t</Car>
+`;
   }
 
   const generateCarXml = generateVehicleXml;

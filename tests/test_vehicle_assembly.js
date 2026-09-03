@@ -170,15 +170,14 @@ assert(
 const sedanXml = E.generateVehicleXml(sedanSliders);
 assert(
   sedanXml &&
-  sedanXml.includes('<?xml version="1.0" encoding="utf-8"?>') &&
   sedanXml.includes('<Car>') &&
   sedanXml.includes('</Car>') &&
-  sedanXml.includes('<Slider_Interior_Style>') &&
-  sedanXml.includes('<Slider_Materials_Paint>') &&
-  sedanXml.includes('<Slider_Design_Safety>') &&
-  sedanXml.includes('<Slider_Demographics_Wealth>') &&
-  sedanXml.includes('<Slider_Testing_Reliability>'),
-  'generateVehicleXml produces valid GearCity SavedSliders XML blueprint with <Car> root tag',
+  sedanXml.includes('<Scroll_InteriorStyle>') &&
+  sedanXml.includes('<Scroll_MatPaintQual>') &&
+  sedanXml.includes('<Scroll_DesignSafety>') &&
+  sedanXml.includes('<DemoWealth>') &&
+  sedanXml.includes('<Scroll_TestReli>'),
+  'generateVehicleXml produces valid GearCity SavedSliders XML blueprint with exact in-game tags',
   `XML length: ${sedanXml.length} chars, Root: <Car>`
 );
 
@@ -235,11 +234,11 @@ assert(
 
 const luxXml = E.generateVehicleXml(luxSliders);
 assert(
-  luxXml.includes('<Slider_Demographics_Age>Greater Than 55</Slider_Demographics_Age>') &&
-  luxXml.includes('<Slider_Demographics_Wealth>5</Slider_Demographics_Wealth>') &&
-  luxXml.includes('<Slider_Testing_Demographics>93.3</Slider_Testing_Demographics>'),
-  'Luxury Sedan XML blueprint contains canonical Greater Than 55, Wealth 5, and 93.3% testing slider',
-  'XML demographic tags match canonical wiki targeting'
+  luxXml.includes('<DemoAge>3</DemoAge>') &&
+  luxXml.includes('<DemoWealth>5</DemoWealth>') &&
+  luxXml.includes('<Scroll_TestDemo>93.3</Scroll_TestDemo>'),
+  'Luxury Sedan XML blueprint contains canonical DemoAge 3 (Greater Than 55), DemoWealth 5, and 93.3% testing slider',
+  'XML demographic tags match canonical in-game targeting enums'
 );
 
 // -------------------------------------------------------------
