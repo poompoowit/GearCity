@@ -136,10 +136,10 @@ GENDER_MODIFIERS: Dict[str, Dict[str, float]] = {
 }
 
 AGE_MODIFIERS: Dict[str, Dict[str, float]] = {
-    "Less Than 25": {"Performance": 0.05, "Fuel": 0.05, "Safety": -0.05, "Luxury": -0.05, "Dependability": 0.05},
+    "Less Than 25": {"Performance": 0.05, "Fuel": 0.05, "Safety": -0.05, "Luxury": -0.05, "Dependability": 0.05, "Quality": -0.05},
     "25-35": {"Performance": -0.05, "Power": -0.05, "Driveability": -0.05, "Safety": 0.05, "Cargo": 0.05, "Dependability": 0.05},
-    "35-55": {"Performance": 0.05, "Power": 0.05, "Fuel": -0.05, "Safety": -0.05, "Cargo": -0.05, "Luxury": 0.05, "Dependability": -0.05},
-    "Greater Than 55": {"Performance": -0.05, "Power": -0.05, "Fuel": -0.05, "Safety": 0.05, "Luxury": 0.05, "Dependability": 0.05, "Driveability": -0.05},
+    "35-55": {"Performance": 0.05, "Power": 0.05, "Fuel": -0.05, "Safety": -0.05, "Cargo": -0.05, "Luxury": 0.05, "Dependability": -0.05, "Quality": 0.05},
+    "Greater Than 55": {"Performance": -0.05, "Power": -0.05, "Fuel": -0.05, "Safety": 0.05, "Luxury": 0.05, "Dependability": 0.05, "Driveability": -0.05, "Quality": 0.05},
 }
 
 

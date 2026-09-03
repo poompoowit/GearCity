@@ -17,6 +17,8 @@ It implements canonical game mechanics derived from the official **[GearCity Wik
 
 The web application runs entirely client-side in pure JavaScript with zero dependencies and sub-second calculation times.
 
+📖 **Looking for full documentation?** Check out the **[Comprehensive User Guide & Manual](docs/USER_GUIDE.md)** for deep dives into formulas, slider mechanics, demographic strategies, and in-game import tutorials.
+
 ---
 
 ## 🌟 The 5 Core Modules

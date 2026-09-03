@@ -14,9 +14,10 @@ def main():
 
     print("\n--- Example Vehicle Synergies: Luxury Sedan (Year 1960) ---")
     arch = advisor.get_vehicle_archetype("Luxury Sedan")
+    demo_res = demo_calc.evaluate_vehicle("Luxury Sedan")
     if arch:
         print(f"Vehicle:           {arch.vehicle_type}")
-        print(f"Target Demographic: Female (25-35)")
+        print(f"Target Demographic: {demo_res.best_gender} ({demo_res.best_age})")
         print(f"Chassis Style:     {arch.chassis_style}")
         print(f"Engine Style:      {arch.engine_style}")
         print(f"Gearbox Style:     {arch.gearbox_style}")
