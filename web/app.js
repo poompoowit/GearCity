@@ -574,6 +574,23 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elVoptYear && elVoptYear.value != clamped) elVoptYear.value = clamped;
     if (elVoptYearNum && elVoptYearNum.value != clamped) elVoptYearNum.value = clamped;
 
+    const elMsYear = document.getElementById('input-ms-year');
+    const elMsYearNum = document.getElementById('input-ms-year-num');
+    if (elMsYear && elMsYear.value != clamped) elMsYear.value = clamped;
+    if (elMsYearNum && elMsYearNum.value != clamped) elMsYearNum.value = clamped;
+
+    document.querySelectorAll('.btn-year-preset, .btn-ms-year-preset').forEach((btn) => {
+      if (Number(btn.dataset.year) === clamped) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    if (typeof window.refreshMotorsportWorkshop === 'function') {
+      window.refreshMotorsportWorkshop();
+    }
+
     if (forceFilterReset) {
       initFiltersForYear(clamped, true);
     }
@@ -2690,8 +2707,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   function initMotorsportWorkshop() {
     const inputYear = document.getElementById('input-ms-year');
-    const displayYear = document.getElementById('ms-year-display');
-    const quickYearBtns = document.querySelectorAll('.btn-ms-quick-year');
+    const inputYearNum = document.getElementById('input-ms-year-num');
+    const btnYearPrev = document.getElementById('btn-ms-year-prev');
+    const btnYearNext = document.getElementById('btn-ms-year-next');
+    const yearPresetBtns = document.querySelectorAll('.btn-ms-year-preset');
     const inputCc = document.getElementById('input-ms-cc');
     const displayCc = document.getElementById('ms-cc-display');
     const tierBtns = document.querySelectorAll('.btn-cc-tier');
@@ -2734,9 +2753,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function syncYear(yr) {
-      inputYear.value = yr;
-      if (displayYear) displayYear.textContent = yr;
-      syncPlatformOptions(yr);
+      const clamped = Math.max(1900, Math.min(2020, Number(yr) || 1900));
+      if (inputYear && inputYear.value != clamped) inputYear.value = clamped;
+      if (inputYearNum && inputYearNum.value != clamped) inputYearNum.value = clamped;
+      yearPresetBtns.forEach((btn) => {
+        if (Number(btn.dataset.year) === clamped) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      syncPlatformOptions(clamped);
     }
 
     function syncCc(cc) {
@@ -2752,17 +2779,53 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     inputYear.addEventListener('input', (e) => {
-      syncYear(parseInt(e.target.value, 10));
+      const yr = parseInt(e.target.value, 10);
+      syncYear(yr);
+      setGameYear(yr, false);
     });
 
     inputYear.addEventListener('change', () => {
       runMotorsportOptimization();
     });
 
-    quickYearBtns.forEach((btn) => {
+    if (inputYearNum) {
+      inputYearNum.addEventListener('input', (e) => {
+        const yr = parseInt(e.target.value, 10);
+        if (!isNaN(yr)) {
+          syncYear(yr);
+          setGameYear(yr, false);
+        }
+      });
+      inputYearNum.addEventListener('change', () => {
+        runMotorsportOptimization();
+      });
+    }
+
+    if (btnYearPrev) {
+      btnYearPrev.addEventListener('click', () => {
+        const currentY = parseInt(inputYear.value, 10) || 1960;
+        const newY = Math.max(1900, currentY - 1);
+        syncYear(newY);
+        setGameYear(newY, false);
+        runMotorsportOptimization();
+      });
+    }
+
+    if (btnYearNext) {
+      btnYearNext.addEventListener('click', () => {
+        const currentY = parseInt(inputYear.value, 10) || 1960;
+        const newY = Math.min(2020, currentY + 1);
+        syncYear(newY);
+        setGameYear(newY, false);
+        runMotorsportOptimization();
+      });
+    }
+
+    yearPresetBtns.forEach((btn) => {
       btn.addEventListener('click', () => {
-        const y = parseInt(btn.dataset.year, 10);
-        syncYear(y);
+        const yr = Number(btn.dataset.year);
+        syncYear(yr);
+        setGameYear(yr, false);
         runMotorsportOptimization();
       });
     });
@@ -3048,8 +3111,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Initial run
-    syncYear(1960);
+    // Initial run using Tab 1 active game year
+    const activeGameYear = Number(document.getElementById('input-year')?.value) || initialYear || 1960;
+    syncYear(activeGameYear);
     syncCc(5000);
     runMotorsportOptimization();
 

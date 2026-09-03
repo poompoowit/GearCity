@@ -1047,22 +1047,27 @@ select option:hover, select option:focus, select option:checked,
 
 .motorsport-tiers-group {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 6px;
+  gap: 6px;
+  margin-top: 8px;
+  width: 100%;
 }
 
 .btn-cc-tier {
+  flex: 1 1 0;
+  min-width: 0;
   background: rgba(0, 0, 0, 0.5);
   color: #e6c8a8;
   border: 1px solid rgba(240, 160, 75, 0.3);
-  border-radius: 8px;
-  padding: 8px 16px;
+  border-radius: 6px;
+  padding: 6px 4px;
   font-family: var(--font-game-ui);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
+  text-align: center;
+  box-shadow: none;
+  white-space: nowrap;
 }
 
 .btn-cc-tier:hover {
@@ -1073,10 +1078,11 @@ select option:hover, select option:focus, select option:checked,
 }
 
 .btn-cc-tier.active {
-  background: linear-gradient(180deg, #e65100 0%, #b71c1c 100%);
-  color: #ffffff;
-  border-color: #ff8a65;
-  box-shadow: 0 4px 14px rgba(230, 81, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  background: linear-gradient(180deg, #e65100 0%, #b71c1c 100%) !important;
+  color: #ffffff !important;
+  border-color: #ff8a65 !important;
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(230, 81, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
 }
 
 .btn-motorsport-run {

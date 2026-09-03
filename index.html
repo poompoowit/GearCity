@@ -56,7 +56,7 @@
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="web/style.css?v=6.6">
+  <link rel="stylesheet" href="web/style.css?v=6.7">
   <style>
     .modal-overlay { display: none !important; }
   </style>
@@ -940,19 +940,24 @@
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; background: rgba(0, 0, 0, 0.35); padding: 18px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08);">
             
-            <!-- Game Year -->
+            <!-- Competition Year (Same set of years as Tab 1) -->
             <div class="control-group">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <label for="input-ms-year" class="control-label">📅 Competition Year</label>
-                <span id="ms-year-display" style="font-size: 16px; font-weight: 800; color: #ffb74d;">1960</span>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label for="input-ms-year" class="control-label" style="margin-bottom: 0;">📅 Competition Year</label>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                  <button type="button" id="btn-ms-year-prev" class="btn-secondary" style="margin-top: 0; padding: 2px 8px; font-size: 11px; height: 26px; min-width: 24px;">◀</button>
+                  <input type="number" id="input-ms-year-num" class="input-text" min="1900" max="2020" value="1960" style="width: 76px; padding: 2px 6px; font-size: 14px; font-weight: 800; text-align: center; height: 26px; color: var(--gc-text-gold); font-family: var(--font-game-mono);">
+                  <button type="button" id="btn-ms-year-next" class="btn-secondary" style="margin-top: 0; padding: 2px 8px; font-size: 11px; height: 26px; min-width: 24px;">▶</button>
+                </div>
               </div>
               <input type="range" id="input-ms-year" min="1900" max="2020" value="1960" step="1" class="slider-control" style="width: 100%;">
-              <div style="display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap;">
-                <button type="button" class="btn-secondary btn-ms-quick-year" data-year="1904" style="padding: 3px 8px; font-size: 11px;">1904</button>
-                <button type="button" class="btn-secondary btn-ms-quick-year" data-year="1925" style="padding: 3px 8px; font-size: 11px;">1925</button>
-                <button type="button" class="btn-secondary btn-ms-quick-year" data-year="1960" style="padding: 3px 8px; font-size: 11px;">1960</button>
-                <button type="button" class="btn-secondary btn-ms-quick-year" data-year="1985" style="padding: 3px 8px; font-size: 11px;">1985</button>
-                <button type="button" class="btn-secondary btn-ms-quick-year" data-year="2010" style="padding: 3px 8px; font-size: 11px;">2010</button>
+              <div style="display: flex; justify-content: space-between; gap: 4px; margin-top: 6px;">
+                <button type="button" class="btn-ms-year-preset btn-secondary" data-year="1900" style="margin-top: 0; padding: 3px 6px; font-size: 11px; flex: 1;">1900</button>
+                <button type="button" class="btn-ms-year-preset btn-secondary" data-year="1920" style="margin-top: 0; padding: 3px 6px; font-size: 11px; flex: 1;">1920</button>
+                <button type="button" class="btn-ms-year-preset btn-secondary" data-year="1940" style="margin-top: 0; padding: 3px 6px; font-size: 11px; flex: 1;">1940</button>
+                <button type="button" class="btn-ms-year-preset btn-secondary" data-year="1960" style="margin-top: 0; padding: 3px 6px; font-size: 11px; flex: 1;">1960</button>
+                <button type="button" class="btn-ms-year-preset btn-secondary" data-year="1980" style="margin-top: 0; padding: 3px 6px; font-size: 11px; flex: 1;">1980</button>
+                <button type="button" class="btn-ms-year-preset btn-secondary" data-year="2000" style="margin-top: 0; padding: 3px 6px; font-size: 11px; flex: 1;">2000</button>
               </div>
             </div>
 
@@ -1075,8 +1080,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="web/data.js?v=6.6"></script>
-  <script src="web/engine.js?v=6.6"></script>
-  <script src="web/app.js?v=6.6"></script>
+  <script src="web/data.js?v=6.7"></script>
+  <script src="web/engine.js?v=6.7"></script>
+  <script src="web/app.js?v=6.7"></script>
 </body>
 </html>
