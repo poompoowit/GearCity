@@ -243,7 +243,13 @@ class EngineOptimizer:
                 penalty += ((res.torque_nm - constraints.max_torque) * 100.0) ** 3
 
             if constraints.design_focus == "Torque":
+                if constraints.max_torque is not None:
+                    torque_contrib = min(res.torque_nm, constraints.max_torque)
+                    return -(torque_contrib + res.horsepower * 0.25 - res.weight_kg * 0.75) + penalty
                 return -res.torque_nm + penalty
+
+            if constraints.max_torque is not None:
+                return -(res.horsepower - res.weight_kg * 0.5) + penalty
             return -res.horsepower + penalty
 
         # Solve

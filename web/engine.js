@@ -462,6 +462,7 @@ const GearCityEngine = (() => {
     const maxCost = constraints.maxCost != null && !isNaN(constraints.maxCost) ? Number(constraints.maxCost) : null;
     const maxCc = constraints.maxCc != null && !isNaN(constraints.maxCc) ? Number(constraints.maxCc) : null;
     const maxWeight = constraints.maxWeight != null && !isNaN(constraints.maxWeight) ? Number(constraints.maxWeight) : null;
+    const maxTorque = (constraints.maxTorque != null && !isNaN(constraints.maxTorque) && constraints.maxTorque !== '' && Number(constraints.maxTorque) > 0) ? Number(constraints.maxTorque) : null;
     const maxLength = constraints.maxLength != null && !isNaN(constraints.maxLength) ? Number(constraints.maxLength) : null;
     const maxWidth = constraints.maxWidth != null && !isNaN(constraints.maxWidth) ? Number(constraints.maxWidth) : null;
     const focus = constraints.focus || 'HP';
@@ -526,6 +527,10 @@ const GearCityEngine = (() => {
       if (maxWidth != null && res.widthCm > maxWidth) {
         penalty += Math.pow(res.widthCm - maxWidth, 2) * 15;
       }
+      if (maxTorque != null && res.torqueNm > maxTorque) {
+        const excessTorque = res.torqueNm - maxTorque;
+        penalty += 20000.0 + excessTorque * 500.0 + Math.pow(excessTorque, 2) * 50.0;
+      }
       if (effectiveMaxRatio != null && res.horsepower > 0) {
         const actualRatio = res.torqueNm / res.horsepower;
         const RATIO_TOLERANCE = 0.05;
@@ -540,12 +545,27 @@ const GearCityEngine = (() => {
       return penalty;
     }
 
+    function computeCandidateScore(res) {
+      if (maxTorque != null) {
+        if (focus === 'Torque') {
+          // When max torque is capped to protect gearbox, optimize for the target torque
+          // while heavily favoring the lightest engine (lowest weight in kg)
+          const torqueContribution = Math.min(res.torqueNm, maxTorque);
+          return (torqueContribution + res.horsepower * 0.25 - res.weightKg * 0.75) - evaluatePenalty(res);
+        } else {
+          // Focus HP within max torque constraint, also favoring lighter weight
+          return (res.horsepower - res.weightKg * 0.5) - evaluatePenalty(res);
+        }
+      }
+      return (focus === 'Torque' ? res.torqueNm : res.horsepower) - evaluatePenalty(res);
+    }
+
     // Pass 1: Quick screening across candidate component combinations
     const screened = [];
-    const screenBores = [150, 400, 700];
-    const screenStrokes = effectiveMaxRatio != null ? [0, 150, 400, 750] : [200, 500, 750];
-    const screenRpms = effectiveMaxRatio != null ? [0.8, 1.0] : [0.8];
-    const screenTorques = effectiveMaxRatio != null ? [0.4, 0.7] : [0.7];
+    const screenBores = maxTorque != null ? [100, 250, 450, 700] : [150, 400, 700];
+    const screenStrokes = (effectiveMaxRatio != null || maxTorque != null) ? [0, 150, 350, 600, 750] : [200, 500, 750];
+    const screenRpms = (effectiveMaxRatio != null || maxTorque != null) ? [0.8, 1.0] : [0.8];
+    const screenTorques = (effectiveMaxRatio != null || maxTorque != null) ? [0.4, 0.7] : [0.7];
 
     for (const comp of candidateComponents) {
       let bestCompScore = -Infinity;
@@ -576,7 +596,7 @@ const GearCityEngine = (() => {
                 name: constraints.modelName || `Engine_${year}`,
               };
               const res = calculatePerformance(testConfig, year);
-              const score = (focus === 'Torque' ? res.torqueNm : res.horsepower) - evaluatePenalty(res);
+              const score = computeCandidateScore(res);
               if (score > bestCompScore) {
                 bestCompScore = score;
               }
@@ -629,7 +649,7 @@ const GearCityEngine = (() => {
 
                 const testConfig = { components: comp, sliders, year, designSkill, name: constraints.modelName || `Engine_${year}` };
                 const res = calculatePerformance(testConfig);
-                const score = (focus === 'Torque' ? res.torqueNm : res.horsepower) - evaluatePenalty(res);
+                const score = computeCandidateScore(res);
 
                 if (score > bestScore) {
                   bestScore = score;
@@ -662,7 +682,7 @@ const GearCityEngine = (() => {
           const testConfig = { ...bestConfig, sliders: tunedSliders };
           try {
             const res = calculatePerformance(testConfig, year);
-            const score = (focus === 'Torque' ? res.torqueNm : res.horsepower) - evaluatePenalty(res);
+            const score = computeCandidateScore(res);
             if (score > bestScore) {
               bestScore = score;
               bestConfig = testConfig;
@@ -1447,6 +1467,11 @@ const GearCityEngine = (() => {
     }
     if (customConstraints.engineBayWidth != null && !isNaN(customConstraints.engineBayWidth)) {
       constraints.maxWidth = Number(customConstraints.engineBayWidth) / 10.0;
+    }
+    if (customConstraints.maxTorque != null && !isNaN(customConstraints.maxTorque) && customConstraints.maxTorque !== '' && Number(customConstraints.maxTorque) > 0) {
+      constraints.maxTorque = Number(customConstraints.maxTorque);
+    } else if (customConstraints.maxTorque === '' || customConstraints.maxTorque === null) {
+      constraints.maxTorque = null;
     }
     if (customConstraints.preferredFuel && customConstraints.preferredFuel !== 'Any' && customConstraints.preferredFuel !== 'Any Available Fuel') {
       constraints.allowedFuels = [customConstraints.preferredFuel];

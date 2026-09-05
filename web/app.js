@@ -86,6 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const goalOptions = document.querySelectorAll('.goal-option');
   const inputMaxCost = document.getElementById('input-max-cost');
   const inputMaxWeight = document.getElementById('input-max-weight');
+  const inputMaxTorque = document.getElementById('input-max-torque');
   const inputOptMaxRatio = document.getElementById('input-opt-max-ratio');
   const hintOptMaxRatio = document.getElementById('hint-opt-max-ratio');
   const inputMaxLen = document.getElementById('input-max-len');
@@ -696,6 +697,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const year = Number(inputYear.value);
     const maxCost = inputMaxCost.value ? Number(inputMaxCost.value) : null;
     const maxWeight = inputMaxWeight.value ? Number(inputMaxWeight.value) : null;
+    const maxTorque = inputMaxTorque && inputMaxTorque.value !== '' ? Number(inputMaxTorque.value) : null;
     const maxHpTorqueRatio = currentFocus === 'Torque' && inputOptMaxRatio && inputOptMaxRatio.value !== '' ? Number(inputOptMaxRatio.value) : null;
     const maxLength = inputMaxLen.value ? Number(inputMaxLen.value) / 10.0 : null; // mm to cm
     const maxWidth = inputMaxWid.value ? Number(inputMaxWid.value) / 10.0 : null;   // mm to cm
@@ -710,6 +712,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const optRes = GearCityEngine.optimizeEngine(year, {
           maxCost,
           maxWeight,
+          maxTorque,
           maxHpTorqueRatio,
           maxLength,
           maxWidth,
@@ -737,7 +740,9 @@ document.addEventListener('DOMContentLoaded', () => {
           sliderWeight.value = Math.round(cfg.sliders.layoutWeight * 100);
 
           updateCalculations();
-          optimizerStatus.textContent = `Optimal setup found: ${cfg.components.layout} ${cfg.components.cylinders}-cyl (${cfg.components.induction}, ${cfg.components.valve}).`;
+          const torqueInfo = maxTorque != null ? ` • Torque: ${optRes.performance.torqueNm.toFixed(1)} Nm (cap: ${maxTorque} Nm)` : '';
+          const weightInfo = maxTorque != null ? ` • Weight: ${optRes.performance.weightKg.toFixed(1)} kg` : '';
+          optimizerStatus.textContent = `Optimal setup found: ${cfg.components.layout} ${cfg.components.cylinders}-cyl (${cfg.components.induction}, ${cfg.components.valve})${torqueInfo}${weightInfo}.`;
         } else {
           optimizerStatus.textContent = 'No configuration found matching all limits. Try adjusting budget, weight, or filters.';
         }
@@ -2229,6 +2234,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const inputMaxCost = document.getElementById('input-vopt-max-cost');
     const inputMaxWeight = document.getElementById('input-vopt-max-weight');
+    const inputMaxTorque = document.getElementById('input-vopt-max-torque');
+    const hintVoptMaxTorque = document.getElementById('hint-vopt-max-torque');
     const inputMaxRatio = document.getElementById('input-vopt-max-ratio');
     const selectFocus = document.getElementById('select-vopt-focus');
     const selectFuel = document.getElementById('select-vopt-fuel');
@@ -2398,6 +2405,35 @@ document.addEventListener('DOMContentLoaded', () => {
       if (inputMaxLen) inputMaxLen.value = '';
       if (inputMaxWid) inputMaxWid.value = '';
 
+      // Recommend matched gearbox max torque input
+      const activeData = GearCityEngine.getActiveData();
+      const vc = (activeData.vehicleClasses && activeData.vehicleClasses.find((v) => v.carType === carType)) ||
+                 (GEARCITY_DATA.vehicleClasses && GEARCITY_DATA.vehicleClasses.find((v) => v.carType === carType));
+      let recGearboxTorque = null;
+      let recGearName = '';
+      if (vc && vc.gear) {
+        recGearName = vc.gear.split(/[>/]/)[0].trim();
+        const gb = (activeData.gearboxDesigns && activeData.gearboxDesigns[recGearName]) ||
+                   (GEARCITY_DATA.gearboxDesigns && GEARCITY_DATA.gearboxDesigns[recGearName]);
+        if (gb && gb.gearing && gb.gearing.maxTorqueInput) {
+          recGearboxTorque = gb.gearing.maxTorqueInput;
+        }
+      }
+
+      if (hintVoptMaxTorque) {
+        if (recGearboxTorque) {
+          hintVoptMaxTorque.textContent = `💡 Gearbox: ${recGearboxTorque} Nm`;
+          hintVoptMaxTorque.title = `Recommended gearbox (${recGearName}) handles up to ${recGearboxTorque} Nm. Click to apply limit.`;
+          hintVoptMaxTorque.onclick = () => {
+            if (inputMaxTorque) inputMaxTorque.value = recGearboxTorque;
+          };
+        } else {
+          hintVoptMaxTorque.textContent = '';
+          hintVoptMaxTorque.onclick = null;
+        }
+      }
+      if (inputMaxTorque) inputMaxTorque.value = '';
+
       if (sliderDepend) sliderDepend.value = constraints.designDependability != null ? constraints.designDependability : 50;
       if (sliderFuel) sliderFuel.value = constraints.performanceFuel != null ? constraints.performanceFuel : 0;
       if (sliderTechComp) sliderTechComp.value = constraints.techComponent != null ? constraints.techComponent : 0;
@@ -2434,6 +2470,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const customConstraints = {
           maxCost: inputMaxCost.value !== '' ? Number(inputMaxCost.value) : null,
           maxWeight: inputMaxWeight.value !== '' ? Number(inputMaxWeight.value) : null,
+          maxTorque: inputMaxTorque && inputMaxTorque.value !== '' ? Number(inputMaxTorque.value) : null,
           maxHpTorqueRatio: inputMaxRatio.value !== '' ? Number(inputMaxRatio.value) : null,
           focus: selectFocus.value,
           preferredFuel: selectFuel.value,
@@ -2689,6 +2726,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if (inputOptMaxRatio) {
     inputOptMaxRatio.addEventListener('input', () => saveCachedState({ optMaxRatio: inputOptMaxRatio.value }));
+  }
+
+  if (cached.optMaxTorque && inputMaxTorque) {
+    inputMaxTorque.value = cached.optMaxTorque;
+  }
+  if (inputMaxTorque) {
+    inputMaxTorque.addEventListener('input', () => saveCachedState({ optMaxTorque: inputMaxTorque.value }));
   }
 
   if (cached.engineSliders) {

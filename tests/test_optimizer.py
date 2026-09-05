@@ -33,6 +33,26 @@ class TestEngineOptimizer(unittest.TestCase):
         self.assertEqual(config.components.fuel, "Gasoline")
         self.assertGreater(result.horsepower, 0)
 
+    def test_max_torque_constraint(self):
+        constraints = OptimizationConstraints(
+            max_torque=180.0,
+            design_focus="Torque",
+            allowed_layouts=["I"],
+            allowed_fuels=["Gasoline"],
+        )
+
+        config, result, raw = self.optimizer.optimize(
+            year=1940,
+            constraints=constraints,
+            maxiter=15,
+            popsize=8,
+            seed=42,
+        )
+
+        self.assertIsNotNone(config)
+        self.assertIsNotNone(result)
+        self.assertLessEqual(result.torque_nm, 185.0)
+
 
 if __name__ == "__main__":
     unittest.main()
