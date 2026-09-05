@@ -153,6 +153,74 @@ assert(
   'Zero maxTorque behaves identically to unconstrained default'
 );
 
+// -------------------------------------------------------------
+// TEST 6: Motorsport Workshop (Tab 6) Max Torque Constraint
+// -------------------------------------------------------------
+console.log('\n--- TEST 6: Motorsport Workshop (Tab 6) Max Torque Constraint (500 Nm @ 1990) ---');
+const msUnconstrained = E.optimizeMotorsportEngines(1990, 5000);
+assert(
+  msUnconstrained && msUnconstrained.variants && msUnconstrained.variants.grandPrix,
+  'Unconstrained 1990 motorsport workshop optimization succeeds'
+);
+assert(
+  msUnconstrained.variants.grandPrix.performance.torqueNm > 900,
+  'Late-era unconstrained race engine torque is very high (> 900 Nm)',
+  `Actual: ${msUnconstrained.variants.grandPrix.performance.torqueNm.toFixed(1)} Nm`
+);
+
+const msCapped500 = E.optimizeMotorsportEngines(1990, 5000, { maxTorque: 500 });
+assert(
+  msCapped500 && msCapped500.variants,
+  'Motorsport optimization succeeds with maxTorque cap of 500 Nm'
+);
+
+const cv = msCapped500.variants;
+assert(
+  cv.grandPrix.performance.torqueNm <= 500.0,
+  'Grand Prix race engine strictly stays <= 500 Nm cap',
+  `Actual: ${cv.grandPrix.performance.torqueNm.toFixed(1)} Nm, HP: ${cv.grandPrix.performance.horsepower.toFixed(1)}`
+);
+assert(
+  cv.endurance.performance.torqueNm <= 500.0,
+  'Endurance race engine strictly stays <= 500 Nm cap',
+  `Actual: ${cv.endurance.performance.torqueNm.toFixed(1)} Nm, Dep: ${cv.endurance.performance.ratings.dependability}%`
+);
+assert(
+  cv.touring.performance.torqueNm <= 500.0,
+  'Touring race engine strictly stays <= 500 Nm cap',
+  `Actual: ${cv.touring.performance.torqueNm.toFixed(1)} Nm`
+);
+assert(
+  cv.general.performance.torqueNm <= 500.0,
+  'General race engine strictly stays <= 500 Nm cap',
+  `Actual: ${cv.general.performance.torqueNm.toFixed(1)} Nm`
+);
+
+assert(
+  cv.grandPrix.performance.weightKg < msUnconstrained.variants.grandPrix.performance.weightKg * 0.75,
+  'Capped GP race engine is significantly lighter (optimizes lightest high-RPM powertrain)',
+  `Capped: ${cv.grandPrix.performance.weightKg.toFixed(1)} kg vs Unconstrained: ${msUnconstrained.variants.grandPrix.performance.weightKg.toFixed(1)} kg`
+);
+
+const raceCar = E.assembleMotorsportVehicle(1990, 5000, cv.general, 'Sports', undefined, { maxTorque: 500 });
+assert(
+  raceCar && raceCar.components && raceCar.components.gearbox,
+  'Motorsport vehicle assembly succeeds with torque limit'
+);
+assert(
+  raceCar.components.gearbox.maxTorqueInput <= 500.0,
+  'Race car gearbox maxTorqueInput reflects the 500 Nm gearbox limit',
+  `Gearbox Max Input: ${raceCar.components.gearbox.maxTorqueInput.toFixed(1)} Nm`
+);
+
+// Backward compatibility check
+const msBlank = E.optimizeMotorsportEngines(1960, 4000, { maxTorque: '' });
+const msDefault = E.optimizeMotorsportEngines(1960, 4000);
+assert(
+  Math.abs(msBlank.variants.general.performance.torqueNm - msDefault.variants.general.performance.torqueNm) < 0.1,
+  'Motorsport blank maxTorque string behaves identically to unconstrained default'
+);
+
 console.log('\n═══════════════════════════════════════════════════════════════');
 console.log(`TOTAL TESTS: ${passed + failed}`);
 console.log(`✅ PASSED: ${passed}`);

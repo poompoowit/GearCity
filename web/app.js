@@ -2758,6 +2758,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputCc = document.getElementById('input-ms-cc');
     const displayCc = document.getElementById('ms-cc-display');
     const tierBtns = document.querySelectorAll('.btn-cc-tier');
+    const inputMaxTorque = document.getElementById('input-ms-max-torque');
+    const torquePresetBtns = document.querySelectorAll('.btn-ms-torque-preset');
     const selectPlatform = document.getElementById('select-ms-platform');
     const selectFuel = document.getElementById('select-ms-fuel');
     const btnRun = document.getElementById('btn-run-motorsport');
@@ -2766,6 +2768,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const assemblyContainer = document.getElementById('ms-car-assembly-container');
 
     if (!inputYear || !inputCc || !cardsContainer || !btnRun) return;
+
+    if (cached.msMaxTorque && inputMaxTorque) {
+      inputMaxTorque.value = cached.msMaxTorque;
+    }
+
+    function updateTorquePresetActiveState() {
+      const curVal = inputMaxTorque ? inputMaxTorque.value.trim() : '';
+      torquePresetBtns.forEach((btn) => {
+        if ((btn.dataset.torque || '') === curVal) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    }
+    updateTorquePresetActiveState();
+
+    if (inputMaxTorque) {
+      inputMaxTorque.addEventListener('input', () => {
+        saveCachedState({ msMaxTorque: inputMaxTorque.value });
+        updateTorquePresetActiveState();
+      });
+      inputMaxTorque.addEventListener('change', () => {
+        runMotorsportOptimization();
+      });
+    }
+
+    torquePresetBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if (inputMaxTorque) {
+          inputMaxTorque.value = btn.dataset.torque || '';
+          saveCachedState({ msMaxTorque: inputMaxTorque.value });
+          updateTorquePresetActiveState();
+          runMotorsportOptimization();
+        }
+      });
+    });
 
     function downloadFile(content, filename) {
       const blob = new Blob([content], { type: 'application/xml;charset=utf-8' });
@@ -2911,18 +2950,30 @@ document.addEventListener('DOMContentLoaded', () => {
       const cc = parseInt(inputCc.value, 10) || 5000;
       const platform = selectPlatform ? selectPlatform.value : 'Sports';
       const fuelPref = selectFuel ? selectFuel.value : 'Any';
+      const maxTorqueVal = inputMaxTorque && inputMaxTorque.value.trim() !== '' && !isNaN(inputMaxTorque.value) && Number(inputMaxTorque.value) > 0
+        ? Number(inputMaxTorque.value)
+        : null;
 
       if (badgeStable) {
-        badgeStable.textContent = `Displacement Class: ≤ ${cc.toLocaleString()} cc @ ${yr}`;
+        if (maxTorqueVal) {
+          badgeStable.textContent = `Displacement Class: ≤ ${cc.toLocaleString()} cc @ ${yr} • Torque Cap: ≤ ${maxTorqueVal} Nm`;
+        } else {
+          badgeStable.textContent = `Displacement Class: ≤ ${cc.toLocaleString()} cc @ ${yr}`;
+        }
       }
 
       if (typeof GearCityEngine.optimizeMotorsportEngines !== 'function') return;
 
-      const engineResults = GearCityEngine.optimizeMotorsportEngines(yr, cc, { preferredFuel: fuelPref });
+      const engineResults = GearCityEngine.optimizeMotorsportEngines(yr, cc, {
+        preferredFuel: fuelPref,
+        maxTorque: maxTorqueVal,
+      });
       if (!engineResults || !engineResults.variants) return;
 
       const v = engineResults.variants;
-      const raceVehicle = GearCityEngine.assembleMotorsportVehicle(yr, cc, v.general, platform);
+      const raceVehicle = GearCityEngine.assembleMotorsportVehicle(yr, cc, v.general, platform, undefined, {
+        maxTorque: maxTorqueVal,
+      });
 
       // Render 4 Engine Variant Cards Side-by-Side
       const variantConfig = [
@@ -2982,9 +3033,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     </h4>
                     <span style="font-size: 11px; color: ${cfg.accentColor}; font-weight: 700;">${cfg.badge}</span>
                   </div>
-                  <span class="badge" style="background: rgba(255,255,255,0.08); color: #fff; font-size: 11px; padding: 2px 6px;">
-                    ${p.displacementCc.toFixed(0)} cc
-                  </span>
+                  <div style="display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end;">
+                    <span class="badge" style="background: rgba(255,255,255,0.08); color: #fff; font-size: 11px; padding: 2px 6px;">
+                      ${p.displacementCc.toFixed(0)} cc
+                    </span>
+                    ${maxTorqueVal ? `
+                      <span class="badge" style="background: rgba(129, 199, 132, 0.18); border: 1px solid #81c784; color: #81c784; font-size: 10.5px; padding: 2px 6px; font-weight: 700;">
+                        ≤ ${maxTorqueVal} Nm
+                      </span>
+                    ` : ''}
+                  </div>
                 </div>
 
                 <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.4;">
@@ -2998,7 +3056,9 @@ document.addEventListener('DOMContentLoaded', () => {
                   </div>
                   <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
                     <span style="font-size: 12px; color: var(--text-muted);">Torque:</span>
-                    <strong style="font-size: 13px; color: #e0e0e0;">${p.torqueNm.toFixed(1)} Nm (${p.torqueFtLb.toFixed(1)} lb-ft)</strong>
+                    <strong style="font-size: 13px; color: ${maxTorqueVal ? (p.torqueNm <= maxTorqueVal ? '#81c784' : '#ff5252') : '#e0e0e0'};">
+                      ${p.torqueNm.toFixed(1)} Nm (${p.torqueFtLb.toFixed(1)} lb-ft)${maxTorqueVal ? (p.torqueNm <= maxTorqueVal ? ' ✓' : ' ⚠️') : ''}
+                    </strong>
                   </div>
                   <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
                     <span style="font-size: 12px; color: var(--text-muted);">Bore × Stroke:</span>

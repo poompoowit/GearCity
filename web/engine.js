@@ -1554,6 +1554,9 @@ const GearCityEngine = (() => {
   function optimizeMotorsportEngines(year = 1960, maxCc = 5000, customOptions = {}, ver) {
     const yr = Math.max(1900, Math.min(2020, parseInt(year, 10) || 1960));
     const capCc = Math.max(1000, Math.min(16000, parseFloat(maxCc) || 5000));
+    const maxTorque = (customOptions.maxTorque != null && !isNaN(customOptions.maxTorque) && customOptions.maxTorque !== '' && Number(customOptions.maxTorque) > 0) ? Number(customOptions.maxTorque) : null;
+    const targetFractions = maxTorque != null ? [0.995, 0.90, 0.80, 0.70, 0.60, 0.50, 0.40, 0.30, 0.25, 0.20, 0.15].filter((f) => capCc * f >= 500) : [0.995];
+    if (targetFractions.length === 0) targetFractions.push(0.995);
 
     const allLayouts = GEARCITY_DATA.layouts || [];
     const allCylinders = GEARCITY_DATA.cylinders || [];
@@ -1596,7 +1599,7 @@ const GearCityEngine = (() => {
           technologyTechnologies: 1.0,
           technologyTechniques: 1.0,
         },
-        evalFn: (p) => p.horsepower + (p.horsepower / (p.weightKg || 100)) * 40,
+        evalFn: (p, maxT) => p.horsepower + (p.horsepower / (p.weightKg || 100)) * 40,
       },
       {
         key: 'endurance',
@@ -1619,7 +1622,7 @@ const GearCityEngine = (() => {
           technologyTechnologies: 0.85,
           technologyTechniques: 1.0,
         },
-        evalFn: (p) => p.horsepower * 0.35 + p.torqueNm * 0.25 + (p.ratings ? p.ratings.dependability * 2.5 : 150),
+        evalFn: (p, maxT) => p.horsepower * 0.35 + (maxT != null ? Math.min(p.torqueNm, maxT) : p.torqueNm) * 0.25 + (p.ratings ? p.ratings.dependability * 2.5 : 150),
       },
       {
         key: 'touring',
@@ -1642,7 +1645,7 @@ const GearCityEngine = (() => {
           technologyTechnologies: 0.85,
           technologyTechniques: 0.90,
         },
-        evalFn: (p) => p.torqueNm * 0.45 + p.horsepower * 0.40 + (p.ratings ? p.ratings.smoothness * 1.5 : 100),
+        evalFn: (p, maxT) => (maxT != null ? Math.min(p.torqueNm, maxT) : p.torqueNm) * 0.45 + p.horsepower * 0.40 + (p.ratings ? p.ratings.smoothness * 1.5 : 100),
       },
       {
         key: 'general',
@@ -1665,7 +1668,7 @@ const GearCityEngine = (() => {
           technologyTechnologies: 0.95,
           technologyTechniques: 1.0,
         },
-        evalFn: (p) => p.horsepower * 0.45 + p.torqueNm * 0.35 + (p.ratings ? p.ratings.dependability * 1.5 : 100),
+        evalFn: (p, maxT) => p.horsepower * 0.45 + (maxT != null ? Math.min(p.torqueNm, maxT) : p.torqueNm) * 0.35 + (p.ratings ? p.ratings.dependability * 1.5 : 100),
       },
     ];
 
@@ -1705,86 +1708,102 @@ const GearCityEngine = (() => {
           const numCyl = parseInt(c.Name.match(/\d+/)?.[0] || '4', 10);
           const limits = getBoreStrokeLimits(l.Name, yr);
 
-          const targetCc = capCc * 0.995;
-          const R = disc.rTarget;
-          const sTarget = Math.cbrt((targetCc * 4000) / (numCyl * Math.PI * R * R));
-          const bTarget = sTarget * R;
+          for (const frac of targetFractions) {
+            const targetCc = capCc * frac;
+            const R = disc.rTarget;
+            const sTarget = Math.cbrt((targetCc * 4000) / (numCyl * Math.PI * R * R));
+            const bTarget = sTarget * R;
 
-          let boreMm = Math.max(limits.minBore, Math.min(limits.maxBore, bTarget));
-          let strokeMm = Math.max(limits.minStroke, Math.min(limits.maxStroke, sTarget));
+            let boreMm = Math.max(limits.minBore, Math.min(limits.maxBore, bTarget));
+            let strokeMm = Math.max(limits.minStroke, Math.min(limits.maxStroke, sTarget));
 
-          // Strict cap enforcement: ensure displacement never exceeds capCc
-          let dispCc = numCyl * (Math.PI / 4) * Math.pow(boreMm, 2) * strokeMm / 1000;
-          if (dispCc > capCc) {
-            strokeMm = (capCc * 1000) / (numCyl * (Math.PI / 4) * Math.pow(boreMm, 2)) * 0.998;
-            dispCc = numCyl * (Math.PI / 4) * Math.pow(boreMm, 2) * strokeMm / 1000;
-          }
+            // Strict cap enforcement: ensure displacement never exceeds capCc
+            let dispCc = numCyl * (Math.PI / 4) * Math.pow(boreMm, 2) * strokeMm / 1000;
+            if (dispCc > capCc) {
+              strokeMm = (capCc * 1000) / (numCyl * (Math.PI / 4) * Math.pow(boreMm, 2)) * 0.998;
+              dispCc = numCyl * (Math.PI / 4) * Math.pow(boreMm, 2) * strokeMm / 1000;
+            }
 
-          const boreSlide = Math.round(((boreMm - limits.minBore) / (limits.maxBore - limits.minBore)) * 1000);
-          const strokeSlide = Math.round(((strokeMm - limits.minStroke) / (limits.maxStroke - limits.minStroke)) * 1000);
+            const boreSlide = Math.round(((boreMm - limits.minBore) / (limits.maxBore - limits.minBore)) * 1000);
+            const strokeSlide = Math.round(((strokeMm - limits.minStroke) / (limits.maxStroke - limits.minStroke)) * 1000);
 
-          for (const ind of candidateInds) {
-            for (const v of candidateValves) {
-              const config = {
-                components: {
-                  layout: l.Name,
-                  cylinders: c.Name,
-                  fuel: fuel.Name,
-                  induction: ind.Name,
-                  valve: v.Name,
-                },
-                sliders: {
-                  boreSlide,
-                  strokeSlide,
-                  ...disc.sliders,
-                },
-                techSliders: {
-                  materials: 100.0,
-                  components: disc.sliders.technologyComponents * 100.0,
-                  technology: disc.sliders.technologyTechnologies * 100.0,
-                  techniques: disc.sliders.technologyTechniques * 100.0,
-                },
-                year: yr,
-                designSkill: 100,
-                name: `Race_${disc.name.replace(/[^A-Za-z0-9]/g, '')}_${capCc}cc_${yr}`,
-              };
+            for (const ind of candidateInds) {
+              for (const v of candidateValves) {
+                const config = {
+                  components: {
+                    layout: l.Name,
+                    cylinders: c.Name,
+                    fuel: fuel.Name,
+                    induction: ind.Name,
+                    valve: v.Name,
+                  },
+                  sliders: {
+                    boreSlide,
+                    strokeSlide,
+                    ...disc.sliders,
+                  },
+                  techSliders: {
+                    materials: 100.0,
+                    components: disc.sliders.technologyComponents * 100.0,
+                    technology: disc.sliders.technologyTechnologies * 100.0,
+                    techniques: disc.sliders.technologyTechniques * 100.0,
+                  },
+                  year: yr,
+                  designSkill: 100,
+                  name: `Race_${disc.name.replace(/[^A-Za-z0-9]/g, '')}_${Math.round(dispCc)}cc_${yr}`,
+                };
 
-              try {
-                const perf = calculatePerformance(config);
-                if (perf.displacementCc <= capCc) {
-                  const score = disc.evalFn(perf);
-                  if (score > bestScore) {
-                    bestScore = score;
-                    bestCandidate = {
-                      disciplineKey: disc.key,
-                      disciplineName: disc.name,
-                      badge: disc.badge,
-                      desc: disc.desc,
-                      config,
-                      performance: perf,
-                      score,
-                      boreMm: Number(perf.boreMm.toFixed(1)),
-                      strokeMm: Number(perf.strokeMm.toFixed(1)),
-                      boreStrokeRatio: Number((perf.boreMm / (perf.strokeMm || 1)).toFixed(2)),
-                      geometry: {
+                try {
+                  const perf = calculatePerformance(config);
+                  if (perf.displacementCc <= capCc) {
+                    let penalty = 0.0;
+                    if (maxTorque != null && perf.torqueNm > maxTorque) {
+                      const excessTorque = perf.torqueNm - maxTorque;
+                      penalty = 20000.0 + excessTorque * 500.0 + Math.pow(excessTorque, 2) * 50.0;
+                    }
+
+                    let score = disc.evalFn(perf, maxTorque);
+                    if (maxTorque != null) {
+                      // Heavily reward lighter weight when under torque cap
+                      score = score - (perf.weightKg * 0.5) - penalty;
+                    } else {
+                      score = score - penalty;
+                    }
+
+                    if (score > bestScore) {
+                      bestScore = score;
+                      bestCandidate = {
+                        disciplineKey: disc.key,
+                        disciplineName: disc.name,
+                        badge: disc.badge,
+                        desc: disc.desc,
+                        config,
+                        performance: perf,
+                        score,
+                        maxTorqueLimit: maxTorque,
                         boreMm: Number(perf.boreMm.toFixed(1)),
                         strokeMm: Number(perf.strokeMm.toFixed(1)),
-                        ratio: Number((perf.boreMm / (perf.strokeMm || 1)).toFixed(2)),
-                      },
-                      components: {
-                        layout: config.components.layout,
-                        cylinders: config.components.cylinders,
-                        valvetrain: config.components.valvetrain || config.components.valve,
-                        fuel: config.components.fuel,
-                        induction: config.components.induction,
-                      },
-                      ccUtilization: Number((perf.displacementCc / capCc * 100).toFixed(1)),
-                      xml: generateEngineXml(config),
-                    };
+                        boreStrokeRatio: Number((perf.boreMm / (perf.strokeMm || 1)).toFixed(2)),
+                        geometry: {
+                          boreMm: Number(perf.boreMm.toFixed(1)),
+                          strokeMm: Number(perf.strokeMm.toFixed(1)),
+                          ratio: Number((perf.boreMm / (perf.strokeMm || 1)).toFixed(2)),
+                        },
+                        components: {
+                          layout: config.components.layout,
+                          cylinders: config.components.cylinders,
+                          valvetrain: config.components.valvetrain || config.components.valve,
+                          fuel: config.components.fuel,
+                          induction: config.components.induction,
+                        },
+                        ccUtilization: Number((perf.displacementCc / capCc * 100).toFixed(1)),
+                        xml: generateEngineXml(config),
+                      };
+                    }
                   }
+                } catch (err) {
+                  // Ignore invalid geometry edge cases
                 }
-              } catch (err) {
-                // Ignore invalid geometry edge cases
               }
             }
           }
@@ -1797,6 +1816,7 @@ const GearCityEngine = (() => {
     return {
       year: yr,
       maxCc: capCc,
+      maxTorque,
       variants: engineVariants,
     };
   }
@@ -1804,7 +1824,7 @@ const GearCityEngine = (() => {
   /**
    * Assemble the Universal Race Car Model using the General Race Engine
    */
-  function assembleMotorsportVehicle(year = 1960, maxCc = 5000, generalVariant, carType = 'Sports', ver) {
+  function assembleMotorsportVehicle(year = 1960, maxCc = 5000, generalVariant, carType = 'Sports', ver, customOptions = {}) {
     const yr = Math.max(1900, Math.min(2020, parseInt(year, 10) || 1960));
     let effectiveCarType = carType;
     if (effectiveCarType === 'Supercar' && yr < 1960) {
@@ -1875,6 +1895,10 @@ const GearCityEngine = (() => {
       },
     };
 
+    const maxTorqueInputVal = (customOptions && customOptions.maxTorque != null && !isNaN(customOptions.maxTorque) && customOptions.maxTorque !== '' && Number(customOptions.maxTorque) > 0)
+      ? Number(customOptions.maxTorque)
+      : Math.max(300.0, (genPerf.torqueNm || 200) * 1.3);
+
     const gearboxConfig = {
       name: `Gearbox_Race_${maxCc}cc_${yr}`,
       gearboxType: yr >= 2000 ? 'Dual-Clutch' : (yr >= 1990 ? 'Sequential' : 'Manual'),
@@ -1889,7 +1913,7 @@ const GearCityEngine = (() => {
         loRatio: 65.0,
         hiRatio: 85.0,
         torqueInputRatio: 80.0,
-        maxTorqueInput: Math.max(300.0, (genPerf.torqueNm || 200) * 1.3),
+        maxTorqueInput: maxTorqueInputVal,
       },
       designFocus: {
         performance: 95.0,

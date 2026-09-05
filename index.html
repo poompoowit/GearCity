@@ -1015,6 +1015,24 @@
               </div>
             </div>
 
+            <!-- Max Torque Limit (Nm) -->
+            <div class="control-group" id="group-ms-max-torque">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label for="input-ms-max-torque" class="control-label" style="margin-bottom: 0;">⚙️ Max Torque (Nm)</label>
+                <span id="hint-ms-max-torque" style="font-size: 11px; color: var(--gc-text-muted); font-weight: normal;">(Gearbox cap)</span>
+              </div>
+              <input type="number" id="input-ms-max-torque" class="input-text" placeholder="e.g. 500 (blank = no limit)" min="50" max="3000" style="width: 100%;">
+              <div style="display: flex; justify-content: space-between; gap: 4px; margin-top: 6px;">
+                <button type="button" class="btn-ms-torque-preset btn-secondary" data-torque="350" style="margin-top: 0; padding: 3px 6px; font-size: 11px; flex: 1;">350</button>
+                <button type="button" class="btn-ms-torque-preset btn-secondary" data-torque="500" style="margin-top: 0; padding: 3px 6px; font-size: 11px; flex: 1;">500</button>
+                <button type="button" class="btn-ms-torque-preset btn-secondary" data-torque="750" style="margin-top: 0; padding: 3px 6px; font-size: 11px; flex: 1;">750</button>
+                <button type="button" class="btn-ms-torque-preset btn-secondary" data-torque="" style="margin-top: 0; padding: 3px 6px; font-size: 11px; flex: 1;">Clear</button>
+              </div>
+              <div style="margin-top: 6px; font-size: 11px; color: var(--text-muted);">
+                Gearbox limit: optimizes lightest high-RPM race engine within torque cap.
+              </div>
+            </div>
+
           </div>
         </div>
 
