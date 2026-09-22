@@ -519,7 +519,8 @@ const GearCityEngine = (() => {
         penalty += Math.pow(res.displacementCc - maxCc, 2) * 5;
       }
       if (maxWeight != null && res.weightKg > maxWeight) {
-        penalty += Math.pow(res.weightKg - maxWeight, 2) * 10;
+        const excessWeight = res.weightKg - maxWeight;
+        penalty += 20000.0 + excessWeight * 500.0 + Math.pow(excessWeight, 2) * 50.0;
       }
       if (maxLength != null && res.lengthCm > maxLength) {
         penalty += Math.pow(res.lengthCm - maxLength, 2) * 15;
@@ -557,6 +558,10 @@ const GearCityEngine = (() => {
           return (res.horsepower - res.weightKg * 0.5) - evaluatePenalty(res);
         }
       }
+      if (maxWeight != null) {
+        const base = focus === 'Torque' ? res.torqueNm : res.horsepower;
+        return (base - res.weightKg * 0.1) - evaluatePenalty(res);
+      }
       return (focus === 'Torque' ? res.torqueNm : res.horsepower) - evaluatePenalty(res);
     }
 
@@ -584,8 +589,8 @@ const GearCityEngine = (() => {
                   designFocusPerformance: 0.8,
                   designFocusFuelEconomy: 0.0,
                   designFocusDependability: 0.5,
-                  layoutLength: 0.25,
-                  layoutWidth: 0.25,
+                  layoutLength: 0.2,
+                  layoutWidth: 0.2,
                   layoutWeight: 0.5,
                   technologyMaterials: 0.4,
                   technologyComponents: 0.0,
@@ -620,6 +625,7 @@ const GearCityEngine = (() => {
     const torqueSteps = [0.3, 0.5, 0.7, 0.95];
     const rpmSteps = [0.65, 0.85, 1.0];
     const matSteps = [0.25, 0.5, 0.75];
+    const weightSteps = maxWeight != null ? [0.1, 0.35, 0.5] : [0.5];
 
     const designSkill = constraints.designSkill != null ? Number(constraints.designSkill) : DEFAULT_ENGINE_SKILL;
 
@@ -629,32 +635,34 @@ const GearCityEngine = (() => {
           for (const t of torqueSteps) {
             for (const r of rpmSteps) {
               for (const m of matSteps) {
-                const sliders = {
-                  boreSlide: b,
-                  strokeSlide: s,
-                  performanceTorque: t,
-                  performanceRevolutions: r,
-                  performanceFuelEconomy: constraints.performanceFuel != null ? constraints.performanceFuel / 100.0 : 0.0,
-                  designFocusPerformance: 0.85,
-                  designFocusFuelEconomy: 0.0,
-                  designFocusDependability: constraints.designDependability != null ? constraints.designDependability / 100.0 : 0.5,
-                  layoutLength: 0.2,
-                  layoutWidth: 0.2,
-                  layoutWeight: 0.5,
-                  technologyMaterials: m,
-                  technologyComponents: constraints.techComponent != null ? constraints.techComponent / 100.0 : 0.0,
-                  technologyTechnologies: constraints.techTechnology != null ? constraints.techTechnology / 100.0 : 0.0,
-                  technologyTechniques: constraints.techTechnique != null ? constraints.techTechnique / 100.0 : 0.0,
-                };
+                for (const w of weightSteps) {
+                  const sliders = {
+                    boreSlide: b,
+                    strokeSlide: s,
+                    performanceTorque: t,
+                    performanceRevolutions: r,
+                    performanceFuelEconomy: constraints.performanceFuel != null ? constraints.performanceFuel / 100.0 : 0.0,
+                    designFocusPerformance: 0.85,
+                    designFocusFuelEconomy: 0.0,
+                    designFocusDependability: constraints.designDependability != null ? constraints.designDependability / 100.0 : 0.5,
+                    layoutLength: 0.2,
+                    layoutWidth: 0.2,
+                    layoutWeight: w,
+                    technologyMaterials: m,
+                    technologyComponents: constraints.techComponent != null ? constraints.techComponent / 100.0 : 0.0,
+                    technologyTechnologies: constraints.techTechnology != null ? constraints.techTechnology / 100.0 : 0.0,
+                    technologyTechniques: constraints.techTechnique != null ? constraints.techTechnique / 100.0 : 0.0,
+                  };
 
-                const testConfig = { components: comp, sliders, year, designSkill, name: constraints.modelName || `Engine_${year}` };
-                const res = calculatePerformance(testConfig);
-                const score = computeCandidateScore(res);
+                  const testConfig = { components: comp, sliders, year, designSkill, name: constraints.modelName || `Engine_${year}` };
+                  const res = calculatePerformance(testConfig);
+                  const score = computeCandidateScore(res);
 
-                if (score > bestScore) {
-                  bestScore = score;
-                  bestConfig = testConfig;
-                  bestPerf = res;
+                  if (score > bestScore) {
+                    bestScore = score;
+                    bestConfig = testConfig;
+                    bestPerf = res;
+                  }
                 }
               }
             }

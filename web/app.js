@@ -189,6 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const tableDemographicsBody = document.getElementById('table-demographics-body');
 
   let currentFocus = 'HP';
+  let currentLayoutLength = 0.2;
+  let currentLayoutWidth = 0.2;
 
   // User Filter State (Allowed components)
   const userAllowed = {
@@ -516,8 +518,8 @@ document.addEventListener('DOMContentLoaded', () => {
         designFocusPerformance: Number(sliderPerfFocus.value) / 100.0,
         designFocusFuelEconomy: Number(sliderEcoFocus.value) / 100.0,
         designFocusDependability: 0.5,
-        layoutLength: 0.3,
-        layoutWidth: 0.3,
+        layoutLength: currentLayoutLength,
+        layoutWidth: currentLayoutWidth,
         layoutWeight: Number(sliderWeight.value) / 100.0,
         technologyMaterials: Number(sliderMaterials.value) / 100.0,
         technologyComponents: 0.0,
@@ -728,6 +730,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (optRes && optRes.config) {
           const cfg = optRes.config;
+          if (cfg.sliders) {
+            currentLayoutLength = cfg.sliders.layoutLength != null ? cfg.sliders.layoutLength : 0.2;
+            currentLayoutWidth = cfg.sliders.layoutWidth != null ? cfg.sliders.layoutWidth : 0.2;
+          }
           populateComponentDropdowns(cfg.components);
 
           sliderBore.value = cfg.sliders.boreSlide;
@@ -759,52 +765,57 @@ document.addEventListener('DOMContentLoaded', () => {
      XML Blueprint Download
      ========================================================================== */
   btnDownloadXml.addEventListener('click', () => {
-    const year = Number(inputYear.value);
-    const rawName = (inputModelName.value || `Model`).trim().replace(/^Engine_/i, '');
-    const safeModelName = rawName.replace(/[^a-zA-Z0-9_]/g, '_') || 'Custom';
-    const filename = `Engine_${safeModelName}_${year}.xml`;
+    try {
+      const year = Number(inputYear.value);
+      const rawName = (inputModelName.value || `Model`).trim().replace(/^Engine_/i, '');
+      const safeModelName = rawName.replace(/[^a-zA-Z0-9_]/g, '_') || 'Custom';
+      const filename = `Engine_${safeModelName}_${year}.xml`;
 
-    trackUsageEvent('download_xml_base', `Download XML: ${filename}`);
+      trackUsageEvent('download_xml_base', `Download XML: ${filename}`);
 
-    const config = {
-      components: {
-        layout: selectLayout.value,
-        cylinders: selectCylinders.value,
-        fuel: selectOptFuel.value || 'Gasoline',
-        induction: selectInduction.value,
-        valve: selectValvetrain.value,
-      },
-      sliders: {
-        boreSlide: Number(sliderBore.value),
-        strokeSlide: Number(sliderStroke.value),
-        performanceTorque: Number(sliderTorq.value) / 100.0,
-        performanceRevolutions: Number(sliderRpm.value) / 100.0,
-        performanceFuelEconomy: Number(sliderEcoFocus.value) / 100.0,
-        designFocusPerformance: Number(sliderPerfFocus.value) / 100.0,
-        designFocusFuelEconomy: Number(sliderEcoFocus.value) / 100.0,
-        designFocusDependability: 0.5,
-        layoutLength: 0.3,
-        layoutWidth: 0.3,
-        layoutWeight: Number(sliderWeight.value) / 100.0,
-        technologyMaterials: Number(sliderMaterials.value) / 100.0,
-        technologyComponents: 0.0,
-        technologyTechnologies: 0.0,
-        technologyTechniques: 0.0,
-      },
-      year,
-      name: modelName,
-    };
+      const config = {
+        components: {
+          layout: selectLayout.value,
+          cylinders: selectCylinders.value,
+          fuel: selectOptFuel.value || 'Gasoline',
+          induction: selectInduction.value,
+          valve: selectValvetrain.value,
+        },
+        sliders: {
+          boreSlide: Number(sliderBore.value),
+          strokeSlide: Number(sliderStroke.value),
+          performanceTorque: Number(sliderTorq.value) / 100.0,
+          performanceRevolutions: Number(sliderRpm.value) / 100.0,
+          performanceFuelEconomy: Number(sliderEcoFocus.value) / 100.0,
+          designFocusPerformance: Number(sliderPerfFocus.value) / 100.0,
+          designFocusFuelEconomy: Number(sliderEcoFocus.value) / 100.0,
+          designFocusDependability: 0.5,
+          layoutLength: currentLayoutLength,
+          layoutWidth: currentLayoutWidth,
+          layoutWeight: Number(sliderWeight.value) / 100.0,
+          technologyMaterials: Number(sliderMaterials.value) / 100.0,
+          technologyComponents: 0.0,
+          technologyTechnologies: 0.0,
+          technologyTechniques: 0.0,
+        },
+        year,
+        name: safeModelName,
+      };
 
-    const xmlContent = GearCityEngine.generateEngineXml(config);
-    const blob = new Blob([xmlContent], { type: 'application/xml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+      const xmlContent = GearCityEngine.generateEngineXml(config);
+      const blob = new Blob([xmlContent], { type: 'application/xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('XML Download error:', err);
+      alert('Failed to generate blueprint XML: ' + (err && err.message ? err.message : err));
+    }
   });
 
   /* ==========================================================================
