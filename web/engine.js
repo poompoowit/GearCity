@@ -462,6 +462,7 @@ const GearCityEngine = (() => {
     const maxCost = constraints.maxCost != null && !isNaN(constraints.maxCost) ? Number(constraints.maxCost) : null;
     const maxCc = constraints.maxCc != null && !isNaN(constraints.maxCc) ? Number(constraints.maxCc) : null;
     const maxWeight = constraints.maxWeight != null && !isNaN(constraints.maxWeight) ? Number(constraints.maxWeight) : null;
+    const designSkill = constraints.designSkill != null ? Number(constraints.designSkill) : DEFAULT_ENGINE_SKILL;
     const maxTorque = (constraints.maxTorque != null && !isNaN(constraints.maxTorque) && constraints.maxTorque !== '' && Number(constraints.maxTorque) > 0) ? Number(constraints.maxTorque) : null;
     const maxLength = constraints.maxLength != null && !isNaN(constraints.maxLength) ? Number(constraints.maxLength) : null;
     const maxWidth = constraints.maxWidth != null && !isNaN(constraints.maxWidth) ? Number(constraints.maxWidth) : null;
@@ -563,8 +564,12 @@ const GearCityEngine = (() => {
 
     // Pass 1: Quick screening across candidate component combinations
     const screened = [];
-    const screenBores = maxTorque != null ? [100, 250, 450, 700] : [150, 400, 700];
-    const screenStrokes = (effectiveMaxRatio != null || maxTorque != null) ? [0, 150, 350, 600, 750] : [200, 500, 750];
+    const screenBores = (maxCost != null || maxLength != null || maxWidth != null)
+      ? [40, 150, 400, 700]
+      : (maxTorque != null ? [100, 250, 450, 700] : [150, 400, 700]);
+    const screenStrokes = (maxCost != null || maxLength != null || maxWidth != null)
+      ? [30, 150, 350, 650]
+      : ((effectiveMaxRatio != null || maxTorque != null) ? [0, 150, 350, 600, 750] : [200, 500, 750]);
     const screenRpms = (effectiveMaxRatio != null || maxTorque != null) ? [0.8, 1.0] : [0.8];
     const screenTorques = (effectiveMaxRatio != null || maxTorque != null) ? [0.4, 0.7] : [0.7];
 
@@ -596,7 +601,7 @@ const GearCityEngine = (() => {
                 year,
                 name: constraints.modelName || `Engine_${year}`,
               };
-              const res = calculatePerformance(testConfig, year);
+              const res = calculatePerformance(testConfig, year, { designSkill });
               const score = computeCandidateScore(res);
               if (score > bestCompScore) {
                 bestCompScore = score;
@@ -609,7 +614,18 @@ const GearCityEngine = (() => {
     }
 
     screened.sort((a, b) => b.initialScore - a.initialScore);
-    const topCandidates = screened.slice(0, 25).map((s) => s.comp);
+    // Ensure architecture diversity (layout + cylinders) across top candidates so one component group doesn't crowd out the candidate pool
+    const archSeen = {};
+    const diverseCandidates = [];
+    for (const s of screened) {
+      const archKey = s.comp.layout + '_' + s.comp.cylinders;
+      archSeen[archKey] = (archSeen[archKey] || 0) + 1;
+      if (archSeen[archKey] <= 2) {
+        diverseCandidates.push(s.comp);
+        if (diverseCandidates.length >= 35) break;
+      }
+    }
+    const topCandidates = diverseCandidates.length > 0 ? diverseCandidates : screened.slice(0, 25).map((s) => s.comp);
 
     // Pass 2: Fine-grained slider search across top candidate architectures
     let bestScore = -Infinity;
@@ -622,8 +638,6 @@ const GearCityEngine = (() => {
     const rpmSteps = [0.65, 0.85, 1.0];
     const matSteps = [0.25, 0.5, 0.75];
     const weightSteps = maxWeight != null ? [0.5, 0.35, 0.1] : [0.5];
-
-    const designSkill = constraints.designSkill != null ? Number(constraints.designSkill) : DEFAULT_ENGINE_SKILL;
 
     for (const comp of topCandidates) {
       for (const b of boreSteps) {
