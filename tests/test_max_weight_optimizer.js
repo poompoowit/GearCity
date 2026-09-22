@@ -108,6 +108,39 @@ assert(
   `Actual: ${tight1935.performance.weightKg.toFixed(1)} kg <= 150 kg`
 );
 
+// -------------------------------------------------------------
+// TEST 4: Engine Bay Limits from 400 mm to 20,000 mm strictly enforced
+// -------------------------------------------------------------
+console.log('\n--- TEST 4: Engine Bay Limits from 400 mm to 20,000 mm ---');
+const baySizesToTest = [
+  { size: 400, desc: '400 mm (Micro)' },
+  { size: 500, desc: '500 mm (Cyclecar)' },
+  { size: 750, desc: '750 mm (Compact)' },
+  { size: 900, desc: '900 mm (Sedan)' },
+  { size: 1200, desc: '1200 mm (Touring)' },
+  { size: 1600, desc: '1600 mm (Luxury / Truck)' },
+  { size: 8000, desc: '8000 mm (Giant Train / Ship)' },
+  { size: 20000, desc: '20000 mm (Unconstrained Max)' },
+];
+
+for (const b of baySizesToTest) {
+  const opt = E.optimizeEngine(1910, {
+    maxCost: 1500,
+    maxLength: b.size / 10.0,
+    maxWidth: b.size / 10.0,
+    focus: 'HP',
+    designSkill: 100,
+    modelName: 'Bay_' + b.size,
+  });
+
+  const fits = (opt.performance.lengthCm * 10 <= b.size + 0.1) && (opt.performance.widthCm * 10 <= b.size + 0.1);
+  assert(
+    fits,
+    `Bay limit ${b.desc} strictly fits engine dimensions`,
+    `${(opt.performance.lengthCm * 10).toFixed(0)} x ${(opt.performance.widthCm * 10).toFixed(0)} mm <= ${b.size} mm (${opt.config.components.layout} ${opt.config.components.cylinders}-cyl, ${opt.performance.horsepower.toFixed(1)} HP)`
+  );
+}
+
 console.log('\n═══════════════════════════════════════════════════════════════');
 console.log(`TOTAL TESTS: ${passed + failed}`);
 console.log(`✅ PASSED: ${passed}`);
@@ -117,5 +150,6 @@ console.log('══════════════════════�
 if (failed > 0) {
   process.exit(1);
 } else {
-  console.log('🌟 ALL MAX WEIGHT OPTIMIZER TESTS PASSED PERFECTLY!\n');
+  console.log('🌟 ALL MAX WEIGHT & BAY OPTIMIZER TESTS PASSED PERFECTLY!\n');
 }
+

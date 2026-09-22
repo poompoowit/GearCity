@@ -524,10 +524,12 @@ const GearCityEngine = (() => {
         penalty += 20000.0 + excessWeight * 500.0 + Math.pow(excessWeight, 2) * 50.0;
       }
       if (maxLength != null && res.lengthCm > maxLength) {
-        penalty += Math.pow(res.lengthCm - maxLength, 2) * 15;
+        const excessLen = res.lengthCm - maxLength;
+        penalty += 20000.0 + excessLen * 500.0 + Math.pow(excessLen, 2) * 50.0;
       }
       if (maxWidth != null && res.widthCm > maxWidth) {
-        penalty += Math.pow(res.widthCm - maxWidth, 2) * 15;
+        const excessWid = res.widthCm - maxWidth;
+        penalty += 20000.0 + excessWid * 500.0 + Math.pow(excessWid, 2) * 50.0;
       }
       if (maxTorque != null && res.torqueNm > maxTorque) {
         const excessTorque = res.torqueNm - maxTorque;
