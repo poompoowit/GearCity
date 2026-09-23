@@ -1129,11 +1129,11 @@ const GearCityEngine = (() => {
     // 2. Interior Sliders (0 - 100%)
     const interior = {
       style: clamp(overrides.interiorStyle ?? (isPremium ? (72.0 + (p.Performance * 18.0) + (wFactor * 8.0)) : (25.0 + (p.Performance * 35.0) + (wFactor * 25.0)))),
-      innovation: clamp(overrides.interiorInnovation ?? (isPremium ? (82.0 + (wFactor * 12.0)) : (20.0 + (wFactor * 40.0) + (Math.max(0, yr - 1930) / 90.0 * 20.0)))),
+      innovation: clamp(overrides.interiorInnovation ?? (isPremium ? (82.0 + (wFactor * 12.0)) : (25.0 + (wFactor * 45.0)))),
       luxury: clamp(overrides.interiorLuxury ?? (isPremium ? (88.0 + (p.Luxury * 9.0)) : (15.0 + (p.Luxury * 55.0) + (wFactor * 25.0)))),
       comfort: clamp(overrides.interiorComfort ?? (isPremium ? (84.0 + (p.Driveability * 12.0)) : (20.0 + (p.Driveability * 40.0) + (p.Luxury * 25.0)))),
       safety: clamp(overrides.interiorSafety ?? (isPremium ? (78.0 + (p.Safety * 18.0)) : (20.0 + (p.Safety * 55.0) + (wFactor * 15.0)))),
-      technology: clamp(overrides.interiorTechnology ?? (isPremium ? (82.0 + (wFactor * 12.0)) : (20.0 + (wFactor * 40.0) + (Math.max(0, yr - 1940) / 80.0 * 20.0)))),
+      technology: clamp(overrides.interiorTechnology ?? (isPremium ? (82.0 + (wFactor * 12.0)) : (25.0 + (wFactor * 45.0)))),
     };
 
     // 3. Materials Sliders (0 - 100%)

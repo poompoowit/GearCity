@@ -1841,7 +1841,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const yr = currentVehicleSliders.year;
         const xml = GearCityEngine.generateVehicleXml(currentVehicleSliders);
         const cleanVehicle = carType.replace(/[^a-zA-Z0-9]/g, '');
-        const filename = `Car_${cleanVehicle}_${yr}.xml`;
+        const filename = `Car_${cleanVehicle}.xml`;
 
         const blob = new Blob([xml], { type: 'application/xml;charset=utf-8' });
         const url = URL.createObjectURL(blob);
@@ -3200,7 +3200,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const btnCar = document.getElementById('btn-ms-download-car');
         if (btnCar) {
           btnCar.addEventListener('click', () => {
-            const filename = `Car_Race_${cc}cc_${yr}.xml`;
+            const filename = `Car_Race_${cc}cc.xml`;
             downloadFile(raceVehicle.blueprints.carXml, filename);
             trackUsageEvent('download_motorsport_car', `Download Race Car XML: ${filename}`);
           });
